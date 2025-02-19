@@ -1,12 +1,12 @@
 <template>
-  <Header msg="Top Page" />
-  <Top msg="Top Page" />
-  <Footer msg="Top Page" />
+  <Header msg="uji52.com" />
+  <Landing msg="Landing Page" />
+  <Footer msg="uji52" />
 </template>
 
 <script setup>
 import Header from './components/Header.vue'
-import Top from './components/Top.vue'
+import Landing from './components/Landing.vue'
 import Footer from './components/Footer.vue'
 </script>
 

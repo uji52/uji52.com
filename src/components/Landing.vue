@@ -1,7 +1,6 @@
 <template>
-  <h1>{{ msg }}</h1>
-
-  <div class="card">
+  <div class="col-12">
+    <h1>{{ msg }}</h1>
     <button class="btn btn-primary" type="button" @click="count++">count is {{ count }}</button>
     <p>Vue Test Main</p>
   </div>
