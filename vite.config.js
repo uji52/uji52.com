@@ -1,3 +1,4 @@
+import vue from '@vitejs/plugin-vue'
 const path = require('path')
 
 export default {
@@ -7,5 +8,6 @@ export default {
   },
   server: {
     port: 8080
-  }
+  },
+  plugins: [vue()]
 }
