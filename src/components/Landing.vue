@@ -4,7 +4,6 @@
     <button class="btn btn-primary" type="button" @click="count++">count is {{ count }}</button>
     <p>Vue Test Main</p>
   </div>
-  <p class="read-the-docs">@uji52</p>
 </template>
 
 <script setup>
