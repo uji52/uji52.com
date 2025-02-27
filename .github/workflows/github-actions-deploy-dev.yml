@@ -2,14 +2,13 @@ name: Deploy Dev
 on:
   push:
     branches:
-      - feature/*
-  
+      - feature/*  
 jobs:
   Lint:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Check nodejs version
         run: node -v
@@ -20,29 +19,30 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      # Lint導入までコメントアウト
       #- name: Lint
       #  run: npm run lint
 
+      # Lint導入までコメントアウト
       #- name: CSS Lint
       #  run: npm run lint:css
-
   UnitTest:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Dependencies
         run: npm install
 
+      # UT導入までコメントアウト
       #- name: Do Unit Test
       #  run: npm run test:unit
-
   DeployDevelop:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Dependencies
         run: npm install
@@ -50,7 +50,7 @@ jobs:
       - name: Build
         run: npm run build  # Vue ビルド
 
-      - name: Deploy  # S3にデプロイ 
+      - name: Deploy  # S3にデプロイ
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -62,4 +62,3 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ap-northeast-1
         run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/*"
-
