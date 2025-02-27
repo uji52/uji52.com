@@ -1,0 +1,65 @@
+name: Deploy Dev
+on:
+  push:
+    branches:
+      - feature/*
+  
+jobs:
+  Lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Check nodejs version
+        run: node -v
+
+      - name: Check npm version
+        run: npm -v
+
+      - name: Install Dependencies
+        run: npm install
+
+      #- name: Lint
+      #  run: npm run lint
+
+      #- name: CSS Lint
+      #  run: npm run lint:css
+
+  UnitTest:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: npm install
+
+      #- name: Do Unit Test
+      #  run: npm run test:unit
+
+  DeployDevelop:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build  # Vue ビルド
+
+      - name: Deploy  # S3にデプロイ 
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: aws s3 cp --recursive --region ap-northeast-1 dist s3://${{ secrets.S3_BUCKET_NAME }}
+
+      - name: Invalidation  # CF Invalidation
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ap-northeast-1
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} --paths "/*"
+
