@@ -147,6 +147,9 @@ const stringToHex = (str) => {
 }
 
 const hexToString = (hex) => {
+  if (!/^[0-9a-f]+$/i.test(hex) || hex.length % 2 !== 0) {
+    throw new Error('Invalid hexadecimal string')
+  }
   const bytes = new Uint8Array(hex.match(/.{2}/g).map(byte => parseInt(byte, 16)))
   return new TextDecoder().decode(bytes)
 }
@@ -210,7 +213,8 @@ watch(b64str, (newValue) => {
 
 watch(b64urlstr, (newValue) => {
   try {
-    b64plane.value = base64ToString(newValue)
+    const base64 = newValue.replace(/-/g, "+").replace(/_/g, "/")
+    b64plane.value = base64ToString(base64)
     b64error.value = ""
   } catch(err) {
     b64error.value = UNKNOWN_ERROR + err.message
@@ -243,11 +247,11 @@ watch(urlencode, (newValue) => {
 
 watch(hashplain, (newValue) => {
   try {
+    hasherror.value = ""
     crypto.subtle.digest("SHA-256", new TextEncoder().encode(newValue)).then(result => {
       hashsha256.value = ""
       new Uint8Array(result).forEach(bit => {
         hashsha256.value += ('00' + bit.toString(16)).slice(-2)
-        hasherror.value = ""
       })
       hashsha256b64.value = btoa(String.fromCharCode(...new Uint8Array(result)))
       hashsha256b64url.value = hashsha256b64.value
@@ -262,9 +266,12 @@ watch(hashplain, (newValue) => {
 
 // メソッドの定義
 const randomgenerate = () => {
+  const array = new Uint8Array(randomlength.value)
+  crypto.getRandomValues(array)
   randomvalue.value = ""
-  for (let index = 0; index < randomlength.value; index++) {
-    randomvalue.value += randomseed.value[Math.floor(randomseed.value.length * Math.random())]
+  for (let i = 0; i < randomlength.value; i++) {
+    const index = array[i] % randomseed.value.length
+    randomvalue.value += randomseed.value[index]
   }
 }
 </script>
