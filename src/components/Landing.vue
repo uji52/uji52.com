@@ -1,0 +1,24 @@
+<template>
+  <div class="col-12">
+    <h1>{{ msg }}</h1>
+    <button class="btn btn-primary" type="button" @click="count++">count is {{ count }}</button>
+    <p>Vue Test Main</p>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+
+defineProps({
+  msg: String,
+})
+
+const count = ref(0)
+</script>
+
+<style scoped>
+.read-the-docs {
+  color: #888;
+}
+</style>
+
