@@ -1,12 +1,13 @@
 <template>
   <Header msg="uji52.com" />
-  <Landing msg="Landing Page" />
+  <Develop msg="Landing Page" />
   <Footer msg="uji52" />
 </template>
 
 <script setup>
 import Header from './components/Header.vue'
-import Landing from './components/Landing.vue'
+//import Landing from './components/Landing.vue'
+import Develop from './components/Develop.vue'
 import Footer from './components/Footer.vue'
 </script>
 
