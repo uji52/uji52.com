@@ -1,8 +1,9 @@
 name: Deploy Prd
 on:
-  push:
+  pull_request:
     branches:
       - master
+    types: [closed]
 jobs:
   Deploy:
     runs-on: ubuntu-24.04
