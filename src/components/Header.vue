@@ -6,7 +6,7 @@
       <nav>
         <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
           <li>
-            <router-link to="/" class="nav-link px-2">
+            <router-link id="linkTop" to="/" class="nav-link px-2">
               <svg
                 class="bi"
                 width="32"
@@ -19,7 +19,7 @@
             </router-link>
           </li>
           <li>
-            <router-link
+            <router-link id="linkLanding"
               to="/"
               class="nav-link px-2"
               :class="{ 'link-secondary': $route.path === '/' }"
@@ -27,7 +27,7 @@
             >
           </li>
           <li>
-            <router-link
+            <router-link id="linkDevelop"
               to="/develop"
               class="nav-link px-2"
               :class="{ 'link-secondary': $route.path === '/develop' }"
@@ -35,7 +35,7 @@
             >
           </li>
           <li>
-            <router-link
+            <router-link id="linkRelease"
               to="/release"
               class="nav-link px-2"
               :class="{ 'link-secondary': $route.path === '/release' }"
@@ -43,7 +43,7 @@
             >
           </li>
           <li>
-            <router-link
+            <router-link id="linkFeedback"
               to="/feedback"
               class="nav-link px-2"
               :class="{ 'link-secondary': $route.path === '/feedback' }"
