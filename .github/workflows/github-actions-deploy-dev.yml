@@ -19,13 +19,8 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      # Lint導入までコメントアウト
-      #- name: Lint
-      #  run: npm run lint
-
-      # Lint導入までコメントアウト
-      #- name: CSS Lint
-      #  run: npm run lint:css
+      - name: Lint
+        run: npm run lint
   UnitTest:
     runs-on: ubuntu-24.04
     steps:
