@@ -1,5 +1,4 @@
 import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
 import Develop from '@/components/Develop.vue'
 
 describe('Develop.vue', () => {
