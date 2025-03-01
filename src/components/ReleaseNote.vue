@@ -1,7 +1,7 @@
 <template>
   <div class="release-note">
     <div class="container py-5">
-      <h2 class="text-center mb-5">リリースノート</h2>
+      <h2 class="text-center mb-5">Release Note</h2>
 
       <div class="timeline">
         <div

@@ -14,6 +14,7 @@
             <div class="col-md-6 mb-3">
               <label for="b64plane">文字列</label>
               <input
+                id="b64plane"
                 v-model="b64plane"
                 class="form-control"
                 placeholder="文字列"
@@ -24,6 +25,7 @@
             <div class="col-md-6 mb-3">
               <label for="b64hex">Base64(16進数)</label>
               <input
+                id="b64hex"
                 v-model="b64hex"
                 class="form-control"
                 placeholder="Base64(16進数)"
@@ -34,6 +36,7 @@
             <div class="col-md-6 mb-3">
               <label for="b64strb64">Base64(文字列)</label>
               <input
+                id="b64str"
                 v-model="b64str"
                 class="form-control"
                 placeholder="Base64(文字列)"
@@ -44,6 +47,7 @@
             <div class="col-md-6 mb-3">
               <label for="b64strb64url">Base64URL(文字列)</label>
               <input
+                id="b64urlstr"
                 v-model="b64urlstr"
                 class="form-control"
                 placeholder="Base64URL(文字列)"
@@ -58,6 +62,7 @@
             <div class="col-md-6 mb-3">
               <label for="urldecode">文字列</label>
               <input
+                id="urldecode"
                 v-model="urldecode"
                 class="form-control"
                 placeholder="文字列"
@@ -68,6 +73,7 @@
             <div class="col-md-6 mb-3">
               <label for="urlencode">URL Encode</label>
               <input
+                id="urlencode"
                 v-model="urlencode"
                 class="form-control"
                 placeholder="URL Encode"
@@ -82,6 +88,7 @@
             <div class="col-md-6 mb-3">
               <label for="hashplain">文字列</label>
               <input
+                id="hashplain"
                 v-model="hashplain"
                 class="form-control"
                 placeholder="Plain"
@@ -92,6 +99,7 @@
             <div class="col-md-6 mb-3">
               <label for="hashsha256">SHA256</label>
               <input
+                id="hashsha256"
                 v-model="hashsha256"
                 class="form-control"
                 placeholder="SHA256"
@@ -102,6 +110,7 @@
             <div class="col-md-6 mb-3">
               <label for="hashsha256">SHA256(Base64Encoded)</label>
               <input
+                id="hashsha256b64"
                 v-model="hashsha256b64"
                 class="form-control"
                 placeholder="SHA256B64"
@@ -112,6 +121,7 @@
             <div class="col-md-6 mb-3">
               <label for="hashsha256">SHA256(Base64URLEncoded)</label>
               <input
+                id="hashsha256b64url"
                 v-model="hashsha256b64url"
                 class="form-control"
                 placeholder="SHA256B64URL"
@@ -126,6 +136,7 @@
             <div class="col-md-6 mb-3">
               <label for="randomseed">ランダムシード</label>
               <input
+                id="randomseed"
                 v-model="randomseed"
                 class="form-control"
                 placeholder="ランダムシード"
@@ -136,6 +147,7 @@
             <div class="col-md-6 mb-3">
               <label for="randomlength">文字列長</label>
               <input
+                id="randomlength"
                 number
                 v-model="randomlength"
                 class="form-control"
@@ -146,6 +158,7 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <input
+                id="randomgenerateButton"
                 type="button"
                 v-on:click="randomgenerate"
                 class="btn btn-success"
@@ -157,6 +170,7 @@
             <div class="col-md-6 mb-3">
               <label for="randomvalue">ランダム値</label>
               <input
+                id="randomvalue"
                 v-model="randomvalue"
                 class="form-control"
                 placeholder="ランダム値"
@@ -175,7 +189,6 @@ import { ref, watch } from 'vue'
 
 const UNKNOWN_ERROR = 'エラー⇒'
 
-// リアクティブな変数の定義
 const b64plane = ref('')
 const b64hex = ref('')
 const b64str = ref('')
