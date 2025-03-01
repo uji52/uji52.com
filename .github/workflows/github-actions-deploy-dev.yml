@@ -30,9 +30,8 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      # UT導入までコメントアウト
-      #- name: Do Unit Test
-      #  run: npm run test:unit
+      - name: Do Unit Test
+        run: npm run test:unit
   DeployDevelop:
     runs-on: ubuntu-24.04
     steps:
