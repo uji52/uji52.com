@@ -1,13 +1,11 @@
 <template>
   <Header msg="uji52.com" />
-  <Develop msg="Landing Page" />
+  <router-view></router-view>
   <Footer msg="uji52" />
 </template>
 
 <script setup>
 import Header from './components/Header.vue'
-//import Landing from './components/Landing.vue'
-import Develop from './components/Develop.vue'
 import Footer from './components/Footer.vue'
 </script>
 
@@ -25,4 +23,3 @@ import Footer from './components/Footer.vue'
   filter: drop-shadow(0 0 2em #42b883aa);
 }
 </style>
-
