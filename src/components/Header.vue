@@ -1,13 +1,57 @@
 <template>
   <div class="container">
-    <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
-      <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="#" class="nav-link px-2"><svg class="bi" width="32" height="32" role="img" aria-label="Icon"><use xlink:href="#icon"></use></svg></a></li>
-        <li><a href="#" class="nav-link px-2">Home</a></li>
-        <li><a href="#" class="nav-link px-2 link-secondary">Develop</a></li>
-        <li><a href="#" class="nav-link px-2">ReleaseNote</a></li>
-        <li><a href="#" class="nav-link px-2">Request</a></li>
-      </ul>
+    <header
+      class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom"
+    >
+      <nav>
+        <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+          <li>
+            <router-link to="/" class="nav-link px-2">
+              <svg
+                class="bi"
+                width="32"
+                height="32"
+                role="img"
+                aria-label="Icon"
+              >
+                <use xlink:href="#icon"></use>
+              </svg>
+            </router-link>
+          </li>
+          <li>
+            <router-link
+              to="/"
+              class="nav-link px-2"
+              :class="{ 'link-secondary': $route.path === '/' }"
+              >Home</router-link
+            >
+          </li>
+          <li>
+            <router-link
+              to="/develop"
+              class="nav-link px-2"
+              :class="{ 'link-secondary': $route.path === '/develop' }"
+              >Develop</router-link
+            >
+          </li>
+          <li>
+            <router-link
+              to="/release"
+              class="nav-link px-2"
+              :class="{ 'link-secondary': $route.path === '/release' }"
+              >ReleaseNote</router-link
+            >
+          </li>
+          <li>
+            <router-link
+              to="/feedback"
+              class="nav-link px-2"
+              :class="{ 'link-secondary': $route.path === '/feedback' }"
+              >Request</router-link
+            >
+          </li>
+        </ul>
+      </nav>
 
       <div class="col-md-3 text-end">
         <!--<button type="button" class="btn btn-outline-primary me-2">Login</button>-->
@@ -15,7 +59,7 @@
       </div>
     </header>
   </div>
-  <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
     <symbol id="icon" viewBox="0 0 64 64">
       <path
         fill="#888888"
@@ -46,4 +90,3 @@
   vertical-align: text-bottom;
 }
 </style>
-
