@@ -23,7 +23,7 @@ describe('Develop.vue', () => {
     expect(wrapper.vm.stringToHex('test')).toBe('74657374')
   })
 
-  it('base64 deencode (base64hex => string)', () => {
+  it('base64 dencode (base64hex => string)', () => {
     expect(wrapper.vm.hexToString('74657374')).toBe('test')
   })
 
@@ -31,7 +31,7 @@ describe('Develop.vue', () => {
     expect(wrapper.vm.stringToBase64('test')).toBe('dGVzdA==')
   })
 
-  it('base64 encode (base64str => plain)', () => {
+  it('base64 decode (base64str => plain)', () => {
     expect(wrapper.vm.base64ToString('dGVzdA==')).toBe('test')
     expect(wrapper.vm.base64ToString('dGVzdA')).toBe('test')
   })
