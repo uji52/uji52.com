@@ -3,7 +3,7 @@
     <section name="head" class="section section-shaped section-lg my-0">
       <div class="shape shape-style-1 shape-default shape-skew"></div>
       <div class="container shifted">
-        <h1 class="display-3 text-white">Development Tools</h1>
+        <h1 class="display-5 fw-bold text-body-emphasis">Development Tools</h1>
       </div>
     </section>
     <section>
@@ -134,7 +134,7 @@ const hashsha256b64 = ref("")
 const hashsha256b64url = ref("")
 const hasherror = ref("")
 
-const randomseed = ref("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+const randomseed = ref("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")
 const randomlength = ref(10)
 const randomvalue = ref("")
 const randomerror = ref("")
