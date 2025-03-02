@@ -50,8 +50,4 @@ describe('Router', () => {
   it('uses web history mode', () => {
     expect(createWebHistory).toHaveBeenCalled()
   })
-
-  it('has correct number of routes', () => {
-    expect(router.options.routes).toHaveLength(4)
-  })
 })

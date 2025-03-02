@@ -61,7 +61,6 @@ describe('Header.vue', () => {
 
     navItems.forEach(item => {
       const link = links.find(link => link.text() === item)
-      //expect(link.exists()).toBe(true)
       expect(link).toBeTruthy()
     })
   })
