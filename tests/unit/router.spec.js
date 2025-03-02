@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createWebHistory } from 'vue-router'
 import router from '@/router'
 
 // Vue Routerのモック

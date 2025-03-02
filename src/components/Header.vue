@@ -19,7 +19,8 @@
             </router-link>
           </li>
           <li>
-            <router-link id="linkLanding"
+            <router-link
+              id="linkLanding"
               to="/"
               class="nav-link px-2"
               :class="{ 'link-secondary': $route.path === '/' }"
@@ -27,7 +28,8 @@
             >
           </li>
           <li>
-            <router-link id="linkDevelop"
+            <router-link
+              id="linkDevelop"
               to="/develop"
               class="nav-link px-2"
               :class="{ 'link-secondary': $route.path === '/develop' }"
@@ -35,7 +37,8 @@
             >
           </li>
           <li>
-            <router-link id="linkRelease"
+            <router-link
+              id="linkRelease"
               to="/release"
               class="nav-link px-2"
               :class="{ 'link-secondary': $route.path === '/release' }"
@@ -43,7 +46,8 @@
             >
           </li>
           <li>
-            <router-link id="linkFeedback"
+            <router-link
+              id="linkFeedback"
               to="/feedback"
               class="nav-link px-2"
               :class="{ 'link-secondary': $route.path === '/feedback' }"
@@ -78,8 +82,7 @@
   </svg>
 </template>
 
-<script setup>
-</script>
+<script setup></script>
 
 <style scoped>
 .read-the-docs {

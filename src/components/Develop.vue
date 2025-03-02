@@ -54,7 +54,7 @@
               />
             </div>
           </div>
-          <p>{{ b64error }}</p>
+          <p id="b64error">{{ b64error }}</p>
         </form>
         <h2>URL Encode</h2>
         <form>
@@ -80,7 +80,7 @@
               />
             </div>
           </div>
-          <p>{{ urlerror }}</p>
+          <p id="urlError" v-if="urlerror">{{ urlerror }}</p>
         </form>
         <h2>Hash</h2>
         <form>
@@ -103,6 +103,7 @@
                 v-model="hashsha256"
                 class="form-control"
                 placeholder="SHA256"
+                readonly
               />
             </div>
           </div>
@@ -114,6 +115,7 @@
                 v-model="hashsha256b64"
                 class="form-control"
                 placeholder="SHA256B64"
+                readonly
               />
             </div>
           </div>
@@ -125,10 +127,11 @@
                 v-model="hashsha256b64url"
                 class="form-control"
                 placeholder="SHA256B64URL"
+                readonly
               />
             </div>
           </div>
-          <p>{{ hasherror }}</p>
+          <p id="hasherror">{{ hasherror }}</p>
         </form>
         <h2>Random</h2>
         <form>
@@ -186,8 +189,6 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-
-const UNKNOWN_ERROR = 'エラー⇒'
 
 const b64plane = ref('')
 const b64hex = ref('')
@@ -258,123 +259,130 @@ const randomgenerate = () => {
   }
 }
 
+const sha256hashGenerate = async (value) => {
+  const result = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value))
+  hashsha256.value = ''
+  new Uint8Array(result).forEach((bit) => {
+    hashsha256.value += ('00' + bit.toString(16)).slice(-2)
+  })
+  hashsha256b64.value = btoa(
+    String.fromCharCode(...new Uint8Array(result))
+  )
+  hashsha256b64url.value = hashsha256b64.value
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '')
+}
+
 // watchers
 watch(
-  () => b64plane.value, (newValue) => {
-    try {
-      if (!newValue) {
-        b64hex.value = ''
-        b64str.value = ''
-        return
-      }
-      const hexValue = stringToHex(newValue)
-      const strValue = stringToBase64(newValue)
-      const urlstrValue = strValue
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=/g, '')
-      const invalidHexRegex = /^(efbfbd)+$/
-      if (invalidHexRegex.test(hexValue)) return
-      b64hex.value = hexValue
-      b64str.value = strValue
-      b64urlstr.value = urlstrValue
-    } catch (err) {
-      b64error.value = UNKNOWN_ERROR + err.message
+  () => b64plane.value,
+  (newValue) => {
+    if (!newValue) {
+      b64hex.value = ''
+      b64str.value = ''
+      b64urlstr.value = ''
+      return
     }
+    const hexValue = stringToHex(newValue)
+    const strValue = stringToBase64(newValue)
+    const urlstrValue = strValue
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '')
+    const invalidHexRegex = /^(efbfbd)+$/
+    if (invalidHexRegex.test(hexValue)) return
+    b64hex.value = hexValue
+    b64str.value = strValue
+    b64urlstr.value = urlstrValue
   }
 )
 
 watch(
-  () => b64hex.value, (newValue) => {
-    try {
-      const hexRegex = /^([0-9a-f][0-9a-f])+$/
-      if (!hexRegex.test(newValue)) {
-        b64plane.value = ''
-        b64str.value = ''
-        b64error.value = 'その値はBase64エンコードされた16進数ではないです。'
-        return
-      }
-      const b64planeValue = hexToString(newValue)
-      b64plane.value = b64planeValue
-      b64error.value = ''
-    } catch (err) {
-      b64error.value = UNKNOWN_ERROR + err.message
+  () => b64hex.value,
+  (newValue) => {
+    const hexRegex = /^([0-9a-f][0-9a-f])+$/
+    if (!hexRegex.test(newValue)) {
+      b64plane.value = ''
+      b64str.value = ''
+      b64error.value = 'その値はBase64エンコードされた16進数ではないです。'
+      return
     }
+    const b64planeValue = hexToString(newValue)
+    b64plane.value = b64planeValue
+    b64error.value = ''
   }
 )
 
 watch(
-  () => b64str.value, (newValue) => {
+  () => b64str.value,
+  (newValue) => {
     try {
+      b64plane.value = ''
       b64plane.value = base64ToString(newValue)
       b64error.value = ''
     } catch (err) {
-      b64error.value = UNKNOWN_ERROR + err.message
+      b64error.value = err.message
     }
   }
 )
 
 watch(
-  () => b64urlstr.value, (newValue) => {
+  () => b64urlstr.value,
+  (newValue) => {
     try {
-      const base64 = newValue.replace(/-/g, '+').replace(/_/g, '/')
-      b64plane.value = base64ToString(base64)
+      b64plane.value = ''
+      b64plane.value = base64ToString(newValue)
       b64error.value = ''
     } catch (err) {
-      b64error.value = UNKNOWN_ERROR + err.message
+      b64error.value = err.message
     }
   }
 )
 
 watch(
-  () => urldecode.value, (newValue) => {
+  () => urldecode.value,
+  (newValue) => {
     try {
       const urlencodeValue = encodeURIComponent(newValue)
       urlencode.value = urlencodeValue
       urlerror.value = ''
     } catch (err) {
-      urlerror.value = UNKNOWN_ERROR + err.message
+      urlerror.value = err.message
     }
   }
 )
 
 watch(
-  () => urlencode.value, (newValue) => {
+  () => urlencode.value,
+  (newValue) => {
     try {
       const urldecodeValue = decodeURIComponent(newValue)
       urldecode.value = urldecodeValue
       urlerror.value = ''
     } catch (err) {
-      if (err.name === 'URIError') {
-        urlerror.value = 'その値はURLデコードできないです。'
-      } else {
-        urlerror.value = UNKNOWN_ERROR + err.message
-      }
+      urlerror.value =
+        err.name === 'URIError'
+          ? 'その値はURLデコードできないです。'
+          : err.message
     }
   }
 )
 
 watch(
-  () => hashplain.value, (newValue) => {
+  () => hashplain.value,
+  (newValue) => {
     try {
+      if (!newValue) {
+        hashsha256.value = ''
+        hashsha256b64.value = ''
+        hashsha256b64url.value = ''
+        return
+      }
       hasherror.value = ''
-      crypto.subtle
-        .digest('SHA-256', new TextEncoder().encode(newValue))
-        .then((result) => {
-          hashsha256.value = ''
-          new Uint8Array(result).forEach((bit) => {
-            hashsha256.value += ('00' + bit.toString(16)).slice(-2)
-          })
-          hashsha256b64.value = btoa(
-            String.fromCharCode(...new Uint8Array(result))
-          )
-          hashsha256b64url.value = hashsha256b64.value
-            .replace(/\+/g, '-')
-            .replace(/\//g, '_')
-            .replace(/=/g, '')
-        })
+      sha256hashGenerate(newValue)
     } catch (err) {
-      hasherror.value = UNKNOWN_ERROR + err.message
+      hasherror.value = err.message
     }
   }
 )

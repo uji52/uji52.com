@@ -6,7 +6,11 @@
       <div class="col-lg-6 mx-auto">
         <p class="lead mb-4">システム開発に利用できるツールを提供します</p>
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-          <router-link id="devToolLink" to="/develop" class="btn btn-primary btn-lg px-4 gap-3">
+          <router-link
+            id="devToolLink"
+            to="/develop"
+            class="btn btn-primary btn-lg px-4 gap-3"
+          >
             開発ツール
           </router-link>
         </div>
@@ -73,8 +77,7 @@
   </div>
 </template>
 
-<script setup>
-</script>
+<script setup></script>
 
 <style scoped>
 .icon-square {
