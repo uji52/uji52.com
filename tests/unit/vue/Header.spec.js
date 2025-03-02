@@ -60,7 +60,7 @@ describe('Header.vue', () => {
     const links = wrapper.findAll('a')
 
     navItems.forEach(item => {
-      const link = links.find(link => link.text() === item)
+      const link = links.find(linkElement => linkElement.text() === item)
       expect(link).toBeTruthy()
     })
   })
