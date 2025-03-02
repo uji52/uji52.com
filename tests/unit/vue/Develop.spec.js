@@ -355,7 +355,6 @@ describe('Develop.vue', () => {
     // expect(urlDecodeError.element.text).toBe('')
   })
 
-  /*
   it('sha256', async () => {
     expect(wrapper.vm.hashplain).toBe('')
     expect(wrapper.vm.hashsha256).toBe('')
@@ -366,36 +365,26 @@ describe('Develop.vue', () => {
     const input = wrapper.find('input[id="hashplain"]')
     await input.setValue('test')
 
-    console.log({
-      'hashplain:': wrapper.vm.hashplain,
-      'hashsha256:': wrapper.vm.hashsha256,
-      'hashsha256b64:': wrapper.vm.hashsha256b64,
-      'hashsha256b64url:': wrapper.vm.hashsha256b64url,
-      'hasherror:': wrapper.vm.hasherror
-    })
-
     expect(wrapper.vm.hashplain).toBe('test')
     expect(wrapper.vm.hashsha256).toBe('9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08')
     expect(wrapper.vm.hashsha256b64).toBe('n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg=')
-    expect(wrapper.vm.hashsha256b64url).toBe('n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg')
+    expect(wrapper.vm.hashsha256b64url).toBe('n4bQgYhMfWWaL-qgxVrQFaO_TxsrC4Is0V1sFbDwCgg')
     expect(wrapper.vm.hasherror).toBe('')
 
-    // DOM の更新も確認
-    const hashplainInput = wrapper.find('input[id="hashplain"]')
-    const hashsha256Input = wrapper.find('input[id="hashsha256"]')
-    const hashsha256b64Input = wrapper.find('input[id="hashsha256b64"]')
-    const hashsha256b64urlInput = wrapper.find('input[id="hashsha256b64url"]')
-    const hasherrInput = wrapper.find('p[id="hasherror"]')
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    //const hashplainInput = wrapper.find('input[id="hashplain"]')
+    //const hashsha256Input = wrapper.find('input[id="hashsha256"]')
+    //const hashsha256b64Input = wrapper.find('input[id="hashsha256b64"]')
+    //const hashsha256b64urlInput = wrapper.find('input[id="hashsha256b64url"]')
+    //const hasherrInput = wrapper.find('p[id="hasherror"]')
 
-    expect(hashplainInput.element.value).toBe('test')
-    expect(hashsha256Input.element.value).toBe('9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08')
-    expect(hashsha256b64Input.element.value).toBe('n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg=')
-    expect(hashsha256b64urlInput.element.value).toBe('n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg')
-    expect(hasherrInput.element.value).toBe('')
+    //expect(hashplainInput.element.value).toBe('test')
+    //expect(hashsha256Input.element.value).toBe('9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08')
+    //expect(hashsha256b64Input.element.value).toBe('n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg=')
+    //expect(hashsha256b64urlInput.element.value).toBe('n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg')
+    //expect(hasherrInput.element.value).toBe('')
   })
-  */
 
-  /*
   it('sha256 null', async () => {
     expect(wrapper.vm.hashplain).toBe('')
     expect(wrapper.vm.hashsha256).toBe('')
@@ -413,22 +402,19 @@ describe('Develop.vue', () => {
     expect(wrapper.vm.hashsha256b64url).toBe('')
     expect(wrapper.vm.hasherror).toBe('')
 
-    // DOM の更新も確認
-    const hashplainInput = wrapper.find('input[id="hashplain"]')
-    const hashsha256Input = wrapper.find('input[id="hashsha256"]')
-    const hashsha256b64Input = wrapper.find('input[id="hashsha256b64"]')
-    const hashsha256b64urlInput = wrapper.find('input[id="hashsha256b64url"]')
-    const hasherrInput = wrapper.find('p[id="hasherror"]')
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    //const hashplainInput = wrapper.find('input[id="hashplain"]')
+    //const hashsha256Input = wrapper.find('input[id="hashsha256"]')
+    //const hashsha256b64Input = wrapper.find('input[id="hashsha256b64"]')
+    //const hashsha256b64urlInput = wrapper.find('input[id="hashsha256b64url"]')
+    //const hasherrInput = wrapper.find('p[id="hasherror"]')
 
-    expect(hashplainInput.element.value).toBe('')
-    expect(hashsha256Input.element.value).toBe('')
-    expect(hashsha256b64Input.element.value).toBe('n')
-    expect(hashsha256b64urlInput.element.value).toBe('n4')
-    expect(hasherrInput.element.value).toBe('')
+    //expect(hashplainInput.element.value).toBe('')
+    //expect(hashsha256Input.element.value).toBe('')
+    //expect(hashsha256b64Input.element.value).toBe('')
+    //expect(hashsha256b64urlInput.element.value).toBe('n4')
+    //expect(hasherrInput.element.value).toBe('')
   })
-  */
-
-  // TODO sha256 後ろのInputに入力 エラー
 
   it('generates random string', async () => {
     const lengthInput = wrapper.find('input[id="randomlength"]')

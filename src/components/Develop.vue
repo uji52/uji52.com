@@ -189,6 +189,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import CryptoJS from 'crypto-js'
 
 const b64plane = ref('')
 const b64hex = ref('')
@@ -259,21 +260,6 @@ const randomgenerate = () => {
   }
 }
 
-const sha256hashGenerate = async (value) => {
-  const result = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value))
-  hashsha256.value = ''
-  new Uint8Array(result).forEach((bit) => {
-    hashsha256.value += ('00' + bit.toString(16)).slice(-2)
-  })
-  hashsha256b64.value = btoa(
-    String.fromCharCode(...new Uint8Array(result))
-  )
-  hashsha256b64url.value = hashsha256b64.value
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '')
-}
-
 // watchers
 watch(
   () => b64plane.value,
@@ -290,8 +276,6 @@ watch(
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=/g, '')
-    const invalidHexRegex = /^(efbfbd)+$/
-    if (invalidHexRegex.test(hexValue)) return
     b64hex.value = hexValue
     b64str.value = strValue
     b64urlstr.value = urlstrValue
@@ -372,18 +356,15 @@ watch(
 watch(
   () => hashplain.value,
   (newValue) => {
-    try {
-      if (!newValue) {
-        hashsha256.value = ''
-        hashsha256b64.value = ''
-        hashsha256b64url.value = ''
-        return
-      }
-      hasherror.value = ''
-      sha256hashGenerate(newValue)
-    } catch (err) {
-      hasherror.value = err.message
+    if (!newValue) {
+      hashsha256.value = ''
+      hashsha256b64.value = ''
+      hashsha256b64url.value = ''
+      return
     }
+    hashsha256.value = CryptoJS.enc.Hex.stringify(CryptoJS.SHA256(newValue))
+    hashsha256b64.value = CryptoJS.enc.Base64.stringify(CryptoJS.SHA256(newValue))
+    hashsha256b64url.value = CryptoJS.enc.Base64url.stringify(CryptoJS.SHA256(newValue))
   }
 )
 </script>
