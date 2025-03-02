@@ -53,6 +53,16 @@ describe('Header.vue', () => {
     await router.push('/develop')
     await nextTick()
     expect(wrapper.find('a[id="linkDevelop"]').classes()).toContain('link-secondary')
+
+    // ReleaseNote ページへ遷移
+    await router.push('/release')
+    await nextTick()
+    expect(wrapper.find('a[id="linkRelease"]').classes()).toContain('link-secondary')
+
+    // Request ページへ遷移
+    await router.push('/feedback')
+    await nextTick()
+    expect(wrapper.find('a[id="linkFeedback"]').classes()).toContain('link-secondary')
   })
 
   it('contains all navigation items', () => {
