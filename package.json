@@ -44,7 +44,8 @@
     "jest-environment-jsdom": "^29.7.0",
     "prettier": "^3.5.2",
     "sass": "^1.85.0",
-    "vite": "^6.1.1"
+    "vite": "^6.1.1",
+    "vite-plugin-pwa": "^0.21.1"
   },
   "keywords": [],
   "author": "uji52",
