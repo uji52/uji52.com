@@ -22,12 +22,12 @@ export default {
         theme_color: '#ffffff',
         icons: [
           {
-            src: 'src/assets/img/favicon.ico',
+            src: '@/src/assets/img/favicon.ico',
             sizes: '192x192',
             type: 'image/x-icon'
           },
           {
-            src: 'src/assets/img/favicon.ico',
+            src: '@/src/assets/img/favicon.ico',
             sizes: '512x512',
             type: 'image/x-icon'
           }
