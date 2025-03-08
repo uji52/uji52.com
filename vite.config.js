@@ -38,6 +38,16 @@ export default {
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src')
+    },
+  },
+  css: {
+    devSourcemap: true,
+    preprocessorOptions: {
+      scss: {
+        quietDeps: true,
+        verbose: false,
+        warnRuleAsDeprecated: false
+      }
     }
   }
 }
