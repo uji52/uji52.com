@@ -5,8 +5,16 @@ const path = require('path')
 export default {
   root: path.resolve(__dirname, 'src'),
   build: {
-    outDir: '../dist'
+    outDir: '../dist',
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'src/index.html')
+      }
+    },
+    assetsDir: 'assets',
   },
+  publicDir: '../public',
+  base: '/',
   server: {
     port: 8080
   },
@@ -22,14 +30,26 @@ export default {
         theme_color: '#ffffff',
         icons: [
           {
-            src: 'favicon.ico',
-            sizes: '192x192',
+            src: '/favicon.ico',
+            sizes: '48x48',
             type: 'image/x-icon'
           },
           {
-            src: 'favicon.ico',
+            src: '/icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any maskable'
+          },
+          {
+            src: '/icon-512.png',
             sizes: '512x512',
-            type: 'image/x-icon'
+            type: 'image/png',
+            purpose: 'any maskable'
+          },
+          {
+            src: '/apple-touch-icon.png',
+            sizes: '180x180',
+            type: 'image/png'
           }
         ]
       }
