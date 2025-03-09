@@ -3,15 +3,18 @@ on:
   push:
     branches:
       - feature/*
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   Setup:
+    timeout-minutes: 10
     runs-on: ubuntu-24.04
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v4
-
-      - name: Cache node modules
-        uses: actions/cache@v4
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.npm
@@ -19,12 +22,16 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.3'
+          cache: 'npm'
 
-      - name: Check nodejs version
-        run: node -v
-
-      - name: Check npm version
+      - name: Check NPM Version
         run: npm -v
+
+      - name: Check Node Version
+        run: node -v
 
       - name: Install Dependencies
         run: npm install
@@ -32,82 +39,86 @@ jobs:
       - name: Security Audit
         continue-on-error: true
         run: npm audit
-  Lint:
-    runs-on: ubuntu-24.04
-    needs: Setup
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v4
 
-      - name: Restore Cache
-        uses: actions/cache@v4
+  Lint:
+    needs: Setup
+    timeout-minutes: 5
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.npm
             node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.3'
+          cache: 'npm'
+      - run: npm run lint
 
-      - name: Lint
-        run: npm run lint
   UnitTest:
     needs: Setup
+    timeout-minutes: 5
     runs-on: ubuntu-24.04
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v4
-
-      - name: Restore Cache
-        uses: actions/cache@v4
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.npm
             node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.3'
+          cache: 'npm'
+      - run: npm run test:unit
 
-      - name: Do Unit Test
-        run: npm run test:unit
   Build:
     needs: [Lint, UnitTest]
+    timeout-minutes: 10
     runs-on: ubuntu-24.04
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v4
-
-      - name: Restore Cache
-        uses: actions/cache@v4
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.npm
             node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-
-      - name: Build
-        run: npm run build
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.3'
+          cache: 'npm'
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist
+          retention-days: 1
+
   DeployDevelop:
     needs: Build
+    timeout-minutes: 5
     runs-on: ubuntu-24.04
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: "ap-northeast-1"
     steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
           name: dist
           path: dist
-
-      - name: Deploy  # S3 Deploy
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: aws s3 cp --recursive --region ap-northeast-1 dist s3://${{ secrets.S3_DEV_BUCKET_NAME }}
-
-      - name: Invalidation  # CF Invalidation
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ap-northeast-1
+      - name: Deploy to S3
+        run: aws s3 cp --recursive dist s3://${{ secrets.S3_DEV_BUCKET_NAME }}
+      - name: Invalidate CloudFront
         run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DEV_DISTRIBUTION_ID }} --paths "/*"
