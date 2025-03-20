@@ -1,4 +1,4 @@
-name: PR from develop to master
+name: PR from feature to develop
 
 on:
   push:
