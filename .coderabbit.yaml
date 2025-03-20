@@ -22,6 +22,7 @@ reviews:
         ignore_title_keywords:
             - "WIP"
             - "DO NOT MERGE"
+            - "Automated PR from develop to master"
         drafts: false
         base_branches:
             - "develop"
