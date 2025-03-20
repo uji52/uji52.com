@@ -1,0 +1,29 @@
+name: PR from develop to master
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+    types:
+      - closed
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          base: master
+          branch: develop
+          delete-branch: false
+          title: 'Automated PR from develop to master'
+          body: 'This is an automated pull request created because changes were merged into develop.'
