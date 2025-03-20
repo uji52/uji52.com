@@ -1,0 +1,29 @@
+name: PR from develop to master
+
+on:
+  push:
+    branches:
+      - feature/*
+
+jobs:
+  create-pull-request:
+    if: github.event.created
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get Last Commit Message
+        id: get_commit_message
+        run: echo "MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          base: develop
+          branch: ${{ github.ref }}
+          delete-branch: false
+          title: ${{ env.MESSAGE }}
+          body: 'Featureブランチが生成されたので、自動でdevelopブランチにPRを作成しました。'
