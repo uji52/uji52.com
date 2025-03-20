@@ -1,0 +1,33 @@
+name: PR from develop to master
+
+on:
+  pull_request:
+    branches:
+      - develop
+    types:
+      - closed
+
+jobs:
+  create-pull-request:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          curl -X POST \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/pulls \
+            -d '{
+              "title": "Automated PR from develop to master",
+              "head": "develop",
+              "base": "master",
+              "body": "This is an automated pull request created because changes were merged into develop.",
+              "delete_branch_on_merge": false
+            }'
