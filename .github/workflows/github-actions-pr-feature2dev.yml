@@ -21,5 +21,5 @@ jobs:
           base: develop
           branch: ${{ github.ref }}
           delete-branch: false
-          title: 'Automated PR from develop to master'
-          body: 'This is an automated pull request created because changes were merged into develop.'
+          title: 'Automated PR from feature to develop'
+          body: 'Featureブランチが生成されたので、自動でdevelopブランチにPRを作成しました。'
