@@ -98,7 +98,7 @@ jobs:
         with:
           node-version: '20.18.3'
           cache: 'npm'
-      - run: npm run build
+      - run: npm run build-dev
       - uses: actions/upload-artifact@v4
         with:
           name: dist
@@ -122,3 +122,21 @@ jobs:
         run: aws s3 cp --recursive dist s3://${{ secrets.S3_DEV_BUCKET_NAME }}
       - name: Invalidate CloudFront
         run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DEV_DISTRIBUTION_ID }} --paths "/*"
+
+  DeployCloudFormation:
+    needs: DeployDevelop
+    timeout-minutes: 10
+    runs-on: ubuntu-24.04
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: "ap-northeast-1"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy CloudFormation Template
+        run: |
+          aws cloudformation deploy \
+            --template-file aws/templates/api-gateway-ses.yml \
+            --stack-name uji52com-dev-apigw-ses \
+            --parameter-overrides EmailSNSTopicArn=${{ secrets.EMAIL_SNS_TOPIC_ARN }} Environment=dev \
+            --capabilities CAPABILITY_NAMED_IAM

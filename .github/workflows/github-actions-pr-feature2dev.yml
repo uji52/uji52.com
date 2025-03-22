@@ -14,7 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Get Last Commit Message
+      - name: Get Last Commit Message(one line)
         id: get_commit_message
         run: echo "MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
 

@@ -13,6 +13,6 @@ describe('Feedback.vue', () => {
   })
 
   it('renders Feedback page', async () => {
-    expect(wrapper.text()).toContain('作成中')
+    expect(wrapper.text()).toContain('機能要望等')
   })
 })

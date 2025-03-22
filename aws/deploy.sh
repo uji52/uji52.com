@@ -1,0 +1,1 @@
+aws cloudformation deploy --template-file aws/templates/api-gateway-ses.yml --stack-name uji52com-dev-apigw-ses --parameter-overrides EmailSNSTopicArn=arn:aws:sns:ap-northeast-1:xxxxxxxx:SendEmail --capabilities CAPABILITY_IAM
