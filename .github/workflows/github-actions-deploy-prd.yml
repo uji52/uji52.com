@@ -22,10 +22,28 @@ jobs:
         run: npm install
 
       - name: Build
-        run: npm run build
+        run: npm run build-prd
 
       - name: Deploy to S3
         run: aws s3 cp --recursive --region ${{ env.AWS_DEFAULT_REGION }} dist s3://${{ secrets.S3_PRD_BUCKET_NAME }}
 
       - name: Invalidate CloudFront
         run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_PRD_DISTRIBUTION_ID }} --paths "/*"
+
+  DeployCloudFormation:
+    needs: Deploy
+    timeout-minutes: 10
+    runs-on: ubuntu-24.04
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: "ap-northeast-1"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy CloudFormation Template
+        run: |
+          aws cloudformation deploy \
+            --template-file aws/templates/api-gateway.yml \
+            --stack-name uji52com-prd-apigw \
+            --parameter-overrides EmailSNSTopicArn=${{ secrets.EMAIL_SNS_TOPIC_ARN }} Environment=prd \
+            --capabilities CAPABILITY_NAMED_IAM
