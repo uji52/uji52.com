@@ -15,6 +15,12 @@ jest.mock('bootstrap', () => {
   }
 })
 
+const testUser = {
+  name: 'Test User',
+  email: 'test@example.com',
+  message: 'This is a test message.',
+};
+
 describe('Feedback.vue', () => {
   let wrapper
 
@@ -53,9 +59,9 @@ describe('Feedback.vue', () => {
     )
 
     // フォームの入力を設定
-    await wrapper.find('#name').setValue('Test User')
-    await wrapper.find('#email').setValue('test@example.com')
-    await wrapper.find('#message').setValue('This is a test message.')
+    await wrapper.find('#name').setValue(testUser.name)
+    await wrapper.find('#email').setValue(testUser.email)
+    await wrapper.find('#message').setValue(testUser.message)
 
     // フォームを送信
     await wrapper.find('form').trigger('submit.prevent')
@@ -67,9 +73,9 @@ describe('Feedback.vue', () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        name: 'Test User',
-        email: 'test@example.com',
-        message: 'This is a test message.',
+        name: testUser.name,
+        email: testUser.email,
+        message: testUser.message,
       }),
     }))
 
@@ -87,9 +93,9 @@ describe('Feedback.vue', () => {
     )
 
     // フォームの入力を設定
-    await wrapper.find('#name').setValue('Test User')
-    await wrapper.find('#email').setValue('test@example.com')
-    await wrapper.find('#message').setValue('This is a test message.')
+    await wrapper.find('#name').setValue(testUser.name)
+    await wrapper.find('#email').setValue(testUser.email)
+    await wrapper.find('#message').setValue(testUser.message)
 
     // フォームを送信
     await wrapper.find('form').trigger('submit.prevent')
@@ -101,13 +107,13 @@ describe('Feedback.vue', () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        name: 'Test User',
-        email: 'test@example.com',
-        message: 'This is a test message.',
+        name: testUser.name,
+        email: testUser.email,
+        message: testUser.message,
       }),
     }))
 
     // 失敗時のトーストメッセージが表示されることを確認
-    expect(document.getElementById('mailToastSubject').textContent).toBe('ご要望を送付に失敗しました。')
+    expect(document.getElementById('mailToastSubject').textContent).toBe('ご要望の送付に失敗しました。')
   })
 })
