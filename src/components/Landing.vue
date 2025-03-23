@@ -62,7 +62,7 @@
             <i class="bi bi-lightbulb"></i>
           </div>
           <div>
-            <h3 class="fs-2 text-body-emphasis">要望・提案(作成中)</h3>
+            <h3 class="fs-2 text-body-emphasis">要望・提案</h3>
             <p>
               新機能の提案やバグ報告など、
               サービス改善のためのフィードバックをお待ちしています。

@@ -1,8 +1,15 @@
 export const releases = [
   {
+    version: '2.0.1',
+    date: '2025/03/22',
+    isNew: true,
+    notes: [
+      'Feedbackの機構を追加'
+    ]
+  },
+  {
     version: '2.0.0',
     date: '2025/03/01',
-    isNew: true,
     notes: [
       'デザイン変更',
       'GA削除',
