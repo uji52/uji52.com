@@ -70,7 +70,7 @@ const submitFeedback = async () => {
   if (response.ok) {
     toastBootstrap.show();
   } else {
-    mailToastSubject.textContent = "ご要望を送付に失敗しました。";
+    mailToastSubject.textContent = "ご要望の送付に失敗しました。";
     mailToastMessage.innerHTML = "<p>申し訳ないですが</p><p>一旦要望の送付は諦めてください。</p>";
     toastBootstrap.show();
   }
