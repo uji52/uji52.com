@@ -48,23 +48,23 @@ Resources:
                 Resource: !Ref EmailSNSTopicArn
 
   # API Gateway
-  EmailAPI:
+  APIGW:
     Type: 'AWS::ApiGateway::RestApi'
     Properties:
-      Name: EmailSenderAPI
+      Name: !Sub 'uji52com-API-${Environment}'
       Description: API for sending emails via SNS
 
   EmailResource:
     Type: 'AWS::ApiGateway::Resource'
     Properties:
-      RestApiId: !Ref EmailAPI
-      ParentId: !GetAtt EmailAPI.RootResourceId
+      RestApiId: !Ref APIGW
+      ParentId: !GetAtt APIGW.RootResourceId
       PathPart: 'email'
 
   EmailMethod:
     Type: 'AWS::ApiGateway::Method'
     Properties:
-      RestApiId: !Ref EmailAPI
+      RestApiId: !Ref APIGW
       ResourceId: !Ref EmailResource
       HttpMethod: POST
       AuthorizationType: NONE
@@ -91,7 +91,7 @@ Resources:
   EmailOptionsMethod:
     Type: 'AWS::ApiGateway::Method'
     Properties:
-      RestApiId: !Ref EmailAPI
+      RestApiId: !Ref APIGW
       ResourceId: !Ref EmailResource
       HttpMethod: OPTIONS
       AuthorizationType: NONE
@@ -117,16 +117,16 @@ Resources:
     Type: 'AWS::ApiGateway::Deployment'
     DependsOn: [EmailMethod, EmailOptionsMethod]
     Properties:
-      RestApiId: !Ref EmailAPI
+      RestApiId: !Ref APIGW
 
   ApiStage:
     Type: 'AWS::ApiGateway::Stage'
     Properties:
       DeploymentId: !Ref ApiDeployment
-      RestApiId: !Ref EmailAPI
+      RestApiId: !Ref APIGW
       StageName: !Ref Environment
 
 Outputs:
   ApiEndpoint:
     Description: 'API Endpoint URL'
-    Value: !Sub 'https://${EmailAPI}.execute-api.${AWS::Region}.amazonaws.com/prod/email'
+    Value: !Sub 'https://${APIGW}.execute-api.${AWS::Region}.amazonaws.com/prod/email'

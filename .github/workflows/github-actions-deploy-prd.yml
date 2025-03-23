@@ -43,7 +43,7 @@ jobs:
       - name: Deploy CloudFormation Template
         run: |
           aws cloudformation deploy \
-            --template-file aws/templates/api-gateway-ses.yml \
-            --stack-name uji52com-prd-apigw-ses \
+            --template-file aws/templates/api-gateway.yml \
+            --stack-name uji52com-prd-apigw \
             --parameter-overrides EmailSNSTopicArn=${{ secrets.EMAIL_SNS_TOPIC_ARN }} Environment=prd \
             --capabilities CAPABILITY_NAMED_IAM

@@ -136,7 +136,7 @@ jobs:
       - name: Deploy CloudFormation Template
         run: |
           aws cloudformation deploy \
-            --template-file aws/templates/api-gateway-ses.yml \
-            --stack-name uji52com-dev-apigw-ses \
+            --template-file aws/templates/api-gateway.yml \
+            --stack-name uji52com-dev-apigw \
             --parameter-overrides EmailSNSTopicArn=${{ secrets.EMAIL_SNS_TOPIC_ARN }} Environment=dev \
             --capabilities CAPABILITY_NAMED_IAM
