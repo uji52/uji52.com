@@ -129,4 +129,4 @@ Resources:
 Outputs:
   ApiEndpoint:
     Description: 'API Endpoint URL'
-    Value: !Sub 'https://${APIGW}.execute-api.${AWS::Region}.amazonaws.com/prod/email'
+    Value: !Sub 'https://${APIGW}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/email'
