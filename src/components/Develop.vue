@@ -23,12 +23,12 @@
           </div>
           <div class="row">
             <div class="col-md-6 mb-3">
-              <label for="b64hex">Base64(16進数)</label>
+              <label for="b64hex">16進数</label>
               <input
                 id="b64hex"
                 v-model="b64hex"
                 class="form-control"
-                placeholder="Base64(16進数)"
+                placeholder="16進数"
               />
             </div>
           </div>
@@ -97,6 +97,61 @@
           </div>
           <div class="row">
             <div class="col-md-6 mb-3">
+              <label for="hashhex">16進数</label>
+              <input
+                id="hashhex"
+                v-model="hashhex"
+                class="form-control"
+                placeholder="Hex"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="hashhex">MD5</label>
+              <input
+                id="hashmd5"
+                v-model="hashmd5"
+                class="form-control"
+                placeholder="MD5"
+                readonly
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label for="hashsha1">SHA1</label>
+              <input
+                id="hashsha1"
+                v-model="hashsha1"
+                class="form-control"
+                placeholder="SHA1"
+                readonly
+              />
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="hashsha1">SHA1(Base64Encoded)</label>
+              <input
+                id="hashsha1b64"
+                v-model="hashsha1b64"
+                class="form-control"
+                placeholder="SHA1B64"
+                readonly
+              />
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="hashsha1">SHA1(Base64URLEncoded)</label>
+              <input
+                id="hashsha1b64url"
+                v-model="hashsha1b64url"
+                class="form-control"
+                placeholder="SHA1B64URL"
+                readonly
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3 mb-3">
               <label for="hashsha256">SHA256</label>
               <input
                 id="hashsha256"
@@ -106,9 +161,7 @@
                 readonly
               />
             </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
+            <div class="col-md-3 mb-3">
               <label for="hashsha256">SHA256(Base64Encoded)</label>
               <input
                 id="hashsha256b64"
@@ -118,15 +171,45 @@
                 readonly
               />
             </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
+            <div class="col-md-3 mb-3">
               <label for="hashsha256">SHA256(Base64URLEncoded)</label>
               <input
                 id="hashsha256b64url"
                 v-model="hashsha256b64url"
                 class="form-control"
                 placeholder="SHA256B64URL"
+                readonly
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label for="hashsha512">SHA512</label>
+              <input
+                id="hashsha512"
+                v-model="hashsha512"
+                class="form-control"
+                placeholder="SHA512"
+                readonly
+              />
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="hashsha512">SHA512(Base64Encoded)</label>
+              <input
+                id="hashsha512b64"
+                v-model="hashsha512b64"
+                class="form-control"
+                placeholder="SHA512B64"
+                readonly
+              />
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="hashsha512">SHA512(Base64URLEncoded)</label>
+              <input
+                id="hashsha512b64url"
+                v-model="hashsha512b64url"
+                class="form-control"
+                placeholder="SHA512B64URL"
                 readonly
               />
             </div>
@@ -201,10 +284,18 @@ const urldecode = ref('')
 const urlencode = ref('')
 const urlerror = ref('')
 
+const hashmd5 = ref('')
 const hashplain = ref('')
+const hashhex = ref('')
+const hashsha1 = ref('')
+const hashsha1b64 = ref('')
+const hashsha1b64url = ref('')
 const hashsha256 = ref('')
 const hashsha256b64 = ref('')
 const hashsha256b64url = ref('')
+const hashsha512 = ref('')
+const hashsha512b64 = ref('')
+const hashsha512b64url = ref('')
 const hasherror = ref('')
 
 const randomseed = ref(
@@ -357,14 +448,67 @@ watch(
   () => hashplain.value,
   (newValue) => {
     if (!newValue) {
+      hashmd5.value = ''
+      hashhex.value = ''
+      hashsha1.value = ''
+      hashsha1b64.value = ''
+      hashsha1b64url.value = ''
       hashsha256.value = ''
       hashsha256b64.value = ''
       hashsha256b64url.value = ''
+      hashsha512.value = ''
+      hashsha512b64.value = ''
+      hashsha512b64url.value = ''
       return
     }
+    hashhex.value = Array.from(new TextEncoder().encode(newValue))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')
+    hashmd5.value = CryptoJS.enc.Hex.stringify(CryptoJS.MD5(newValue))
+    hashsha1.value = CryptoJS.enc.Hex.stringify(CryptoJS.SHA1(newValue))
+    hashsha1b64.value = CryptoJS.enc.Base64.stringify(CryptoJS.SHA1(newValue))
+    hashsha1b64url.value = CryptoJS.enc.Base64url.stringify(CryptoJS.SHA1(newValue))
     hashsha256.value = CryptoJS.enc.Hex.stringify(CryptoJS.SHA256(newValue))
     hashsha256b64.value = CryptoJS.enc.Base64.stringify(CryptoJS.SHA256(newValue))
     hashsha256b64url.value = CryptoJS.enc.Base64url.stringify(CryptoJS.SHA256(newValue))
+    hashsha512.value = CryptoJS.enc.Hex.stringify(CryptoJS.SHA512(newValue))
+    hashsha512b64.value = CryptoJS.enc.Base64.stringify(CryptoJS.SHA512(newValue))
+    hashsha512b64url.value = CryptoJS.enc.Base64url.stringify(CryptoJS.SHA512(newValue))
+  }
+)
+
+watch(
+  () => hashhex.value,
+  (newValue) => {
+    hasherror.value = ''
+    if (!newValue) {
+      hashmd5.value = ''
+      hashplain.value = ''
+      hashsha1.value = ''
+      hashsha1b64.value = ''
+      hashsha1b64url.value = ''
+      hashsha256.value = ''
+      hashsha256b64.value = ''
+      hashsha256b64url.value = ''
+      hashsha512.value = ''
+      hashsha512b64.value = ''
+      hashsha512b64url.value = ''
+      return
+    }
+    try {
+      hashplain.value = new TextDecoder().decode(
+        new Uint8Array(
+          newValue.match(/.{2}/g).map((byte) => parseInt(byte, 16))
+        )
+      )
+      // 特殊文字のチェックは不要
+      // eslint-disable-next-line no-control-regex
+      if (/[\x00-\x1f�]/.test(hashplain.value)) {
+        hasherror.value = '文字列として表示されている値が文字化けしてしまっている可能性があります'
+      }
+    } catch (err) {
+      hasherror.value = 'その値は文字列化可能な16進数ではないです。'
+    }
   }
 )
 </script>
