@@ -1,8 +1,18 @@
 export const releases = [
   {
+    version: '2.0.2',
+    date: '2025/03/24',
+    isNew: true,
+    notes: [
+      'Hash時の16進数を追加',
+      'MD5ハッシュを追加',
+      'SHA1ハッシュを追加',
+      'SHA512ハッシュを追加'
+    ]
+  },
+  {
     version: '2.0.1',
     date: '2025/03/22',
-    isNew: true,
     notes: [
       'Feedbackの機構を追加'
     ]

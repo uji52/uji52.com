@@ -355,20 +355,36 @@ describe('Develop.vue', () => {
     // expect(urlDecodeError.element.text).toBe('')
   })
 
-  it('sha256', async () => {
+  it('hash', async () => {
     expect(wrapper.vm.hashplain).toBe('')
+    expect(wrapper.vm.hashhex).toBe('')
+    expect(wrapper.vm.hashmd5).toBe('')
+    expect(wrapper.vm.hashsha1).toBe('')
+    expect(wrapper.vm.hashsha1b64).toBe('')
+    expect(wrapper.vm.hashsha1b64url).toBe('')
     expect(wrapper.vm.hashsha256).toBe('')
     expect(wrapper.vm.hashsha256b64).toBe('')
     expect(wrapper.vm.hashsha256b64url).toBe('')
+    expect(wrapper.vm.hashsha512).toBe('')
+    expect(wrapper.vm.hashsha512b64).toBe('')
+    expect(wrapper.vm.hashsha512b64url).toBe('')
     expect(wrapper.vm.hasherror).toBe('')
 
     const input = wrapper.find('input[id="hashplain"]')
     await input.setValue('test')
 
     expect(wrapper.vm.hashplain).toBe('test')
+    expect(wrapper.vm.hashhex).toBe('74657374')
+    expect(wrapper.vm.hashmd5).toBe('098f6bcd4621d373cade4e832627b4f6')
+    expect(wrapper.vm.hashsha1).toBe('a94a8fe5ccb19ba61c4c0873d391e987982fbbd3')
+    expect(wrapper.vm.hashsha1b64).toBe('qUqP5cyxm6YcTAhz05Hph5gvu9M=')
+    expect(wrapper.vm.hashsha1b64url).toBe('qUqP5cyxm6YcTAhz05Hph5gvu9M')
     expect(wrapper.vm.hashsha256).toBe('9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08')
     expect(wrapper.vm.hashsha256b64).toBe('n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg=')
     expect(wrapper.vm.hashsha256b64url).toBe('n4bQgYhMfWWaL-qgxVrQFaO_TxsrC4Is0V1sFbDwCgg')
+    expect(wrapper.vm.hashsha512).toBe('ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff')
+    expect(wrapper.vm.hashsha512b64).toBe('7iaw3Ur350mqGo7jwQrpkj9hiYB3Lkc/iBml1JQODbJ6wYX4oOHV+E+IvIh/1nsUNzLDBMxfqa2Ob1f1ACio/w==')
+    expect(wrapper.vm.hashsha512b64url).toBe('7iaw3Ur350mqGo7jwQrpkj9hiYB3Lkc_iBml1JQODbJ6wYX4oOHV-E-IvIh_1nsUNzLDBMxfqa2Ob1f1ACio_w')
     expect(wrapper.vm.hasherror).toBe('')
 
     // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
@@ -385,11 +401,19 @@ describe('Develop.vue', () => {
     //expect(hasherrInput.element.value).toBe('')
   })
 
-  it('sha256 null', async () => {
+  it('hash null', async () => {
     expect(wrapper.vm.hashplain).toBe('')
+    expect(wrapper.vm.hashhex).toBe('')
+    expect(wrapper.vm.hashmd5).toBe('')
+    expect(wrapper.vm.hashsha1).toBe('')
+    expect(wrapper.vm.hashsha1b64).toBe('')
+    expect(wrapper.vm.hashsha1b64url).toBe('')
     expect(wrapper.vm.hashsha256).toBe('')
     expect(wrapper.vm.hashsha256b64).toBe('')
     expect(wrapper.vm.hashsha256b64url).toBe('')
+    expect(wrapper.vm.hashsha512).toBe('')
+    expect(wrapper.vm.hashsha512b64).toBe('')
+    expect(wrapper.vm.hashsha512b64url).toBe('')
     expect(wrapper.vm.hasherror).toBe('')
 
     const input = wrapper.find('input[id="hashplain"]')
@@ -397,9 +421,17 @@ describe('Develop.vue', () => {
     await input.setValue('')
 
     expect(wrapper.vm.hashplain).toBe('')
+    expect(wrapper.vm.hashhex).toBe('')
+    expect(wrapper.vm.hashmd5).toBe('')
+    expect(wrapper.vm.hashsha1).toBe('')
+    expect(wrapper.vm.hashsha1b64).toBe('')
+    expect(wrapper.vm.hashsha1b64url).toBe('')
     expect(wrapper.vm.hashsha256).toBe('')
     expect(wrapper.vm.hashsha256b64).toBe('')
     expect(wrapper.vm.hashsha256b64url).toBe('')
+    expect(wrapper.vm.hashsha512).toBe('')
+    expect(wrapper.vm.hashsha512b64).toBe('')
+    expect(wrapper.vm.hashsha512b64url).toBe('')
     expect(wrapper.vm.hasherror).toBe('')
 
     // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
@@ -414,6 +446,70 @@ describe('Develop.vue', () => {
     //expect(hashsha256b64Input.element.value).toBe('')
     //expect(hashsha256b64urlInput.element.value).toBe('n4')
     //expect(hasherrInput.element.value).toBe('')
+  })
+
+  it('hash 00 error', async () => {
+    expect(wrapper.vm.hashplain).toBe('')
+    expect(wrapper.vm.hashhex).toBe('')
+    expect(wrapper.vm.hashmd5).toBe('')
+    expect(wrapper.vm.hashsha1).toBe('')
+    expect(wrapper.vm.hashsha1b64).toBe('')
+    expect(wrapper.vm.hashsha1b64url).toBe('')
+    expect(wrapper.vm.hashsha256).toBe('')
+    expect(wrapper.vm.hashsha256b64).toBe('')
+    expect(wrapper.vm.hashsha256b64url).toBe('')
+    expect(wrapper.vm.hashsha512).toBe('')
+    expect(wrapper.vm.hashsha512b64).toBe('')
+    expect(wrapper.vm.hashsha512b64url).toBe('')
+    expect(wrapper.vm.hasherror).toBe('')
+
+    const input = wrapper.find('input[id="hashhex"]')
+    await input.setValue('00')
+
+    expect(wrapper.vm.hasherror).toBe('文字列として表示されている値が文字化けしてしまっている可能性があります')
+  })
+
+  it('hash not binary error', async () => {
+    expect(wrapper.vm.hashplain).toBe('')
+    expect(wrapper.vm.hashhex).toBe('')
+    expect(wrapper.vm.hashmd5).toBe('')
+    expect(wrapper.vm.hashsha1).toBe('')
+    expect(wrapper.vm.hashsha1b64).toBe('')
+    expect(wrapper.vm.hashsha1b64url).toBe('')
+    expect(wrapper.vm.hashsha256).toBe('')
+    expect(wrapper.vm.hashsha256b64).toBe('')
+    expect(wrapper.vm.hashsha256b64url).toBe('')
+    expect(wrapper.vm.hashsha512).toBe('')
+    expect(wrapper.vm.hashsha512b64).toBe('')
+    expect(wrapper.vm.hashsha512b64url).toBe('')
+    expect(wrapper.vm.hasherror).toBe('')
+
+    const input = wrapper.find('input[id="hashhex"]')
+    await input.setValue('�')
+
+    expect(wrapper.vm.hasherror).toBe('その値は文字列化可能な16進数ではないです。')
+  })
+
+  it('hash efbfbd error', async () => {
+    expect(wrapper.vm.hashplain).toBe('')
+    expect(wrapper.vm.hashhex).toBe('')
+    expect(wrapper.vm.hashmd5).toBe('')
+    expect(wrapper.vm.hashsha1).toBe('')
+    expect(wrapper.vm.hashsha1b64).toBe('')
+    expect(wrapper.vm.hashsha1b64url).toBe('')
+    expect(wrapper.vm.hashsha256).toBe('')
+    expect(wrapper.vm.hashsha256b64).toBe('')
+    expect(wrapper.vm.hashsha256b64url).toBe('')
+    expect(wrapper.vm.hashsha512).toBe('')
+    expect(wrapper.vm.hashsha512b64).toBe('')
+    expect(wrapper.vm.hashsha512b64url).toBe('')
+    expect(wrapper.vm.hasherror).toBe('')
+
+    const input = wrapper.find('input[id="hashhex"]')
+    await input.setValue('efbfbd')
+
+    expect(wrapper.vm.hashplain).toBe('�')
+    expect(wrapper.vm.hasherror).toBe('文字列として表示されている値が文字化けしてしまっている可能性があります')
   })
 
   it('generates random string', async () => {
