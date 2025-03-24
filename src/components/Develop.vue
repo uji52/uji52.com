@@ -399,9 +399,6 @@ watch(
         newValue.match(/.{2}/g).map((byte) => parseInt(byte, 16))
       )
     )
-    hashsha256.value = CryptoJS.enc.Hex.stringify(CryptoJS.SHA256(newValue))
-    hashsha256b64.value = CryptoJS.enc.Base64.stringify(CryptoJS.SHA256(newValue))
-    hashsha256b64url.value = CryptoJS.enc.Base64url.stringify(CryptoJS.SHA256(newValue))
   }
 )
 
