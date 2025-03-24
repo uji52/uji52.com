@@ -97,6 +97,17 @@
           </div>
           <div class="row">
             <div class="col-md-6 mb-3">
+              <label for="hashbin">バイナリ列</label>
+              <input
+                id="hashbin"
+                v-model="hashbin"
+                class="form-control"
+                placeholder="00520052"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
               <label for="hashsha256">SHA256</label>
               <input
                 id="hashsha256"
@@ -202,6 +213,7 @@ const urlencode = ref('')
 const urlerror = ref('')
 
 const hashplain = ref('')
+const hashbin = ref('')
 const hashsha256 = ref('')
 const hashsha256b64 = ref('')
 const hashsha256b64url = ref('')
@@ -357,16 +369,42 @@ watch(
   () => hashplain.value,
   (newValue) => {
     if (!newValue) {
+      hashbin.value = ''
       hashsha256.value = ''
       hashsha256b64.value = ''
       hashsha256b64url.value = ''
       return
     }
+    hashbin.value = Array.from(new TextEncoder().encode(newValue))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')
     hashsha256.value = CryptoJS.enc.Hex.stringify(CryptoJS.SHA256(newValue))
     hashsha256b64.value = CryptoJS.enc.Base64.stringify(CryptoJS.SHA256(newValue))
     hashsha256b64url.value = CryptoJS.enc.Base64url.stringify(CryptoJS.SHA256(newValue))
   }
 )
+
+watch(
+  () => hashbin.value,
+  (newValue) => {
+    if (!newValue) {
+      hashplain.value = ''
+      hashsha256.value = ''
+      hashsha256b64.value = ''
+      hashsha256b64url.value = ''
+      return
+    }
+    hashplain.value = new TextDecoder().decode(
+      new Uint8Array(
+        newValue.match(/.{2}/g).map((byte) => parseInt(byte, 16))
+      )
+    )
+    hashsha256.value = CryptoJS.enc.Hex.stringify(CryptoJS.SHA256(newValue))
+    hashsha256b64.value = CryptoJS.enc.Base64.stringify(CryptoJS.SHA256(newValue))
+    hashsha256b64url.value = CryptoJS.enc.Base64url.stringify(CryptoJS.SHA256(newValue))
+  }
+)
+
 </script>
 
 <style scoped></style>
