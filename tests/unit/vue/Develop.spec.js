@@ -58,7 +58,8 @@ describe('Develop.vue', () => {
     expect(wrapper.vm.randomvalue).toMatch(/[a-c]{8}/)
   })
 
-  const expectInitialValues = () => {
+  // watchers
+  const expectEncodeInitialValues = () => {
     expect(wrapper.vm.plane).toBe('')
     expect(wrapper.vm.b64str).toBe('')
     expect(wrapper.vm.b64urlstr).toBe('')
@@ -94,7 +95,7 @@ describe('Develop.vue', () => {
 
   }
 
-  const expectTestValues = () => {
+  const expectEncodeTestValues = () => {
     expect(wrapper.vm.plane).toBe('test')
     expect(wrapper.vm.b64str).toBe('dGVzdA==')
     expect(wrapper.vm.b64urlstr).toBe('dGVzdA')
@@ -129,7 +130,7 @@ describe('Develop.vue', () => {
     expect(wrapper.vm.encodeError).toBe('')
   }
 
-  const expectTestSpaceValues = () => {
+  const expectEncodeTestSpaceValues = () => {
     expect(wrapper.vm.plane).toBe('test ')
     expect(wrapper.vm.b64str).toBe('dGVzdCA=')
     expect(wrapper.vm.b64urlstr).toBe('dGVzdCA')
@@ -164,98 +165,49 @@ describe('Develop.vue', () => {
     expect(wrapper.vm.encodeError).toBe('')
   }
 
-  // watchers
   it('encode plane', async () => {
-    expectInitialValues()
+    expectEncodeInitialValues()
 
     const input = wrapper.find('input[id="plane"]')
     await input.setValue('test')
 
-    expectTestValues()
+    expectEncodeTestValues()
   })
 
   it('encode plane space', async () => {
-    expectInitialValues()
+    expectEncodeInitialValues()
 
     const input = wrapper.find('input[id="plane"]')
     await input.setValue('test ')
 
-    expectTestSpaceValues()
+    expectEncodeTestSpaceValues()
   })
 
   it('encode plane null', async () => {
-    expectInitialValues()
+    expectEncodeInitialValues()
 
     const input = wrapper.find('input[id="plane"]')
     await input.setValue('test')
 
-    expectTestValues()
+    expectEncodeTestValues()
 
     await input.setValue('')
 
-    expectInitialValues()
+    expectEncodeInitialValues()
   })
 
   it('encode hex', async () => {
-    expect(wrapper.vm.plane).toBe('')
-    expect(wrapper.vm.b64str).toBe('')
-    expect(wrapper.vm.b64urlstr).toBe('')
-    expect(wrapper.vm.urlencode).toBe('')
-    expect(wrapper.vm.unicode).toBe('')
-    expect(wrapper.vm.bin).toBe('')
-    expect(wrapper.vm.quat).toBe('')
-    expect(wrapper.vm.dec).toBe('')
-    expect(wrapper.vm.hex).toBe('')
-    expect(wrapper.vm.encodeError).toBe('')
+    expectEncodeInitialValues()
 
     const input = wrapper.find('input[id="hex"]')
     await input.setValue('74657374')
 
-    expect(wrapper.vm.plane).toBe('test')
-    expect(wrapper.vm.b64str).toBe('dGVzdA==')
-    expect(wrapper.vm.b64urlstr).toBe('dGVzdA')
-    expect(wrapper.vm.urlencode).toBe('test')
-    expect(wrapper.vm.unicode).toBe('\\u0074\\u0065\\u0073\\u0074')
-    expect(wrapper.vm.bin).toBe('01110100011001010111001101110100')
-    expect(wrapper.vm.quat).toBe('1310121113031310')
-    expect(wrapper.vm.dec).toBe('116101115116')
-    expect(wrapper.vm.hex).toBe('74657374')
-    expect(wrapper.vm.encodeError).toBe('')
+    expectEncodeTestValues()
 
-    // DOM の更新も確認
-    const planeInput = wrapper.find('input[id="plane"]')
-    const strInput = wrapper.find('input[id="b64str"]')
-    const urlstrInput = wrapper.find('input[id="b64urlstr"]')
-    const urlInput = wrapper.find('input[id="urlencode"]')
-    const unicodeInput = wrapper.find('input[id="unicode"]')
-    const binInput = wrapper.find('input[id="bin"]')
-    const quatInput = wrapper.find('input[id="quat"]')
-    const decInput = wrapper.find('input[id="dec"]')
-    const hexInput = wrapper.find('input[id="hex"]')
-
-    expect(planeInput.element.value).toBe('test')
-    expect(strInput.element.value).toBe('dGVzdA==')
-    expect(urlstrInput.element.value).toBe('dGVzdA')
-    expect(urlInput.element.value).toBe('test')
-    expect(unicodeInput.element.value).toBe('\\u0074\\u0065\\u0073\\u0074')
-    expect(binInput.element.value).toBe('01110100011001010111001101110100')
-    expect(quatInput.element.value).toBe('1310121113031310')
-    expect(decInput.element.value).toBe('116101115116')
-    expect(hexInput.element.value).toBe('74657374')
-    expect(wrapper.vm.encodeError).toBe('')
   })
 
   it('encode hex error', async () => {
-    expect(wrapper.vm.plane).toBe('')
-    expect(wrapper.vm.b64str).toBe('')
-    expect(wrapper.vm.b64urlstr).toBe('')
-    expect(wrapper.vm.urlencode).toBe('')
-    expect(wrapper.vm.unicode).toBe('')
-    expect(wrapper.vm.bin).toBe('')
-    expect(wrapper.vm.quat).toBe('')
-    expect(wrapper.vm.dec).toBe('')
-    expect(wrapper.vm.hex).toBe('')
-    expect(wrapper.vm.encodeError).toBe('')
+    expectEncodeInitialValues()
 
     const input = wrapper.find('input[id="hex"]')
     await input.setValue('z')
@@ -269,16 +221,16 @@ describe('Develop.vue', () => {
   })
 
   it('encode b64 str', async () => {
-    expectInitialValues()
+    expectEncodeInitialValues()
 
     const input = wrapper.find('input[id="b64str"]')
     await input.setValue('dGVzdA==')
 
-    expectTestValues()
+    expectEncodeTestValues()
   })
 
   it('encode base64 str error', async () => {
-    expectInitialValues()
+    expectEncodeInitialValues()
 
     const input = wrapper.find('input[id="b64str"]')
     await input.setValue('=')
@@ -292,16 +244,16 @@ describe('Develop.vue', () => {
   })
 
   it('encode base64 urlstr', async () => {
-    expectInitialValues()
+    expectEncodeInitialValues()
 
     const input = wrapper.find('input[id="b64urlstr"]')
     await input.setValue('dGVzdA')
 
-    expectTestValues()
+    expectEncodeTestValues()
   })
 
   it('encode base64url str error', async () => {
-    expectInitialValues()
+    expectEncodeInitialValues()
 
     const input = wrapper.find('input[id="b64urlstr"]')
     await input.setValue('=')
@@ -315,16 +267,16 @@ describe('Develop.vue', () => {
   })
 
   it('encode urlstr', async () => {
-    expectInitialValues()
+    expectEncodeInitialValues()
 
     const input = wrapper.find('input[id="urlencode"]')
     await input.setValue('test%20')
 
-    expectTestSpaceValues()
+    expectEncodeTestSpaceValues()
   })
 
   it('encode urlstr error', async () => {
-    expectInitialValues()
+    expectEncodeInitialValues()
 
     const input = wrapper.find('input[id="urlencode"]')
     await input.setValue('%')
@@ -337,7 +289,7 @@ describe('Develop.vue', () => {
     // expect(b64Error.element.text).toBe('')
   })
 
-  it('hash', async () => {
+  const expectHashInitialValues = () => {
     expect(wrapper.vm.hashPlain).toBe('')
     expect(wrapper.vm.hashHex).toBe('')
     expect(wrapper.vm.hashMd5).toBe('')
@@ -351,10 +303,9 @@ describe('Develop.vue', () => {
     expect(wrapper.vm.hashSha512b64).toBe('')
     expect(wrapper.vm.hashSha512b64url).toBe('')
     expect(wrapper.vm.hasherror).toBe('')
+  }
 
-    const input = wrapper.find('input[id="hashPlain"]')
-    await input.setValue('test')
-
+  const expectHashTestValues = () => {
     expect(wrapper.vm.hashPlain).toBe('test')
     expect(wrapper.vm.hashHex).toBe('74657374')
     expect(wrapper.vm.hashMd5).toBe('098f6bcd4621d373cade4e832627b4f6')
@@ -381,69 +332,29 @@ describe('Develop.vue', () => {
     //expect(hashSha256b64Input.element.value).toBe('n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg=')
     //expect(hashSha256b64urlInput.element.value).toBe('n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg')
     //expect(hasherrInput.element.value).toBe('')
+  }
+
+  it('hash', async () => {
+    expectHashInitialValues()
+
+    const input = wrapper.find('input[id="hashPlain"]')
+    await input.setValue('test')
+
+    expectHashTestValues()
   })
 
   it('hash null', async () => {
-    expect(wrapper.vm.hashPlain).toBe('')
-    expect(wrapper.vm.hashHex).toBe('')
-    expect(wrapper.vm.hashMd5).toBe('')
-    expect(wrapper.vm.hashSha1).toBe('')
-    expect(wrapper.vm.hashSha1b64).toBe('')
-    expect(wrapper.vm.hashSha1b64url).toBe('')
-    expect(wrapper.vm.hashSha256).toBe('')
-    expect(wrapper.vm.hashSha256b64).toBe('')
-    expect(wrapper.vm.hashSha256b64url).toBe('')
-    expect(wrapper.vm.hashSha512).toBe('')
-    expect(wrapper.vm.hashSha512b64).toBe('')
-    expect(wrapper.vm.hashSha512b64url).toBe('')
-    expect(wrapper.vm.hasherror).toBe('')
+    expectHashInitialValues()
 
     const input = wrapper.find('input[id="hashPlain"]')
     await input.setValue('test')
     await input.setValue('')
 
-    expect(wrapper.vm.hashPlain).toBe('')
-    expect(wrapper.vm.hashHex).toBe('')
-    expect(wrapper.vm.hashMd5).toBe('')
-    expect(wrapper.vm.hashSha1).toBe('')
-    expect(wrapper.vm.hashSha1b64).toBe('')
-    expect(wrapper.vm.hashSha1b64url).toBe('')
-    expect(wrapper.vm.hashSha256).toBe('')
-    expect(wrapper.vm.hashSha256b64).toBe('')
-    expect(wrapper.vm.hashSha256b64url).toBe('')
-    expect(wrapper.vm.hashSha512).toBe('')
-    expect(wrapper.vm.hashSha512b64).toBe('')
-    expect(wrapper.vm.hashSha512b64url).toBe('')
-    expect(wrapper.vm.hasherror).toBe('')
-
-    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
-    //const hashPlainInput = wrapper.find('input[id="hashPlain"]')
-    //const hashSha256Input = wrapper.find('input[id="hashSha256"]')
-    //const hashSha256b64Input = wrapper.find('input[id="hashSha256b64"]')
-    //const hashSha256b64urlInput = wrapper.find('input[id="hashSha256b64url"]')
-    //const hasherrInput = wrapper.find('p[id="hasherror"]')
-
-    //expect(hashPlainInput.element.value).toBe('')
-    //expect(hashSha256Input.element.value).toBe('')
-    //expect(hashSha256b64Input.element.value).toBe('')
-    //expect(hashSha256b64urlInput.element.value).toBe('n4')
-    //expect(hasherrInput.element.value).toBe('')
+    expectHashInitialValues()
   })
 
   it('hash 00 error', async () => {
-    expect(wrapper.vm.hashPlain).toBe('')
-    expect(wrapper.vm.hashHex).toBe('')
-    expect(wrapper.vm.hashMd5).toBe('')
-    expect(wrapper.vm.hashSha1).toBe('')
-    expect(wrapper.vm.hashSha1b64).toBe('')
-    expect(wrapper.vm.hashSha1b64url).toBe('')
-    expect(wrapper.vm.hashSha256).toBe('')
-    expect(wrapper.vm.hashSha256b64).toBe('')
-    expect(wrapper.vm.hashSha256b64url).toBe('')
-    expect(wrapper.vm.hashSha512).toBe('')
-    expect(wrapper.vm.hashSha512b64).toBe('')
-    expect(wrapper.vm.hashSha512b64url).toBe('')
-    expect(wrapper.vm.hasherror).toBe('')
+    expectHashInitialValues()
 
     const input = wrapper.find('input[id="hashHex"]')
     await input.setValue('00')
@@ -452,19 +363,7 @@ describe('Develop.vue', () => {
   })
 
   it('hash not binary error', async () => {
-    expect(wrapper.vm.hashPlain).toBe('')
-    expect(wrapper.vm.hashHex).toBe('')
-    expect(wrapper.vm.hashMd5).toBe('')
-    expect(wrapper.vm.hashSha1).toBe('')
-    expect(wrapper.vm.hashSha1b64).toBe('')
-    expect(wrapper.vm.hashSha1b64url).toBe('')
-    expect(wrapper.vm.hashSha256).toBe('')
-    expect(wrapper.vm.hashSha256b64).toBe('')
-    expect(wrapper.vm.hashSha256b64url).toBe('')
-    expect(wrapper.vm.hashSha512).toBe('')
-    expect(wrapper.vm.hashSha512b64).toBe('')
-    expect(wrapper.vm.hashSha512b64url).toBe('')
-    expect(wrapper.vm.hasherror).toBe('')
+    expectHashInitialValues()
 
     const input = wrapper.find('input[id="hashHex"]')
     await input.setValue('�')
@@ -473,19 +372,7 @@ describe('Develop.vue', () => {
   })
 
   it('hash efbfbd error', async () => {
-    expect(wrapper.vm.hashPlain).toBe('')
-    expect(wrapper.vm.hashHex).toBe('')
-    expect(wrapper.vm.hashMd5).toBe('')
-    expect(wrapper.vm.hashSha1).toBe('')
-    expect(wrapper.vm.hashSha1b64).toBe('')
-    expect(wrapper.vm.hashSha1b64url).toBe('')
-    expect(wrapper.vm.hashSha256).toBe('')
-    expect(wrapper.vm.hashSha256b64).toBe('')
-    expect(wrapper.vm.hashSha256b64url).toBe('')
-    expect(wrapper.vm.hashSha512).toBe('')
-    expect(wrapper.vm.hashSha512b64).toBe('')
-    expect(wrapper.vm.hashSha512b64url).toBe('')
-    expect(wrapper.vm.hasherror).toBe('')
+    expectHashInitialValues()
 
     const input = wrapper.find('input[id="hashHex"]')
     await input.setValue('efbfbd')
