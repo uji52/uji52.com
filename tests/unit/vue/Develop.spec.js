@@ -196,30 +196,6 @@ describe('Develop.vue', () => {
     expectEncodeInitialValues()
   })
 
-  it('encode hex', async () => {
-    expectEncodeInitialValues()
-
-    const input = wrapper.find('input[id="hex"]')
-    await input.setValue('74657374')
-
-    expectEncodeTestValues()
-
-  })
-
-  it('encode hex error', async () => {
-    expectEncodeInitialValues()
-
-    const input = wrapper.find('input[id="hex"]')
-    await input.setValue('z')
-    await nextTick()
-
-    expect(wrapper.vm.encodeError).toBe('その値はBase64エンコードされた16進数ではないです。')
-
-    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
-    // const b64Error = wrapper.find('p[id="b64error"]')
-    // expect(b64Error.element.text).toBe('')
-  })
-
   it('encode b64 str', async () => {
     expectEncodeInitialValues()
 
@@ -283,6 +259,178 @@ describe('Develop.vue', () => {
     await nextTick()
 
     expect(wrapper.vm.encodeError).toBe('その値はURLデコードできないです。')
+
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    // const b64Error = wrapper.find('p[id="b64error"]')
+    // expect(b64Error.element.text).toBe('')
+  })
+
+  it('encode unicode', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="unicode"]')
+    await input.setValue('\\u0074\\u0065\\u0073\\u0074')
+
+    expectEncodeTestValues()
+  })
+
+  it('encode unicode error', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="unicode"]')
+    await input.setValue('test')
+    await nextTick()
+
+    expectEncodeTestValues()
+
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    // const b64Error = wrapper.find('p[id="b64error"]')
+    // expect(b64Error.element.text).toBe('')
+  })
+
+  it('encode bin', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="bin"]')
+    await input.setValue('01110100011001010111001101110100')
+
+    expectEncodeTestValues()
+  })
+
+  it('encode bin error', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="bin"]')
+    await input.setValue('z')
+    await nextTick()
+
+    expect(wrapper.vm.encodeError).toBe('その値はBase64エンコードされた2進数ではないです。')
+
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    // const b64Error = wrapper.find('p[id="b64error"]')
+    // expect(b64Error.element.text).toBe('')
+  })
+
+  it('encode bin error UndecodableError', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="bin"]')
+    await input.setValue('1')
+    await nextTick()
+
+    expect(wrapper.vm.encodeError).toBe('文字列化できる2進数ではありません。')
+
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    // const b64Error = wrapper.find('p[id="b64error"]')
+    // expect(b64Error.element.text).toBe('')
+  })
+
+  it('encode quat', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="quat"]')
+    await input.setValue('1310121113031310')
+
+    expectEncodeTestValues()
+  })
+
+  it('encode quat error', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="quat"]')
+    await input.setValue('z')
+    await nextTick()
+
+    expect(wrapper.vm.encodeError).toBe('その値はBase64エンコードされた4進数ではないです。')
+
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    // const b64Error = wrapper.find('p[id="b64error"]')
+    // expect(b64Error.element.text).toBe('')
+  })
+
+  it('encode quat error UndecodableError', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="quat"]')
+    await input.setValue('1')
+    await nextTick()
+
+    expect(wrapper.vm.encodeError).toBe('文字列化できる4進数ではありません。')
+
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    // const b64Error = wrapper.find('p[id="b64error"]')
+    // expect(b64Error.element.text).toBe('')
+  })
+
+  it('encode dec', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="dec"]')
+    await input.setValue('116101115116')
+
+    expectEncodeTestValues()
+  })
+
+  it('encode dec error', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="dec"]')
+    await input.setValue('z')
+    await nextTick()
+
+    expect(wrapper.vm.encodeError).toBe('その値はBase64エンコードされた10進数ではないです。')
+
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    // const b64Error = wrapper.find('p[id="b64error"]')
+    // expect(b64Error.element.text).toBe('')
+  })
+
+  it('encode dec error UndecodableError', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="dec"]')
+    await input.setValue('1')
+    await nextTick()
+
+    expect(wrapper.vm.encodeError).toBe('文字列化できる10進数ではありません。')
+
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    // const b64Error = wrapper.find('p[id="b64error"]')
+    // expect(b64Error.element.text).toBe('')
+  })
+
+  it('encode hex', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="hex"]')
+    await input.setValue('74657374')
+
+    expectEncodeTestValues()
+
+  })
+
+  it('encode hex error', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="hex"]')
+    await input.setValue('z')
+    await nextTick()
+
+    expect(wrapper.vm.encodeError).toBe('その値はBase64エンコードされた16進数ではないです。')
+
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    // const b64Error = wrapper.find('p[id="b64error"]')
+    // expect(b64Error.element.text).toBe('')
+  })
+
+  it('encode hex error UndecodableError', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="hex"]')
+    await input.setValue('1')
+    await nextTick()
+
+    expect(wrapper.vm.encodeError).toBe('文字列化できる16進数ではありません。')
 
     // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
     // const b64Error = wrapper.find('p[id="b64error"]')

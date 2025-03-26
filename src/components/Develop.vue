@@ -384,7 +384,7 @@ const quatToString = (quat) => {
     throw new UndecodableError(errorMessages.invalidQuaternary)
   }
   const bytes = new Uint8Array(
-    quat.match(/.{2}/g).map((byte) => parseInt(byte, 4))
+    quat.match(/.{4}/g).map((byte) => parseInt(byte, 4))
   )
   return new TextDecoder().decode(bytes)
 }
@@ -519,7 +519,7 @@ watch(
       encodeError.value =
         err.name === 'URIError'
           ? 'その値はURLデコードできないです。'
-          : err.message
+          : err.message // 入らない想定
     }
   }
 )
@@ -532,7 +532,7 @@ watch(
       plane.value = unicodeToString(newValue)
       encodeError.value = ''
     } catch (err) {
-      encodeError.value = err.message
+      encodeError.value = err.message // 入らない想定
     }
   }
 )
@@ -554,11 +554,8 @@ watch(
       plane.value = planeValue
       encodeError.value = ''
     } catch (err) {
-      if (err instanceof UndecodableError) {
-        encodeError.value = "文字列化できる2進数ではありません。"
-      } else {
-        encodeError.value = "unknown error: " + err.message
-      }
+      encodeError.value = "unknown error: " + err.message
+      if (err instanceof UndecodableError) encodeError.value = "文字列化できる2進数ではありません。"
     }
   }
 )
@@ -580,11 +577,8 @@ watch(
       plane.value = planeValue
       encodeError.value = ''
     } catch (err) {
-      if (err instanceof UndecodableError) {
-        encodeError.value = "文字列化できる4進数ではありません。"
-      } else {
-        encodeError.value = "unknown error: " + err.message
-      }
+      encodeError.value = "unknown error: " + err.message
+      if (err instanceof UndecodableError) encodeError.value = "文字列化できる4進数ではありません。"
     }
   }
 )
@@ -606,11 +600,8 @@ watch(
       plane.value = planeValue
       encodeError.value = ''
     } catch (err) {
-      if (err instanceof UndecodableError) {
-        encodeError.value = "文字列化できる10進数ではありません。"
-      } else {
-        encodeError.value = "unknown error: " + err.message
-      }
+      encodeError.value = "unknown error: " + err.message
+      if (err instanceof UndecodableError) encodeError.value = "文字列化できる10進数ではありません。"
     }
   }
 )
@@ -632,11 +623,8 @@ watch(
       plane.value = planeValue
       encodeError.value = ''
     } catch (err) {
-      if (err instanceof UndecodableError) {
-        encodeError.value = "文字列化できる16進数ではありません。"
-      } else {
-        encodeError.value = "unknown error: " + err.message
-      }
+      encodeError.value = "unknown error: " + err.message
+      if (err instanceof UndecodableError) encodeError.value = "文字列化できる16進数ではありません。"
     }
   }
 )
