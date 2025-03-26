@@ -1,8 +1,17 @@
 export const releases = [
   {
+    version: '2.0.3',
+    date: '2025/03/26',
+    isNew: true,
+    notes: [
+      'エンコード類の位置変更',
+      'Unicode変換追加',
+      '進数変換追加'
+    ]
+  },
+  {
     version: '2.0.2',
     date: '2025/03/24',
-    isNew: true,
     notes: [
       'Hash時の16進数を追加',
       'MD5ハッシュを追加',
