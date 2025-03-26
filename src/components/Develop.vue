@@ -8,32 +8,21 @@
     </section>
     <section>
       <div class="container">
-        <h2>Base64 Encode</h2>
+        <h2>Encode</h2>
         <form>
           <div class="row">
             <div class="col-md-6 mb-3">
-              <label for="b64plane">文字列</label>
+              <label for="plane">文字列</label>
               <input
-                id="b64plane"
-                v-model="b64plane"
+                id="plane"
+                v-model="plane"
                 class="form-control"
                 placeholder="文字列"
               />
             </div>
           </div>
           <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="b64hex">16進数</label>
-              <input
-                id="b64hex"
-                v-model="b64hex"
-                class="form-control"
-                placeholder="16進数"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
+            <div class="col-md-3 mb-3">
               <label for="b64strb64">Base64(文字列)</label>
               <input
                 id="b64str"
@@ -42,30 +31,13 @@
                 placeholder="Base64(文字列)"
               />
             </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
+            <div class="col-md-3 mb-3">
               <label for="b64strb64url">Base64URL(文字列)</label>
               <input
                 id="b64urlstr"
                 v-model="b64urlstr"
                 class="form-control"
                 placeholder="Base64URL(文字列)"
-              />
-            </div>
-          </div>
-          <p id="b64error">{{ b64error }}</p>
-        </form>
-        <h2>URL Encode</h2>
-        <form>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="urldecode">文字列</label>
-              <input
-                id="urldecode"
-                v-model="urldecode"
-                class="form-control"
-                placeholder="文字列"
               />
             </div>
           </div>
@@ -80,7 +52,56 @@
               />
             </div>
           </div>
-          <p id="urlError" v-if="urlerror">{{ urlerror }}</p>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="unicode">Unicode</label>
+              <input
+                id="unicode"
+                v-model="unicode"
+                class="form-control"
+                placeholder="Unicode"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-2 mb-3">
+              <label for="bin">2進数</label>
+              <input
+                id="bin"
+                v-model="bin"
+                class="form-control"
+                placeholder="2進数"
+              />
+            </div>
+            <div class="col-md-2 mb-3">
+              <label for="quat">4進数</label>
+              <input
+                id="quat"
+                v-model="quat"
+                class="form-control"
+                placeholder="4進数"
+              />
+            </div>
+            <div class="col-md-2 mb-3">
+              <label for="dec">10進数</label>
+              <input
+                id="dec"
+                v-model="dec"
+                class="form-control"
+                placeholder="10進数"
+              />
+            </div>
+            <div class="col-md-2 mb-3">
+              <label for="hex">16進数</label>
+              <input
+                id="hex"
+                v-model="hex"
+                class="form-control"
+                placeholder="16進数"
+              />
+            </div>
+          </div>
+          <p id="encodeerror">{{ encodeerror }}</p>
         </form>
         <h2>Hash</h2>
         <form>
@@ -274,15 +295,33 @@
 import { ref, watch } from 'vue'
 import CryptoJS from 'crypto-js'
 
-const b64plane = ref('')
-const b64hex = ref('')
+class UndecodableError extends Error {
+  constructor(message) {
+    super(message)
+    this.name = 'UndecodableError'
+  }
+}
+
+const errorMessages = {
+  invalidBinary: 'Invalid binary string',
+  invalidQuaternary: 'Invalid quaternary string',
+  invalidDecimal: 'Invalid decimal string',
+  invalidHexadecimal: 'Invalid hexadecimal string',
+  invalidBase64: 'Invalid Base64 string',
+  invalidUnicode: 'Invalid Unicode string',
+  invalidURLEncoding: 'Invalid URL encoding',
+}
+
+const plane = ref('')
+const bin = ref('')
+const quat = ref('')
+const dec = ref('')
+const hex = ref('')
 const b64str = ref('')
 const b64urlstr = ref('')
-const b64error = ref('')
-
-const urldecode = ref('')
+const unicode = ref('')
 const urlencode = ref('')
-const urlerror = ref('')
+const encodeerror = ref('')
 
 const hashmd5 = ref('')
 const hashplain = ref('')
@@ -306,15 +345,63 @@ const randomvalue = ref('')
 const randomerror = ref('')
 
 // functions
+const stringToBin = (str) => {
+  return Array.from(new TextEncoder().encode(str))
+    .map((b) => b.toString(2).padStart(8, '0'))
+    .join('')
+}
+
+const stringToQuat = (str) => {
+  return Array.from(new TextEncoder().encode(str))
+    .map((b) => b.toString(4).padStart(2, '0'))
+    .join('')
+}
+
+const stringToDec = (str) => {
+  return Array.from(new TextEncoder().encode(str))
+    .map((b) => b.toString(10).padStart(3, '0'))
+    .join('')
+}
+
 const stringToHex = (str) => {
   return Array.from(new TextEncoder().encode(str))
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('')
 }
 
+const binToString = (bin) => {
+  if (!/^[01]+$/i.test(bin) || bin.length % 8 !== 0) {
+    throw new UndecodableError(errorMessages.invalidBinary)
+  }
+  const bytes = new Uint8Array(
+    bin.match(/.{8}/g).map((byte) => parseInt(byte, 2))
+  )
+  return new TextDecoder().decode(bytes)
+}
+
+const quatToString = (quat) => {
+  if (!/^[0-3]+$/i.test(quat) || quat.length % 2 !== 0) {
+    throw new UndecodableError(errorMessages.invalidQuaternary)
+  }
+  const bytes = new Uint8Array(
+    quat.match(/.{2}/g).map((byte) => parseInt(byte, 4))
+  )
+  return new TextDecoder().decode(bytes)
+}
+
+const decToString = (dec) => {
+  if (!/^[0-9]+$/i.test(dec) || dec.length % 3 !== 0) {
+    throw new UndecodableError(errorMessages.invalidDecimal)
+  }
+  const bytes = new Uint8Array(
+    dec.match(/.{3}/g).map((byte) => parseInt(byte, 10))
+  )
+  return new TextDecoder().decode(bytes)
+}
+
 const hexToString = (hex) => {
   if (!/^[0-9a-f]+$/i.test(hex) || hex.length % 2 !== 0) {
-    throw new Error('Invalid hexadecimal string')
+    throw new UndecodableError(errorMessages.invalidHexadecimal)
   }
   const bytes = new Uint8Array(
     hex.match(/.{2}/g).map((byte) => parseInt(byte, 16))
@@ -351,41 +438,49 @@ const randomgenerate = () => {
   }
 }
 
+const stringToUnicode = (str) => {
+  return Array.from(str)
+    .map((char) => `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`)
+    .join('')
+}
+
+const unicodeToString = (unicodeStr) => {
+  return unicodeStr.replace(/\\u[\dA-F]{4}/gi, (match) => {
+    return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16))
+  })
+}
+
+const cleanEncodeValues = () => {
+  b64str.value = ''
+  b64urlstr.value = ''
+  urlencode.value = ''
+  unicode.value = ''
+  bin.value = ''
+  quat.value = ''
+  dec.value = ''
+  hex.value = ''
+}
+
 // watchers
 watch(
-  () => b64plane.value,
+  () => plane.value,
   (newValue) => {
     if (!newValue) {
-      b64hex.value = ''
-      b64str.value = ''
-      b64urlstr.value = ''
+      cleanEncodeValues()
       return
     }
-    const hexValue = stringToHex(newValue)
-    const strValue = stringToBase64(newValue)
-    const urlstrValue = strValue
+    b64str.value = stringToBase64(newValue)
+    const urlstrValue = b64str.value
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=/g, '')
-    b64hex.value = hexValue
-    b64str.value = strValue
     b64urlstr.value = urlstrValue
-  }
-)
-
-watch(
-  () => b64hex.value,
-  (newValue) => {
-    const hexRegex = /^([0-9a-f][0-9a-f])+$/
-    if (!hexRegex.test(newValue)) {
-      b64plane.value = ''
-      b64str.value = ''
-      b64error.value = 'その値はBase64エンコードされた16進数ではないです。'
-      return
-    }
-    const b64planeValue = hexToString(newValue)
-    b64plane.value = b64planeValue
-    b64error.value = ''
+    urlencode.value = encodeURIComponent(newValue)
+    unicode.value = stringToUnicode(newValue)
+    bin.value = stringToBin(newValue)
+    quat.value = stringToQuat(newValue)
+    dec.value = stringToDec(newValue)
+    hex.value = stringToHex(newValue)
   }
 )
 
@@ -393,11 +488,11 @@ watch(
   () => b64str.value,
   (newValue) => {
     try {
-      b64plane.value = ''
-      b64plane.value = base64ToString(newValue)
-      b64error.value = ''
+      plane.value = ''
+      plane.value = base64ToString(newValue)
+      encodeerror.value = ''
     } catch (err) {
-      b64error.value = err.message
+      encodeerror.value = err.message
     }
   }
 )
@@ -406,24 +501,11 @@ watch(
   () => b64urlstr.value,
   (newValue) => {
     try {
-      b64plane.value = ''
-      b64plane.value = base64ToString(newValue)
-      b64error.value = ''
+      plane.value = ''
+      plane.value = base64ToString(newValue)
+      encodeerror.value = ''
     } catch (err) {
-      b64error.value = err.message
-    }
-  }
-)
-
-watch(
-  () => urldecode.value,
-  (newValue) => {
-    try {
-      const urlencodeValue = encodeURIComponent(newValue)
-      urlencode.value = urlencodeValue
-      urlerror.value = ''
-    } catch (err) {
-      urlerror.value = err.message
+      encodeerror.value = err.message
     }
   }
 )
@@ -432,14 +514,129 @@ watch(
   () => urlencode.value,
   (newValue) => {
     try {
-      const urldecodeValue = decodeURIComponent(newValue)
-      urldecode.value = urldecodeValue
-      urlerror.value = ''
+      plane.value = decodeURIComponent(newValue)
     } catch (err) {
-      urlerror.value =
+      encodeerror.value =
         err.name === 'URIError'
           ? 'その値はURLデコードできないです。'
           : err.message
+    }
+  }
+)
+
+watch(
+  () => unicode.value,
+  (newValue) => {
+    try {
+      plane.value = ''
+      plane.value = unicodeToString(newValue)
+      encodeerror.value = ''
+    } catch (err) {
+      encodeerror.value = err.message
+    }
+  }
+)
+
+watch(
+  () => bin.value,
+  (newValue) => {
+    if (!newValue) {
+      cleanEncodeValues()
+      return
+    }
+    const regex = /^[0-1]+$/
+    if (!regex.test(newValue)) {
+      encodeerror.value = 'その値はBase64エンコードされた2進数ではないです。'
+      return
+    }
+    try {
+      const planeValue = binToString(newValue)
+      plane.value = planeValue
+      encodeerror.value = ''
+    } catch (err) {
+      if (err instanceof UndecodableError) {
+        encodeerror.value = "文字列化できる2進数ではありません。"
+      } else {
+        encodeerror.value = "unknown error: " + err.message
+      }
+    }
+  }
+)
+
+watch(
+  () => quat.value,
+  (newValue) => {
+    if (!newValue) {
+      cleanEncodeValues()
+      return
+    }
+    const regex = /^[0-3]+$/
+    if (!regex.test(newValue)) {
+      encodeerror.value = 'その値はBase64エンコードされた4進数ではないです。'
+      return
+    }
+    try {
+      const planeValue = quatToString(newValue)
+      plane.value = planeValue
+      encodeerror.value = ''
+    } catch (err) {
+      if (err instanceof UndecodableError) {
+        encodeerror.value = "文字列化できる4進数ではありません。"
+      } else {
+        encodeerror.value = "unknown error: " + err.message
+      }
+    }
+  }
+)
+
+watch(
+  () => dec.value,
+  (newValue) => {
+    if (!newValue) {
+      cleanEncodeValues()
+      return
+    }
+    const regex = /^[0-9]+$/
+    if (!regex.test(newValue)) {
+      encodeerror.value = 'その値はBase64エンコードされた10進数ではないです。'
+      return
+    }
+    try {
+      const planeValue = decToString(newValue)
+      plane.value = planeValue
+      encodeerror.value = ''
+    } catch (err) {
+      if (err instanceof UndecodableError) {
+        encodeerror.value = "文字列化できる10進数ではありません。"
+      } else {
+        encodeerror.value = "unknown error: " + err.message
+      }
+    }
+  }
+)
+
+watch(
+  () => hex.value,
+  (newValue) => {
+    if (!newValue) {
+      cleanEncodeValues()
+      return
+    }
+    const regex = /^[0-9a-f]+$/
+    if (!regex.test(newValue)) {
+      encodeerror.value = 'その値はBase64エンコードされた16進数ではないです。'
+      return
+    }
+    try {
+      const planeValue = hexToString(newValue)
+      plane.value = planeValue
+      encodeerror.value = ''
+    } catch (err) {
+      if (err instanceof UndecodableError) {
+        encodeerror.value = "文字列化できる16進数ではありません。"
+      } else {
+        encodeerror.value = "unknown error: " + err.message
+      }
     }
   }
 )
