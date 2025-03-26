@@ -8,32 +8,21 @@
     </section>
     <section>
       <div class="container">
-        <h2>Base64 Encode</h2>
+        <h2>Encode</h2>
         <form>
           <div class="row">
             <div class="col-md-6 mb-3">
-              <label for="b64plane">文字列</label>
+              <label for="plane">文字列</label>
               <input
-                id="b64plane"
-                v-model="b64plane"
+                id="plane"
+                v-model="plane"
                 class="form-control"
                 placeholder="文字列"
               />
             </div>
           </div>
           <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="b64hex">16進数</label>
-              <input
-                id="b64hex"
-                v-model="b64hex"
-                class="form-control"
-                placeholder="16進数"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
+            <div class="col-md-3 mb-3">
               <label for="b64strb64">Base64(文字列)</label>
               <input
                 id="b64str"
@@ -42,30 +31,13 @@
                 placeholder="Base64(文字列)"
               />
             </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
+            <div class="col-md-3 mb-3">
               <label for="b64strb64url">Base64URL(文字列)</label>
               <input
                 id="b64urlstr"
                 v-model="b64urlstr"
                 class="form-control"
                 placeholder="Base64URL(文字列)"
-              />
-            </div>
-          </div>
-          <p id="b64error">{{ b64error }}</p>
-        </form>
-        <h2>URL Encode</h2>
-        <form>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="urldecode">文字列</label>
-              <input
-                id="urldecode"
-                v-model="urldecode"
-                class="form-control"
-                placeholder="文字列"
               />
             </div>
           </div>
@@ -80,16 +52,65 @@
               />
             </div>
           </div>
-          <p id="urlError" v-if="urlerror">{{ urlerror }}</p>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="unicode">Unicode</label>
+              <input
+                id="unicode"
+                v-model="unicode"
+                class="form-control"
+                placeholder="Unicode"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-2 mb-3">
+              <label for="bin">2進数</label>
+              <input
+                id="bin"
+                v-model="bin"
+                class="form-control"
+                placeholder="2進数"
+              />
+            </div>
+            <div class="col-md-2 mb-3">
+              <label for="quat">4進数</label>
+              <input
+                id="quat"
+                v-model="quat"
+                class="form-control"
+                placeholder="4進数"
+              />
+            </div>
+            <div class="col-md-2 mb-3">
+              <label for="dec">10進数</label>
+              <input
+                id="dec"
+                v-model="dec"
+                class="form-control"
+                placeholder="10進数"
+              />
+            </div>
+            <div class="col-md-2 mb-3">
+              <label for="hex">16進数</label>
+              <input
+                id="hex"
+                v-model="hex"
+                class="form-control"
+                placeholder="16進数"
+              />
+            </div>
+          </div>
+          <p id="encodeError">{{ encodeError }}</p>
         </form>
         <h2>Hash</h2>
         <form>
           <div class="row">
             <div class="col-md-6 mb-3">
-              <label for="hashplain">文字列</label>
+              <label for="hashPlain">文字列</label>
               <input
-                id="hashplain"
-                v-model="hashplain"
+                id="hashPlain"
+                v-model="hashPlain"
                 class="form-control"
                 placeholder="Plain"
               />
@@ -97,10 +118,10 @@
           </div>
           <div class="row">
             <div class="col-md-6 mb-3">
-              <label for="hashhex">16進数</label>
+              <label for="hashHex">16進数</label>
               <input
-                id="hashhex"
-                v-model="hashhex"
+                id="hashHex"
+                v-model="hashHex"
                 class="form-control"
                 placeholder="Hex"
               />
@@ -108,10 +129,10 @@
           </div>
           <div class="row">
             <div class="col-md-6 mb-3">
-              <label for="hashhex">MD5</label>
+              <label for="hashHex">MD5</label>
               <input
-                id="hashmd5"
-                v-model="hashmd5"
+                id="hashMd5"
+                v-model="hashMd5"
                 class="form-control"
                 placeholder="MD5"
                 readonly
@@ -120,30 +141,30 @@
           </div>
           <div class="row">
             <div class="col-md-3 mb-3">
-              <label for="hashsha1">SHA1</label>
+              <label for="hashSha1">SHA1</label>
               <input
-                id="hashsha1"
-                v-model="hashsha1"
+                id="hashSha1"
+                v-model="hashSha1"
                 class="form-control"
                 placeholder="SHA1"
                 readonly
               />
             </div>
             <div class="col-md-3 mb-3">
-              <label for="hashsha1">SHA1(Base64Encoded)</label>
+              <label for="hashSha1">SHA1(Base64Encoded)</label>
               <input
-                id="hashsha1b64"
-                v-model="hashsha1b64"
+                id="hashSha1b64"
+                v-model="hashSha1b64"
                 class="form-control"
                 placeholder="SHA1B64"
                 readonly
               />
             </div>
             <div class="col-md-3 mb-3">
-              <label for="hashsha1">SHA1(Base64URLEncoded)</label>
+              <label for="hashSha1">SHA1(Base64URLEncoded)</label>
               <input
-                id="hashsha1b64url"
-                v-model="hashsha1b64url"
+                id="hashSha1b64url"
+                v-model="hashSha1b64url"
                 class="form-control"
                 placeholder="SHA1B64URL"
                 readonly
@@ -152,30 +173,30 @@
           </div>
           <div class="row">
             <div class="col-md-3 mb-3">
-              <label for="hashsha256">SHA256</label>
+              <label for="hashSha256">SHA256</label>
               <input
-                id="hashsha256"
-                v-model="hashsha256"
+                id="hashSha256"
+                v-model="hashSha256"
                 class="form-control"
                 placeholder="SHA256"
                 readonly
               />
             </div>
             <div class="col-md-3 mb-3">
-              <label for="hashsha256">SHA256(Base64Encoded)</label>
+              <label for="hashSha256">SHA256(Base64Encoded)</label>
               <input
-                id="hashsha256b64"
-                v-model="hashsha256b64"
+                id="hashSha256b64"
+                v-model="hashSha256b64"
                 class="form-control"
                 placeholder="SHA256B64"
                 readonly
               />
             </div>
             <div class="col-md-3 mb-3">
-              <label for="hashsha256">SHA256(Base64URLEncoded)</label>
+              <label for="hashSha256">SHA256(Base64URLEncoded)</label>
               <input
-                id="hashsha256b64url"
-                v-model="hashsha256b64url"
+                id="hashSha256b64url"
+                v-model="hashSha256b64url"
                 class="form-control"
                 placeholder="SHA256B64URL"
                 readonly
@@ -184,30 +205,30 @@
           </div>
           <div class="row">
             <div class="col-md-3 mb-3">
-              <label for="hashsha512">SHA512</label>
+              <label for="hashSha512">SHA512</label>
               <input
-                id="hashsha512"
-                v-model="hashsha512"
+                id="hashSha512"
+                v-model="hashSha512"
                 class="form-control"
                 placeholder="SHA512"
                 readonly
               />
             </div>
             <div class="col-md-3 mb-3">
-              <label for="hashsha512">SHA512(Base64Encoded)</label>
+              <label for="hashSha512">SHA512(Base64Encoded)</label>
               <input
-                id="hashsha512b64"
-                v-model="hashsha512b64"
+                id="hashSha512b64"
+                v-model="hashSha512b64"
                 class="form-control"
                 placeholder="SHA512B64"
                 readonly
               />
             </div>
             <div class="col-md-3 mb-3">
-              <label for="hashsha512">SHA512(Base64URLEncoded)</label>
+              <label for="hashSha512">SHA512(Base64URLEncoded)</label>
               <input
-                id="hashsha512b64url"
-                v-model="hashsha512b64url"
+                id="hashSha512b64url"
+                v-model="hashSha512b64url"
                 class="form-control"
                 placeholder="SHA512B64URL"
                 readonly
@@ -274,28 +295,46 @@
 import { ref, watch } from 'vue'
 import CryptoJS from 'crypto-js'
 
-const b64plane = ref('')
-const b64hex = ref('')
+class UndecodableError extends Error {
+  constructor(message) {
+    super(message)
+    this.name = 'UndecodableError'
+  }
+}
+
+const errorMessages = {
+  invalidBinary: 'Invalid binary string',
+  invalidQuaternary: 'Invalid quaternary string',
+  invalidDecimal: 'Invalid decimal string',
+  invalidHexadecimal: 'Invalid hexadecimal string',
+  invalidBase64: 'Invalid Base64 string',
+  invalidUnicode: 'Invalid Unicode string',
+  invalidURLEncoding: 'Invalid URL encoding',
+}
+
+const plane = ref('')
+const bin = ref('')
+const quat = ref('')
+const dec = ref('')
+const hex = ref('')
 const b64str = ref('')
 const b64urlstr = ref('')
-const b64error = ref('')
-
-const urldecode = ref('')
+const unicode = ref('')
 const urlencode = ref('')
-const urlerror = ref('')
+const encodeError = ref('')
 
-const hashmd5 = ref('')
-const hashplain = ref('')
-const hashhex = ref('')
-const hashsha1 = ref('')
-const hashsha1b64 = ref('')
-const hashsha1b64url = ref('')
-const hashsha256 = ref('')
-const hashsha256b64 = ref('')
-const hashsha256b64url = ref('')
-const hashsha512 = ref('')
-const hashsha512b64 = ref('')
-const hashsha512b64url = ref('')
+const hashMd5 = ref('')
+const hashPlain = ref('')
+const hashHex = ref('')
+const hashSha1 = ref('')
+const hashSha1b64 = ref('')
+const hashSha1b64url = ref('')
+const hashSha256 = ref('')
+const hashSha256b64 = ref('')
+const hashSha256b64url = ref('')
+const hashSha512 = ref('')
+const hashSha512b64 = ref('')
+const hashSha512b64url = ref('')
 const hasherror = ref('')
 
 const randomseed = ref(
@@ -306,15 +345,63 @@ const randomvalue = ref('')
 const randomerror = ref('')
 
 // functions
+const stringToBin = (str) => {
+  return Array.from(new TextEncoder().encode(str))
+    .map((b) => b.toString(2).padStart(8, '0'))
+    .join('')
+}
+
+const stringToQuat = (str) => {
+  return Array.from(new TextEncoder().encode(str))
+    .map((b) => b.toString(4).padStart(2, '0'))
+    .join('')
+}
+
+const stringToDec = (str) => {
+  return Array.from(new TextEncoder().encode(str))
+    .map((b) => b.toString(10).padStart(3, '0'))
+    .join('')
+}
+
 const stringToHex = (str) => {
   return Array.from(new TextEncoder().encode(str))
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('')
 }
 
+const binToString = (bin) => {
+  if (!/^[01]+$/i.test(bin) || bin.length % 8 !== 0) {
+    throw new UndecodableError(errorMessages.invalidBinary)
+  }
+  const bytes = new Uint8Array(
+    bin.match(/.{8}/g).map((byte) => parseInt(byte, 2))
+  )
+  return new TextDecoder().decode(bytes)
+}
+
+const quatToString = (quat) => {
+  if (!/^[0-3]+$/i.test(quat) || quat.length % 2 !== 0) {
+    throw new UndecodableError(errorMessages.invalidQuaternary)
+  }
+  const bytes = new Uint8Array(
+    quat.match(/.{4}/g).map((byte) => parseInt(byte, 4))
+  )
+  return new TextDecoder().decode(bytes)
+}
+
+const decToString = (dec) => {
+  if (!/^[0-9]+$/i.test(dec) || dec.length % 3 !== 0) {
+    throw new UndecodableError(errorMessages.invalidDecimal)
+  }
+  const bytes = new Uint8Array(
+    dec.match(/.{3}/g).map((byte) => parseInt(byte, 10))
+  )
+  return new TextDecoder().decode(bytes)
+}
+
 const hexToString = (hex) => {
   if (!/^[0-9a-f]+$/i.test(hex) || hex.length % 2 !== 0) {
-    throw new Error('Invalid hexadecimal string')
+    throw new UndecodableError(errorMessages.invalidHexadecimal)
   }
   const bytes = new Uint8Array(
     hex.match(/.{2}/g).map((byte) => parseInt(byte, 16))
@@ -351,41 +438,49 @@ const randomgenerate = () => {
   }
 }
 
+const stringToUnicode = (str) => {
+  return Array.from(str)
+    .map((char) => `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`)
+    .join('')
+}
+
+const unicodeToString = (unicodeStr) => {
+  return unicodeStr.replace(/\\u[\dA-F]{4}/gi, (match) => {
+    return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16))
+  })
+}
+
+const cleanEncodeValues = () => {
+  b64str.value = ''
+  b64urlstr.value = ''
+  urlencode.value = ''
+  unicode.value = ''
+  bin.value = ''
+  quat.value = ''
+  dec.value = ''
+  hex.value = ''
+}
+
 // watchers
 watch(
-  () => b64plane.value,
+  () => plane.value,
   (newValue) => {
     if (!newValue) {
-      b64hex.value = ''
-      b64str.value = ''
-      b64urlstr.value = ''
+      cleanEncodeValues()
       return
     }
-    const hexValue = stringToHex(newValue)
-    const strValue = stringToBase64(newValue)
-    const urlstrValue = strValue
+    b64str.value = stringToBase64(newValue)
+    const urlstrValue = b64str.value
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=/g, '')
-    b64hex.value = hexValue
-    b64str.value = strValue
     b64urlstr.value = urlstrValue
-  }
-)
-
-watch(
-  () => b64hex.value,
-  (newValue) => {
-    const hexRegex = /^([0-9a-f][0-9a-f])+$/
-    if (!hexRegex.test(newValue)) {
-      b64plane.value = ''
-      b64str.value = ''
-      b64error.value = 'その値はBase64エンコードされた16進数ではないです。'
-      return
-    }
-    const b64planeValue = hexToString(newValue)
-    b64plane.value = b64planeValue
-    b64error.value = ''
+    urlencode.value = encodeURIComponent(newValue)
+    unicode.value = stringToUnicode(newValue)
+    bin.value = stringToBin(newValue)
+    quat.value = stringToQuat(newValue)
+    dec.value = stringToDec(newValue)
+    hex.value = stringToHex(newValue)
   }
 )
 
@@ -393,11 +488,11 @@ watch(
   () => b64str.value,
   (newValue) => {
     try {
-      b64plane.value = ''
-      b64plane.value = base64ToString(newValue)
-      b64error.value = ''
+      plane.value = ''
+      plane.value = base64ToString(newValue)
+      encodeError.value = ''
     } catch (err) {
-      b64error.value = err.message
+      encodeError.value = err.message
     }
   }
 )
@@ -406,24 +501,11 @@ watch(
   () => b64urlstr.value,
   (newValue) => {
     try {
-      b64plane.value = ''
-      b64plane.value = base64ToString(newValue)
-      b64error.value = ''
+      plane.value = ''
+      plane.value = base64ToString(newValue)
+      encodeError.value = ''
     } catch (err) {
-      b64error.value = err.message
-    }
-  }
-)
-
-watch(
-  () => urldecode.value,
-  (newValue) => {
-    try {
-      const urlencodeValue = encodeURIComponent(newValue)
-      urlencode.value = urlencodeValue
-      urlerror.value = ''
-    } catch (err) {
-      urlerror.value = err.message
+      encodeError.value = err.message
     }
   }
 )
@@ -432,78 +514,181 @@ watch(
   () => urlencode.value,
   (newValue) => {
     try {
-      const urldecodeValue = decodeURIComponent(newValue)
-      urldecode.value = urldecodeValue
-      urlerror.value = ''
+      plane.value = decodeURIComponent(newValue)
     } catch (err) {
-      urlerror.value =
+      encodeError.value =
         err.name === 'URIError'
           ? 'その値はURLデコードできないです。'
-          : err.message
+          : err.message // 入らない想定
     }
   }
 )
 
 watch(
-  () => hashplain.value,
+  () => unicode.value,
+  (newValue) => {
+    try {
+      plane.value = ''
+      plane.value = unicodeToString(newValue)
+      encodeError.value = ''
+    } catch (err) {
+      encodeError.value = err.message // 入らない想定
+    }
+  }
+)
+
+watch(
+  () => bin.value,
   (newValue) => {
     if (!newValue) {
-      hashmd5.value = ''
-      hashhex.value = ''
-      hashsha1.value = ''
-      hashsha1b64.value = ''
-      hashsha1b64url.value = ''
-      hashsha256.value = ''
-      hashsha256b64.value = ''
-      hashsha256b64url.value = ''
-      hashsha512.value = ''
-      hashsha512b64.value = ''
-      hashsha512b64url.value = ''
+      cleanEncodeValues()
       return
     }
-    hashhex.value = Array.from(new TextEncoder().encode(newValue))
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('')
-    hashmd5.value = CryptoJS.enc.Hex.stringify(CryptoJS.MD5(newValue))
-    hashsha1.value = CryptoJS.enc.Hex.stringify(CryptoJS.SHA1(newValue))
-    hashsha1b64.value = CryptoJS.enc.Base64.stringify(CryptoJS.SHA1(newValue))
-    hashsha1b64url.value = CryptoJS.enc.Base64url.stringify(CryptoJS.SHA1(newValue))
-    hashsha256.value = CryptoJS.enc.Hex.stringify(CryptoJS.SHA256(newValue))
-    hashsha256b64.value = CryptoJS.enc.Base64.stringify(CryptoJS.SHA256(newValue))
-    hashsha256b64url.value = CryptoJS.enc.Base64url.stringify(CryptoJS.SHA256(newValue))
-    hashsha512.value = CryptoJS.enc.Hex.stringify(CryptoJS.SHA512(newValue))
-    hashsha512b64.value = CryptoJS.enc.Base64.stringify(CryptoJS.SHA512(newValue))
-    hashsha512b64url.value = CryptoJS.enc.Base64url.stringify(CryptoJS.SHA512(newValue))
-  }
-)
-
-watch(
-  () => hashhex.value,
-  (newValue) => {
-    hasherror.value = ''
-    if (!newValue) {
-      hashmd5.value = ''
-      hashplain.value = ''
-      hashsha1.value = ''
-      hashsha1b64.value = ''
-      hashsha1b64url.value = ''
-      hashsha256.value = ''
-      hashsha256b64.value = ''
-      hashsha256b64url.value = ''
-      hashsha512.value = ''
-      hashsha512b64.value = ''
-      hashsha512b64url.value = ''
+    const regex = /^[0-1]+$/
+    if (!regex.test(newValue)) {
+      encodeError.value = 'その値はBase64エンコードされた2進数ではないです。'
       return
     }
     try {
-      hashplain.value = new TextDecoder().decode(
+      const planeValue = binToString(newValue)
+      plane.value = planeValue
+      encodeError.value = ''
+    } catch (err) {
+      encodeError.value = "unknown error: " + err.message
+      if (err instanceof UndecodableError) encodeError.value = "文字列化できる2進数ではありません。"
+    }
+  }
+)
+
+watch(
+  () => quat.value,
+  (newValue) => {
+    if (!newValue) {
+      cleanEncodeValues()
+      return
+    }
+    const regex = /^[0-3]+$/
+    if (!regex.test(newValue)) {
+      encodeError.value = 'その値はBase64エンコードされた4進数ではないです。'
+      return
+    }
+    try {
+      const planeValue = quatToString(newValue)
+      plane.value = planeValue
+      encodeError.value = ''
+    } catch (err) {
+      encodeError.value = "unknown error: " + err.message
+      if (err instanceof UndecodableError) encodeError.value = "文字列化できる4進数ではありません。"
+    }
+  }
+)
+
+watch(
+  () => dec.value,
+  (newValue) => {
+    if (!newValue) {
+      cleanEncodeValues()
+      return
+    }
+    const regex = /^[0-9]+$/
+    if (!regex.test(newValue)) {
+      encodeError.value = 'その値はBase64エンコードされた10進数ではないです。'
+      return
+    }
+    try {
+      const planeValue = decToString(newValue)
+      plane.value = planeValue
+      encodeError.value = ''
+    } catch (err) {
+      encodeError.value = "unknown error: " + err.message
+      if (err instanceof UndecodableError) encodeError.value = "文字列化できる10進数ではありません。"
+    }
+  }
+)
+
+watch(
+  () => hex.value,
+  (newValue) => {
+    if (!newValue) {
+      cleanEncodeValues()
+      return
+    }
+    const regex = /^[0-9a-f]+$/
+    if (!regex.test(newValue)) {
+      encodeError.value = 'その値はBase64エンコードされた16進数ではないです。'
+      return
+    }
+    try {
+      const planeValue = hexToString(newValue)
+      plane.value = planeValue
+      encodeError.value = ''
+    } catch (err) {
+      encodeError.value = "unknown error: " + err.message
+      if (err instanceof UndecodableError) encodeError.value = "文字列化できる16進数ではありません。"
+    }
+  }
+)
+
+watch(
+  () => hashPlain.value,
+  (newValue) => {
+    if (!newValue) {
+      hashMd5.value = ''
+      hashHex.value = ''
+      hashSha1.value = ''
+      hashSha1b64.value = ''
+      hashSha1b64url.value = ''
+      hashSha256.value = ''
+      hashSha256b64.value = ''
+      hashSha256b64url.value = ''
+      hashSha512.value = ''
+      hashSha512b64.value = ''
+      hashSha512b64url.value = ''
+      return
+    }
+    hashHex.value = Array.from(new TextEncoder().encode(newValue))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')
+    hashMd5.value = CryptoJS.enc.Hex.stringify(CryptoJS.MD5(newValue))
+    hashSha1.value = CryptoJS.enc.Hex.stringify(CryptoJS.SHA1(newValue))
+    hashSha1b64.value = CryptoJS.enc.Base64.stringify(CryptoJS.SHA1(newValue))
+    hashSha1b64url.value = CryptoJS.enc.Base64url.stringify(CryptoJS.SHA1(newValue))
+    hashSha256.value = CryptoJS.enc.Hex.stringify(CryptoJS.SHA256(newValue))
+    hashSha256b64.value = CryptoJS.enc.Base64.stringify(CryptoJS.SHA256(newValue))
+    hashSha256b64url.value = CryptoJS.enc.Base64url.stringify(CryptoJS.SHA256(newValue))
+    hashSha512.value = CryptoJS.enc.Hex.stringify(CryptoJS.SHA512(newValue))
+    hashSha512b64.value = CryptoJS.enc.Base64.stringify(CryptoJS.SHA512(newValue))
+    hashSha512b64url.value = CryptoJS.enc.Base64url.stringify(CryptoJS.SHA512(newValue))
+  }
+)
+
+watch(
+  () => hashHex.value,
+  (newValue) => {
+    hasherror.value = ''
+    if (!newValue) {
+      hashMd5.value = ''
+      hashPlain.value = ''
+      hashSha1.value = ''
+      hashSha1b64.value = ''
+      hashSha1b64url.value = ''
+      hashSha256.value = ''
+      hashSha256b64.value = ''
+      hashSha256b64url.value = ''
+      hashSha512.value = ''
+      hashSha512b64.value = ''
+      hashSha512b64url.value = ''
+      return
+    }
+    try {
+      hashPlain.value = new TextDecoder().decode(
         new Uint8Array(
           newValue.match(/.{2}/g).map((byte) => parseInt(byte, 16))
         )
       )
       // 特殊文字のチェックは不要
       // eslint-disable-next-line no-control-regex
-      if (/[\x00-\x1f�]/.test(hashplain.value)) {
+      if (/[\x00-\x1f�]/.test(hashPlain.value)) {
         hasherror.value = '文字列として表示されている値が文字化けしてしまっている可能性があります'
       }
     } catch (err) {

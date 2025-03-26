@@ -59,456 +59,473 @@ describe('Develop.vue', () => {
   })
 
   // watchers
-  it('base64 plane', async () => {
-    expect(wrapper.vm.b64plane).toBe('')
-    expect(wrapper.vm.b64hex).toBe('')
+  const expectEncodeInitialValues = () => {
+    expect(wrapper.vm.plane).toBe('')
     expect(wrapper.vm.b64str).toBe('')
     expect(wrapper.vm.b64urlstr).toBe('')
-    expect(wrapper.vm.b64error).toBe('')
-
-    const input = wrapper.find('input[id="b64plane"]')
-    await input.setValue('test')
-
-    expect(wrapper.vm.b64plane).toBe('test')
-    expect(wrapper.vm.b64hex).toBe('74657374')
-    expect(wrapper.vm.b64str).toBe('dGVzdA==')
-    expect(wrapper.vm.b64urlstr).toBe('dGVzdA')
-    expect(wrapper.vm.b64error).toBe('')
+    expect(wrapper.vm.urlencode).toBe('')
+    expect(wrapper.vm.unicode).toBe('')
+    expect(wrapper.vm.bin).toBe('')
+    expect(wrapper.vm.quat).toBe('')
+    expect(wrapper.vm.dec).toBe('')
+    expect(wrapper.vm.hex).toBe('')
+    expect(wrapper.vm.encodeError).toBe('')
 
     // DOM の更新も確認
-    const planeInput = wrapper.find('input[id="b64plane"]')
-    const hexInput = wrapper.find('input[id="b64hex"]')
+    const planeInput = wrapper.find('input[id="plane"]')
     const strInput = wrapper.find('input[id="b64str"]')
     const urlstrInput = wrapper.find('input[id="b64urlstr"]')
-
-    expect(planeInput.element.value).toBe('test')
-    expect(hexInput.element.value).toBe('74657374')
-    expect(strInput.element.value).toBe('dGVzdA==')
-    expect(urlstrInput.element.value).toBe('dGVzdA')
-    expect(wrapper.vm.b64error).toBe('')
-  })
-
-  it('base64 plane null', async () => {
-    expect(wrapper.vm.b64plane).toBe('')
-    expect(wrapper.vm.b64hex).toBe('')
-    expect(wrapper.vm.b64str).toBe('')
-    expect(wrapper.vm.b64urlstr).toBe('')
-    expect(wrapper.vm.b64error).toBe('')
-
-    const input = wrapper.find('input[id="b64plane"]')
-    await input.setValue('test')
-
-    expect(wrapper.vm.b64plane).toBe('test')
-    expect(wrapper.vm.b64hex).toBe('74657374')
-    expect(wrapper.vm.b64str).toBe('dGVzdA==')
-    expect(wrapper.vm.b64urlstr).toBe('dGVzdA')
-    expect(wrapper.vm.b64error).toBe('')
-
-    await input.setValue('')
-    expect(wrapper.vm.b64plane).toBe('')
-    expect(wrapper.vm.b64hex).toBe('')
-    expect(wrapper.vm.b64str).toBe('')
-    expect(wrapper.vm.b64urlstr).toBe('')
-    expect(wrapper.vm.b64error).toBe('')
-
-    // DOM の更新も確認
-    const planeInput = wrapper.find('input[id="b64plane"]')
-    const hexInput = wrapper.find('input[id="b64hex"]')
-    const strInput = wrapper.find('input[id="b64str"]')
-    const urlstrInput = wrapper.find('input[id="b64urlstr"]')
+    const urlInput = wrapper.find('input[id="urlencode"]')
+    const unicodeInput = wrapper.find('input[id="unicode"]')
+    const binInput = wrapper.find('input[id="bin"]')
+    const quatInput = wrapper.find('input[id="quat"]')
+    const decInput = wrapper.find('input[id="dec"]')
+    const hexInput = wrapper.find('input[id="hex"]')
 
     expect(planeInput.element.value).toBe('')
-    expect(hexInput.element.value).toBe('')
     expect(strInput.element.value).toBe('')
     expect(urlstrInput.element.value).toBe('')
-    expect(wrapper.vm.b64error).toBe('')
-  })
+    expect(urlInput.element.value).toBe('')
+    expect(unicodeInput.element.value).toBe('')
+    expect(binInput.element.value).toBe('')
+    expect(quatInput.element.value).toBe('')
+    expect(decInput.element.value).toBe('')
+    expect(hexInput.element.value).toBe('')
+    expect(wrapper.vm.encodeError).toBe('')
 
-  it('base64 hex', async () => {
-    expect(wrapper.vm.b64plane).toBe('')
-    expect(wrapper.vm.b64hex).toBe('')
-    expect(wrapper.vm.b64str).toBe('')
-    expect(wrapper.vm.b64urlstr).toBe('')
-    expect(wrapper.vm.b64error).toBe('')
+  }
 
-    const input = wrapper.find('input[id="b64hex"]')
-    await input.setValue('74657374')
-
-    expect(wrapper.vm.b64plane).toBe('test')
-    expect(wrapper.vm.b64hex).toBe('74657374')
+  const expectEncodeTestValues = () => {
+    expect(wrapper.vm.plane).toBe('test')
     expect(wrapper.vm.b64str).toBe('dGVzdA==')
     expect(wrapper.vm.b64urlstr).toBe('dGVzdA')
-    expect(wrapper.vm.b64error).toBe('')
+    expect(wrapper.vm.urlencode).toBe('test')
+    expect(wrapper.vm.unicode).toBe('\\u0074\\u0065\\u0073\\u0074')
+    expect(wrapper.vm.bin).toBe('01110100011001010111001101110100')
+    expect(wrapper.vm.quat).toBe('1310121113031310')
+    expect(wrapper.vm.dec).toBe('116101115116')
+    expect(wrapper.vm.hex).toBe('74657374')
+    expect(wrapper.vm.encodeError).toBe('')
 
     // DOM の更新も確認
-    const planeInput = wrapper.find('input[id="b64plane"]')
-    const hexInput = wrapper.find('input[id="b64hex"]')
+    const planeInput = wrapper.find('input[id="plane"]')
     const strInput = wrapper.find('input[id="b64str"]')
     const urlstrInput = wrapper.find('input[id="b64urlstr"]')
+    const urlInput = wrapper.find('input[id="urlencode"]')
+    const unicodeInput = wrapper.find('input[id="unicode"]')
+    const binInput = wrapper.find('input[id="bin"]')
+    const quatInput = wrapper.find('input[id="quat"]')
+    const decInput = wrapper.find('input[id="dec"]')
+    const hexInput = wrapper.find('input[id="hex"]')
 
     expect(planeInput.element.value).toBe('test')
-    expect(hexInput.element.value).toBe('74657374')
     expect(strInput.element.value).toBe('dGVzdA==')
     expect(urlstrInput.element.value).toBe('dGVzdA')
+    expect(urlInput.element.value).toBe('test')
+    expect(unicodeInput.element.value).toBe('\\u0074\\u0065\\u0073\\u0074')
+    expect(binInput.element.value).toBe('01110100011001010111001101110100')
+    expect(quatInput.element.value).toBe('1310121113031310')
+    expect(decInput.element.value).toBe('116101115116')
+    expect(hexInput.element.value).toBe('74657374')
+    expect(wrapper.vm.encodeError).toBe('')
+  }
+
+  const expectEncodeTestSpaceValues = () => {
+    expect(wrapper.vm.plane).toBe('test ')
+    expect(wrapper.vm.b64str).toBe('dGVzdCA=')
+    expect(wrapper.vm.b64urlstr).toBe('dGVzdCA')
+    expect(wrapper.vm.urlencode).toBe('test%20')
+    expect(wrapper.vm.unicode).toBe('\\u0074\\u0065\\u0073\\u0074\\u0020')
+    expect(wrapper.vm.bin).toBe('0111010001100101011100110111010000100000')
+    expect(wrapper.vm.quat).toBe('1310121113031310200')
+    expect(wrapper.vm.dec).toBe('116101115116032')
+    expect(wrapper.vm.hex).toBe('7465737420')
+    expect(wrapper.vm.encodeError).toBe('')
+
+    // DOM の更新も確認
+    const planeInput = wrapper.find('input[id="plane"]')
+    const strInput = wrapper.find('input[id="b64str"]')
+    const urlstrInput = wrapper.find('input[id="b64urlstr"]')
+    const urlInput = wrapper.find('input[id="urlencode"]')
+    const unicodeInput = wrapper.find('input[id="unicode"]')
+    const binInput = wrapper.find('input[id="bin"]')
+    const quatInput = wrapper.find('input[id="quat"]')
+    const decInput = wrapper.find('input[id="dec"]')
+    const hexInput = wrapper.find('input[id="hex"]')
+
+    expect(planeInput.element.value).toBe('test ')
+    expect(strInput.element.value).toBe('dGVzdCA=')
+    expect(urlstrInput.element.value).toBe('dGVzdCA')
+    expect(urlInput.element.value).toBe('test%20')
+    expect(unicodeInput.element.value).toBe('\\u0074\\u0065\\u0073\\u0074\\u0020')
+    expect(binInput.element.value).toBe('0111010001100101011100110111010000100000')
+    expect(quatInput.element.value).toBe('1310121113031310200')
+    expect(decInput.element.value).toBe('116101115116032')
+    expect(hexInput.element.value).toBe('7465737420')
+    expect(wrapper.vm.encodeError).toBe('')
+  }
+
+  it('encode plane', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="plane"]')
+    await input.setValue('test')
+
+    expectEncodeTestValues()
   })
 
-  it('base64 hex error', async () => {
-    expect(wrapper.vm.b64plane).toBe('')
-    expect(wrapper.vm.b64hex).toBe('')
-    expect(wrapper.vm.b64str).toBe('')
-    expect(wrapper.vm.b64urlstr).toBe('')
-    expect(wrapper.vm.b64error).toBe('')
+  it('encode plane space', async () => {
+    expectEncodeInitialValues()
 
-    const input = wrapper.find('input[id="b64hex"]')
-    await input.setValue('z')
-    await nextTick()
+    const input = wrapper.find('input[id="plane"]')
+    await input.setValue('test ')
 
-    expect(wrapper.vm.b64error).toBe('その値はBase64エンコードされた16進数ではないです。')
-
-    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
-    // const b64Error = wrapper.find('p[id="b64error"]')
-    // expect(b64Error.element.text).toBe('')
+    expectEncodeTestSpaceValues()
   })
 
-  it('base64 str', async () => {
-    expect(wrapper.vm.b64plane).toBe('')
-    expect(wrapper.vm.b64hex).toBe('')
-    expect(wrapper.vm.b64str).toBe('')
-    expect(wrapper.vm.b64urlstr).toBe('')
-    expect(wrapper.vm.b64error).toBe('')
+  it('encode plane null', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="plane"]')
+    await input.setValue('test')
+
+    expectEncodeTestValues()
+
+    await input.setValue('')
+
+    expectEncodeInitialValues()
+  })
+
+  it('encode b64 str', async () => {
+    expectEncodeInitialValues()
 
     const input = wrapper.find('input[id="b64str"]')
     await input.setValue('dGVzdA==')
 
-    expect(wrapper.vm.b64plane).toBe('test')
-    expect(wrapper.vm.b64hex).toBe('74657374')
-    expect(wrapper.vm.b64str).toBe('dGVzdA==')
-    expect(wrapper.vm.b64urlstr).toBe('dGVzdA')
-    expect(wrapper.vm.b64error).toBe('')
-
-    // DOM の更新も確認
-    const planeInput = wrapper.find('input[id="b64plane"]')
-    const hexInput = wrapper.find('input[id="b64hex"]')
-    const strInput = wrapper.find('input[id="b64str"]')
-    const urlstrInput = wrapper.find('input[id="b64urlstr"]')
-
-    expect(planeInput.element.value).toBe('test')
-    expect(hexInput.element.value).toBe('74657374')
-    expect(strInput.element.value).toBe('dGVzdA==')
-    expect(urlstrInput.element.value).toBe('dGVzdA')
+    expectEncodeTestValues()
   })
 
-  it('base64 str error', async () => {
-    expect(wrapper.vm.b64plane).toBe('')
-    expect(wrapper.vm.b64hex).toBe('')
-    expect(wrapper.vm.b64str).toBe('')
-    expect(wrapper.vm.b64urlstr).toBe('')
-    expect(wrapper.vm.b64error).toBe('')
+  it('encode base64 str error', async () => {
+    expectEncodeInitialValues()
 
     const input = wrapper.find('input[id="b64str"]')
     await input.setValue('=')
     await nextTick()
 
-    expect(wrapper.vm.b64error).toBe('Invalid Base64 string')
+    expect(wrapper.vm.encodeError).toBe('Invalid Base64 string')
 
     // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
     // const b64Error = wrapper.find('p[id="b64error"]')
     // expect(b64Error.element.text).toBe('')
   })
 
-  it('base64 urlstr', async () => {
-    expect(wrapper.vm.b64plane).toBe('')
-    expect(wrapper.vm.b64hex).toBe('')
-    expect(wrapper.vm.b64str).toBe('')
-    expect(wrapper.vm.b64urlstr).toBe('')
-    expect(wrapper.vm.b64error).toBe('')
+  it('encode base64 urlstr', async () => {
+    expectEncodeInitialValues()
 
     const input = wrapper.find('input[id="b64urlstr"]')
     await input.setValue('dGVzdA')
 
-    expect(wrapper.vm.b64plane).toBe('test')
-    expect(wrapper.vm.b64hex).toBe('74657374')
-    expect(wrapper.vm.b64str).toBe('dGVzdA==')
-    expect(wrapper.vm.b64urlstr).toBe('dGVzdA')
-    expect(wrapper.vm.b64error).toBe('')
-
-    // DOM の更新も確認
-    const planeInput = wrapper.find('input[id="b64plane"]')
-    const hexInput = wrapper.find('input[id="b64hex"]')
-    const strInput = wrapper.find('input[id="b64str"]')
-    const urlstrInput = wrapper.find('input[id="b64urlstr"]')
-
-    expect(planeInput.element.value).toBe('test')
-    expect(hexInput.element.value).toBe('74657374')
-    expect(strInput.element.value).toBe('dGVzdA==')
-    expect(urlstrInput.element.value).toBe('dGVzdA')
+    expectEncodeTestValues()
   })
 
-  it('base64url str error', async () => {
-    expect(wrapper.vm.b64plane).toBe('')
-    expect(wrapper.vm.b64hex).toBe('')
-    expect(wrapper.vm.b64str).toBe('')
-    expect(wrapper.vm.b64urlstr).toBe('')
-    expect(wrapper.vm.b64error).toBe('')
+  it('encode base64url str error', async () => {
+    expectEncodeInitialValues()
 
     const input = wrapper.find('input[id="b64urlstr"]')
     await input.setValue('=')
     await nextTick()
 
-    expect(wrapper.vm.b64error).toBe('Invalid Base64 string')
+    expect(wrapper.vm.encodeError).toBe('Invalid Base64 string')
 
     // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
     // const b64Error = wrapper.find('p[id="b64error"]')
     // expect(b64Error.element.text).toBe('')
   })
 
-  it('url encode', async () => {
-    expect(wrapper.vm.urldecode).toBe('')
-    expect(wrapper.vm.urlencode).toBe('')
-    expect(wrapper.vm.urlerror).toBe('')
-
-    const input = wrapper.find('input[id="urldecode"]')
-    await input.setValue('hoge fuga')
-
-    expect(wrapper.vm.urldecode).toBe('hoge fuga')
-    expect(wrapper.vm.urlencode).toBe('hoge%20fuga')
-    expect(wrapper.vm.urlerror).toBe('')
-
-    // DOM の更新も確認
-    const urldecodeInput = wrapper.find('input[id="urldecode"]')
-    const urlencodeInput = wrapper.find('input[id="urlencode"]')
-
-    expect(urldecodeInput.element.value).toBe('hoge fuga')
-    expect(urlencodeInput.element.value).toBe('hoge%20fuga')
-  })
-
-  it('url encode error', async () => {
-    expect(wrapper.vm.urldecode).toBe('')
-    expect(wrapper.vm.urlencode).toBe('')
-    expect(wrapper.vm.urlerror).toBe('')
-
-    global.encodeURIComponent = jest.fn(() => {
-      throw new Error('Unexpected error occurred')
-    })
-
-    const input = wrapper.find('input[id="urldecode"]')
-    await input.setValue('hoge fuga')
-
-    expect(wrapper.vm.urlerror).toBe('Unexpected error occurred')
-
-    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
-    // const urlError = wrapper.find('p[id="urlError"]')
-    // expect(urlError.element.text).toBe('その値はURLデコードできないです。')
-  })
-
-  it('url decode', async () => {
-    expect(wrapper.vm.urldecode).toBe('')
-    expect(wrapper.vm.urlencode).toBe('')
-    expect(wrapper.vm.urlerror).toBe('')
+  it('encode urlstr', async () => {
+    expectEncodeInitialValues()
 
     const input = wrapper.find('input[id="urlencode"]')
-    await input.setValue('hoge%20fuga')
+    await input.setValue('test%20')
 
-    expect(wrapper.vm.urldecode).toBe('hoge fuga')
-    expect(wrapper.vm.urlencode).toBe('hoge%20fuga')
-    expect(wrapper.vm.urlerror).toBe('')
-
-    // DOM の更新も確認
-    const urldecodeInput = wrapper.find('input[id="urldecode"]')
-    const urlencodeInput = wrapper.find('input[id="urlencode"]')
-
-    expect(urldecodeInput.element.value).toBe('hoge fuga')
-    expect(urlencodeInput.element.value).toBe('hoge%20fuga')
+    expectEncodeTestSpaceValues()
   })
 
-  it('url decode error', async () => {
-    expect(wrapper.vm.urldecode).toBe('')
-    expect(wrapper.vm.urlencode).toBe('')
-    expect(wrapper.vm.urlerror).toBe('')
+  it('encode urlstr error', async () => {
+    expectEncodeInitialValues()
 
     const input = wrapper.find('input[id="urlencode"]')
     await input.setValue('%')
+    await nextTick()
 
-    expect(wrapper.vm.urlerror).toBe('その値はURLデコードできないです。')
-
-    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
-    // const urlError = wrapper.find('p[id="urlError"]')
-    // expect(urlError.element.text).toBe('')
-  })
-
-  it('url decode undefined error', async () => {
-    expect(wrapper.vm.urldecode).toBe('')
-    expect(wrapper.vm.urlencode).toBe('')
-    expect(wrapper.vm.urlerror).toBe('')
-
-    global.decodeURIComponent = jest.fn(() => {
-      throw new Error('Unexpected error occurred')
-    })
-
-    const input = wrapper.find('input[id="urlencode"]')
-    await input.setValue('%')
-
-    expect(wrapper.vm.urlerror).toBe('Unexpected error occurred')
+    expect(wrapper.vm.encodeError).toBe('その値はURLデコードできないです。')
 
     // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
-    // const urlDecodeError = wrapper.find('p[id="urlDecodeError"]')
-    // expect(urlDecodeError.element.text).toBe('')
+    // const b64Error = wrapper.find('p[id="b64error"]')
+    // expect(b64Error.element.text).toBe('')
   })
 
-  it('hash', async () => {
-    expect(wrapper.vm.hashplain).toBe('')
-    expect(wrapper.vm.hashhex).toBe('')
-    expect(wrapper.vm.hashmd5).toBe('')
-    expect(wrapper.vm.hashsha1).toBe('')
-    expect(wrapper.vm.hashsha1b64).toBe('')
-    expect(wrapper.vm.hashsha1b64url).toBe('')
-    expect(wrapper.vm.hashsha256).toBe('')
-    expect(wrapper.vm.hashsha256b64).toBe('')
-    expect(wrapper.vm.hashsha256b64url).toBe('')
-    expect(wrapper.vm.hashsha512).toBe('')
-    expect(wrapper.vm.hashsha512b64).toBe('')
-    expect(wrapper.vm.hashsha512b64url).toBe('')
-    expect(wrapper.vm.hasherror).toBe('')
+  it('encode unicode', async () => {
+    expectEncodeInitialValues()
 
-    const input = wrapper.find('input[id="hashplain"]')
+    const input = wrapper.find('input[id="unicode"]')
+    await input.setValue('\\u0074\\u0065\\u0073\\u0074')
+
+    expectEncodeTestValues()
+  })
+
+  it('encode unicode error', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="unicode"]')
     await input.setValue('test')
+    await nextTick()
 
-    expect(wrapper.vm.hashplain).toBe('test')
-    expect(wrapper.vm.hashhex).toBe('74657374')
-    expect(wrapper.vm.hashmd5).toBe('098f6bcd4621d373cade4e832627b4f6')
-    expect(wrapper.vm.hashsha1).toBe('a94a8fe5ccb19ba61c4c0873d391e987982fbbd3')
-    expect(wrapper.vm.hashsha1b64).toBe('qUqP5cyxm6YcTAhz05Hph5gvu9M=')
-    expect(wrapper.vm.hashsha1b64url).toBe('qUqP5cyxm6YcTAhz05Hph5gvu9M')
-    expect(wrapper.vm.hashsha256).toBe('9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08')
-    expect(wrapper.vm.hashsha256b64).toBe('n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg=')
-    expect(wrapper.vm.hashsha256b64url).toBe('n4bQgYhMfWWaL-qgxVrQFaO_TxsrC4Is0V1sFbDwCgg')
-    expect(wrapper.vm.hashsha512).toBe('ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff')
-    expect(wrapper.vm.hashsha512b64).toBe('7iaw3Ur350mqGo7jwQrpkj9hiYB3Lkc/iBml1JQODbJ6wYX4oOHV+E+IvIh/1nsUNzLDBMxfqa2Ob1f1ACio/w==')
-    expect(wrapper.vm.hashsha512b64url).toBe('7iaw3Ur350mqGo7jwQrpkj9hiYB3Lkc_iBml1JQODbJ6wYX4oOHV-E-IvIh_1nsUNzLDBMxfqa2Ob1f1ACio_w')
+    expectEncodeTestValues()
+
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    // const b64Error = wrapper.find('p[id="b64error"]')
+    // expect(b64Error.element.text).toBe('')
+  })
+
+  it('encode bin', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="bin"]')
+    await input.setValue('01110100011001010111001101110100')
+
+    expectEncodeTestValues()
+  })
+
+  it('encode bin error', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="bin"]')
+    await input.setValue('z')
+    await nextTick()
+
+    expect(wrapper.vm.encodeError).toBe('その値はBase64エンコードされた2進数ではないです。')
+
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    // const b64Error = wrapper.find('p[id="b64error"]')
+    // expect(b64Error.element.text).toBe('')
+  })
+
+  it('encode bin error UndecodableError', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="bin"]')
+    await input.setValue('1')
+    await nextTick()
+
+    expect(wrapper.vm.encodeError).toBe('文字列化できる2進数ではありません。')
+
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    // const b64Error = wrapper.find('p[id="b64error"]')
+    // expect(b64Error.element.text).toBe('')
+  })
+
+  it('encode quat', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="quat"]')
+    await input.setValue('1310121113031310')
+
+    expectEncodeTestValues()
+  })
+
+  it('encode quat error', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="quat"]')
+    await input.setValue('z')
+    await nextTick()
+
+    expect(wrapper.vm.encodeError).toBe('その値はBase64エンコードされた4進数ではないです。')
+
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    // const b64Error = wrapper.find('p[id="b64error"]')
+    // expect(b64Error.element.text).toBe('')
+  })
+
+  it('encode quat error UndecodableError', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="quat"]')
+    await input.setValue('1')
+    await nextTick()
+
+    expect(wrapper.vm.encodeError).toBe('文字列化できる4進数ではありません。')
+
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    // const b64Error = wrapper.find('p[id="b64error"]')
+    // expect(b64Error.element.text).toBe('')
+  })
+
+  it('encode dec', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="dec"]')
+    await input.setValue('116101115116')
+
+    expectEncodeTestValues()
+  })
+
+  it('encode dec error', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="dec"]')
+    await input.setValue('z')
+    await nextTick()
+
+    expect(wrapper.vm.encodeError).toBe('その値はBase64エンコードされた10進数ではないです。')
+
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    // const b64Error = wrapper.find('p[id="b64error"]')
+    // expect(b64Error.element.text).toBe('')
+  })
+
+  it('encode dec error UndecodableError', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="dec"]')
+    await input.setValue('1')
+    await nextTick()
+
+    expect(wrapper.vm.encodeError).toBe('文字列化できる10進数ではありません。')
+
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    // const b64Error = wrapper.find('p[id="b64error"]')
+    // expect(b64Error.element.text).toBe('')
+  })
+
+  it('encode hex', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="hex"]')
+    await input.setValue('74657374')
+
+    expectEncodeTestValues()
+
+  })
+
+  it('encode hex error', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="hex"]')
+    await input.setValue('z')
+    await nextTick()
+
+    expect(wrapper.vm.encodeError).toBe('その値はBase64エンコードされた16進数ではないです。')
+
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    // const b64Error = wrapper.find('p[id="b64error"]')
+    // expect(b64Error.element.text).toBe('')
+  })
+
+  it('encode hex error UndecodableError', async () => {
+    expectEncodeInitialValues()
+
+    const input = wrapper.find('input[id="hex"]')
+    await input.setValue('1')
+    await nextTick()
+
+    expect(wrapper.vm.encodeError).toBe('文字列化できる16進数ではありません。')
+
+    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
+    // const b64Error = wrapper.find('p[id="b64error"]')
+    // expect(b64Error.element.text).toBe('')
+  })
+
+  const expectHashInitialValues = () => {
+    expect(wrapper.vm.hashPlain).toBe('')
+    expect(wrapper.vm.hashHex).toBe('')
+    expect(wrapper.vm.hashMd5).toBe('')
+    expect(wrapper.vm.hashSha1).toBe('')
+    expect(wrapper.vm.hashSha1b64).toBe('')
+    expect(wrapper.vm.hashSha1b64url).toBe('')
+    expect(wrapper.vm.hashSha256).toBe('')
+    expect(wrapper.vm.hashSha256b64).toBe('')
+    expect(wrapper.vm.hashSha256b64url).toBe('')
+    expect(wrapper.vm.hashSha512).toBe('')
+    expect(wrapper.vm.hashSha512b64).toBe('')
+    expect(wrapper.vm.hashSha512b64url).toBe('')
+    expect(wrapper.vm.hasherror).toBe('')
+  }
+
+  const expectHashTestValues = () => {
+    expect(wrapper.vm.hashPlain).toBe('test')
+    expect(wrapper.vm.hashHex).toBe('74657374')
+    expect(wrapper.vm.hashMd5).toBe('098f6bcd4621d373cade4e832627b4f6')
+    expect(wrapper.vm.hashSha1).toBe('a94a8fe5ccb19ba61c4c0873d391e987982fbbd3')
+    expect(wrapper.vm.hashSha1b64).toBe('qUqP5cyxm6YcTAhz05Hph5gvu9M=')
+    expect(wrapper.vm.hashSha1b64url).toBe('qUqP5cyxm6YcTAhz05Hph5gvu9M')
+    expect(wrapper.vm.hashSha256).toBe('9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08')
+    expect(wrapper.vm.hashSha256b64).toBe('n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg=')
+    expect(wrapper.vm.hashSha256b64url).toBe('n4bQgYhMfWWaL-qgxVrQFaO_TxsrC4Is0V1sFbDwCgg')
+    expect(wrapper.vm.hashSha512).toBe('ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff')
+    expect(wrapper.vm.hashSha512b64).toBe('7iaw3Ur350mqGo7jwQrpkj9hiYB3Lkc/iBml1JQODbJ6wYX4oOHV+E+IvIh/1nsUNzLDBMxfqa2Ob1f1ACio/w==')
+    expect(wrapper.vm.hashSha512b64url).toBe('7iaw3Ur350mqGo7jwQrpkj9hiYB3Lkc_iBml1JQODbJ6wYX4oOHV-E-IvIh_1nsUNzLDBMxfqa2Ob1f1ACio_w')
     expect(wrapper.vm.hasherror).toBe('')
 
     // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
-    //const hashplainInput = wrapper.find('input[id="hashplain"]')
-    //const hashsha256Input = wrapper.find('input[id="hashsha256"]')
-    //const hashsha256b64Input = wrapper.find('input[id="hashsha256b64"]')
-    //const hashsha256b64urlInput = wrapper.find('input[id="hashsha256b64url"]')
+    //const hashPlainInput = wrapper.find('input[id="hashPlain"]')
+    //const hashSha256Input = wrapper.find('input[id="hashSha256"]')
+    //const hashSha256b64Input = wrapper.find('input[id="hashSha256b64"]')
+    //const hashSha256b64urlInput = wrapper.find('input[id="hashSha256b64url"]')
     //const hasherrInput = wrapper.find('p[id="hasherror"]')
 
-    //expect(hashplainInput.element.value).toBe('test')
-    //expect(hashsha256Input.element.value).toBe('9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08')
-    //expect(hashsha256b64Input.element.value).toBe('n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg=')
-    //expect(hashsha256b64urlInput.element.value).toBe('n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg')
+    //expect(hashPlainInput.element.value).toBe('test')
+    //expect(hashSha256Input.element.value).toBe('9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08')
+    //expect(hashSha256b64Input.element.value).toBe('n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg=')
+    //expect(hashSha256b64urlInput.element.value).toBe('n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg')
     //expect(hasherrInput.element.value).toBe('')
+  }
+
+  it('hash', async () => {
+    expectHashInitialValues()
+
+    const input = wrapper.find('input[id="hashPlain"]')
+    await input.setValue('test')
+
+    expectHashTestValues()
   })
 
   it('hash null', async () => {
-    expect(wrapper.vm.hashplain).toBe('')
-    expect(wrapper.vm.hashhex).toBe('')
-    expect(wrapper.vm.hashmd5).toBe('')
-    expect(wrapper.vm.hashsha1).toBe('')
-    expect(wrapper.vm.hashsha1b64).toBe('')
-    expect(wrapper.vm.hashsha1b64url).toBe('')
-    expect(wrapper.vm.hashsha256).toBe('')
-    expect(wrapper.vm.hashsha256b64).toBe('')
-    expect(wrapper.vm.hashsha256b64url).toBe('')
-    expect(wrapper.vm.hashsha512).toBe('')
-    expect(wrapper.vm.hashsha512b64).toBe('')
-    expect(wrapper.vm.hashsha512b64url).toBe('')
-    expect(wrapper.vm.hasherror).toBe('')
+    expectHashInitialValues()
 
-    const input = wrapper.find('input[id="hashplain"]')
+    const input = wrapper.find('input[id="hashPlain"]')
     await input.setValue('test')
     await input.setValue('')
 
-    expect(wrapper.vm.hashplain).toBe('')
-    expect(wrapper.vm.hashhex).toBe('')
-    expect(wrapper.vm.hashmd5).toBe('')
-    expect(wrapper.vm.hashsha1).toBe('')
-    expect(wrapper.vm.hashsha1b64).toBe('')
-    expect(wrapper.vm.hashsha1b64url).toBe('')
-    expect(wrapper.vm.hashsha256).toBe('')
-    expect(wrapper.vm.hashsha256b64).toBe('')
-    expect(wrapper.vm.hashsha256b64url).toBe('')
-    expect(wrapper.vm.hashsha512).toBe('')
-    expect(wrapper.vm.hashsha512b64).toBe('')
-    expect(wrapper.vm.hashsha512b64url).toBe('')
-    expect(wrapper.vm.hasherror).toBe('')
-
-    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
-    //const hashplainInput = wrapper.find('input[id="hashplain"]')
-    //const hashsha256Input = wrapper.find('input[id="hashsha256"]')
-    //const hashsha256b64Input = wrapper.find('input[id="hashsha256b64"]')
-    //const hashsha256b64urlInput = wrapper.find('input[id="hashsha256b64url"]')
-    //const hasherrInput = wrapper.find('p[id="hasherror"]')
-
-    //expect(hashplainInput.element.value).toBe('')
-    //expect(hashsha256Input.element.value).toBe('')
-    //expect(hashsha256b64Input.element.value).toBe('')
-    //expect(hashsha256b64urlInput.element.value).toBe('n4')
-    //expect(hasherrInput.element.value).toBe('')
+    expectHashInitialValues()
   })
 
   it('hash 00 error', async () => {
-    expect(wrapper.vm.hashplain).toBe('')
-    expect(wrapper.vm.hashhex).toBe('')
-    expect(wrapper.vm.hashmd5).toBe('')
-    expect(wrapper.vm.hashsha1).toBe('')
-    expect(wrapper.vm.hashsha1b64).toBe('')
-    expect(wrapper.vm.hashsha1b64url).toBe('')
-    expect(wrapper.vm.hashsha256).toBe('')
-    expect(wrapper.vm.hashsha256b64).toBe('')
-    expect(wrapper.vm.hashsha256b64url).toBe('')
-    expect(wrapper.vm.hashsha512).toBe('')
-    expect(wrapper.vm.hashsha512b64).toBe('')
-    expect(wrapper.vm.hashsha512b64url).toBe('')
-    expect(wrapper.vm.hasherror).toBe('')
+    expectHashInitialValues()
 
-    const input = wrapper.find('input[id="hashhex"]')
+    const input = wrapper.find('input[id="hashHex"]')
     await input.setValue('00')
 
     expect(wrapper.vm.hasherror).toBe('文字列として表示されている値が文字化けしてしまっている可能性があります')
   })
 
   it('hash not binary error', async () => {
-    expect(wrapper.vm.hashplain).toBe('')
-    expect(wrapper.vm.hashhex).toBe('')
-    expect(wrapper.vm.hashmd5).toBe('')
-    expect(wrapper.vm.hashsha1).toBe('')
-    expect(wrapper.vm.hashsha1b64).toBe('')
-    expect(wrapper.vm.hashsha1b64url).toBe('')
-    expect(wrapper.vm.hashsha256).toBe('')
-    expect(wrapper.vm.hashsha256b64).toBe('')
-    expect(wrapper.vm.hashsha256b64url).toBe('')
-    expect(wrapper.vm.hashsha512).toBe('')
-    expect(wrapper.vm.hashsha512b64).toBe('')
-    expect(wrapper.vm.hashsha512b64url).toBe('')
-    expect(wrapper.vm.hasherror).toBe('')
+    expectHashInitialValues()
 
-    const input = wrapper.find('input[id="hashhex"]')
+    const input = wrapper.find('input[id="hashHex"]')
     await input.setValue('�')
 
     expect(wrapper.vm.hasherror).toBe('その値は文字列化可能な16進数ではないです。')
   })
 
   it('hash efbfbd error', async () => {
-    expect(wrapper.vm.hashplain).toBe('')
-    expect(wrapper.vm.hashhex).toBe('')
-    expect(wrapper.vm.hashmd5).toBe('')
-    expect(wrapper.vm.hashsha1).toBe('')
-    expect(wrapper.vm.hashsha1b64).toBe('')
-    expect(wrapper.vm.hashsha1b64url).toBe('')
-    expect(wrapper.vm.hashsha256).toBe('')
-    expect(wrapper.vm.hashsha256b64).toBe('')
-    expect(wrapper.vm.hashsha256b64url).toBe('')
-    expect(wrapper.vm.hashsha512).toBe('')
-    expect(wrapper.vm.hashsha512b64).toBe('')
-    expect(wrapper.vm.hashsha512b64url).toBe('')
-    expect(wrapper.vm.hasherror).toBe('')
+    expectHashInitialValues()
 
-    const input = wrapper.find('input[id="hashhex"]')
+    const input = wrapper.find('input[id="hashHex"]')
     await input.setValue('efbfbd')
 
-    expect(wrapper.vm.hashplain).toBe('�')
+    expect(wrapper.vm.hashPlain).toBe('�')
     expect(wrapper.vm.hasherror).toBe('文字列として表示されている値が文字化けしてしまっている可能性があります')
   })
 
