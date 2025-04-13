@@ -9,12 +9,9 @@ Parameters:
     Type: String
     Description: Google OAuth Client Secret
     NoEcho: true
-  CertificateArn:
+  FromMailAddress:
     Type: String
-    Description: ACM Certificate ARN for Cognito Domain
-  HostedZoneId:
-    Type: String
-    Description: Route53 Hosted Zone ID for uji52.com
+    Description: Email address for Cognito email configuration
   Environment:
     Type: String
     Description: 'dev or prd'
@@ -35,13 +32,29 @@ Resources:
         AllowAdminCreateUserOnly: false
       AutoVerifiedAttributes:
         - email
-      UsernameAttributes:
+      AliasAttributes:
         - email
+        - preferred_username
       Schema:
+        - Name: preferred_username
+          AttributeDataType: String
+          Mutable: true
+          Required: false
         - Name: email
           AttributeDataType: String
           Mutable: true
           Required: true
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: verified_email
+            Priority: 1
+      MfaConfiguration: 'OPTIONAL'
+      EnabledMfas:
+        - SOFTWARE_TOKEN_MFA
+      EmailConfiguration:
+        EmailSendingAccount: DEVELOPER
+        From: !Ref FromMailAddress
+        SourceArn: !Sub "arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/uji52.com"
 
   UserPoolClient:
     Type: AWS::Cognito::UserPoolClient
@@ -143,6 +156,3 @@ Outputs:
   IdentityPoolId:
     Value: !Ref IdentityPool
     Description: Cognito Identity Pool ID
-  UserPoolDomainName:
-    Value: !Sub auth-${Environment}.uji52.com
-    Description: Cognito User Pool Domain Name

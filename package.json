@@ -21,7 +21,9 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
+    "@aws-amplify/auth": "^6.12.2",
     "@popperjs/core": "^2.11.8",
+    "aws-amplify": "^6.14.2",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "crypto-js": "^4.2.0",

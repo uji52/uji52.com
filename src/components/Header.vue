@@ -56,11 +56,125 @@
           </li>
         </ul>
       </nav>
-
-      <div class="col-md-3 text-end">
-        <!--<button type="button" class="btn btn-outline-primary me-2">Login</button>-->
-        <!--<button type="button" class="btn btn-primary">Sign-up</button>-->
-      </div>
+      <template v-if="isAuthenticated">
+        <span class="me-2">{{ username }}さん</span>
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          @click="onSignout"
+        >
+          Signout
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-danger"
+          @click="confirmDeleteAccount"
+        >
+          Delete Account
+        </button>
+      </template>
+      <template v-if="!isAuthenticated">
+        <template v-if="requiresNewPassword">
+          <div class="mb-3">
+            <h5>新しいパスワードを設定してください</h5>
+            <input
+              type="password"
+              v-model="newPassword"
+              placeholder="新しいパスワード"
+              class="form-control mb-2"
+            />
+            <button
+              type="button"
+              class="btn btn-primary"
+              @click="onCompleteNewPassword"
+            >
+              パスワードを設定
+            </button>
+          </div>
+        </template>
+        <template v-if="showVerificationForm">
+          <input
+            type="text"
+            v-model="verificationCode"
+            placeholder="Verification Code"
+            class="form-control mb-2"
+          />
+          <button
+            type="button"
+            class="btn btn-primary me-2"
+            @click="onVerifyCode"
+          >
+            Verify Code
+          </button>
+        </template>
+        <template v-if="!requiresNewPassword && !showVerificationForm">
+          <div class="mb-3">
+            <button
+              type="button"
+              class="btn btn-link"
+              :class="{ 'active': !isSignup }"
+              @click="isSignup = false"
+            >
+              Signin
+            </button>
+            <button
+              type="button"
+              class="btn btn-link"
+              :class="{ 'active': isSignup }"
+              @click="isSignup = true"
+            >
+              Signup
+            </button>
+          </div>
+          <input
+            type="text"
+            v-model="loginForm.username"
+            placeholder="username"
+            class="form-control mb-2"
+          />
+          <input
+            v-if="isSignup"
+            type="email"
+            v-model="loginForm.email"
+            placeholder="Email"
+            class="form-control mb-2"
+          />
+          <input
+            type="password"
+            v-model="loginForm.password"
+            placeholder="Password"
+            class="form-control mb-2"
+          />
+          <button
+            type="button"
+            class="btn btn-primary me-2"
+            @click="isSignup ? onSignup() : onSignin()"
+          >
+            {{ isSignup ? 'Signup now' : 'Signin now' }}
+          </button>
+        </template>
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+          <div
+            class="toast"
+            :class="{ 'show': show }"
+            role="alert"
+            aria-live="assertive"
+            aria-atomic="true"
+          >
+            <div class="toast-header" :class="headerClass">
+              <strong class="me-auto">{{ title }}</strong>
+              <button
+                type="button"
+                class="btn-close"
+                @click="hideToast"
+              ></button>
+            </div>
+            <div class="toast-body">
+              {{ message }}
+            </div>
+          </div>
+        </div>
+      </template>
     </header>
   </div>
   <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
@@ -74,7 +188,125 @@
   </svg>
 </template>
 
-<script setup></script>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { handleSignup, handleConfirmSignUp, handleSignin, resendConfirmationCode, handleSignout, checkCurrentUser, completeNewPassword, handleDeleteAccount } from '../utils/auth';
+
+const isAuthenticated = ref(false);
+const username = ref('');
+const loginForm = ref({
+  username: '',
+  email: '',
+  password: ''
+});
+const requiresNewPassword = ref(false);
+const newPassword = ref('');
+const tempUser = ref(null);
+const isSignup = ref(false);
+const errorMessage = ref('');
+const showVerificationForm = ref(false);
+const verificationCode = ref('');
+const unverifiedUser = ref(null);
+
+const onSignup = async () => {
+  try {
+    errorMessage.value = '';
+    const result = await handleSignup(loginForm.value.username, loginForm.value.email, loginForm.value.password);
+    unverifiedUser.value = result.user;
+    showVerificationForm.value = true;
+  } catch (error) {
+    console.error('Sign up failed:', error);
+    errorMessage.value = error.message || 'サインアップに失敗しました';
+  }
+};
+
+const onVerifyCode = async () => {
+  try {
+    await handleConfirmSignUp(loginForm.value.username || loginForm.value.email, verificationCode.value);
+    showVerificationForm.value = false;
+    await onSignin();
+  } catch (error) {
+    console.error('Verification failed:', error);
+    errorMessage.value = error.message || '認証コードの確認に失敗しました';
+  }
+};
+
+const onSignin = async () => {
+  try {
+    errorMessage.value = '';
+    const result = await handleSignin(loginForm.value.username, loginForm.value.password);
+    if (result.requiresNewPassword) {
+      requiresNewPassword.value = true;
+      tempUser.value = result.user;
+    } else if (result.user && result.user.nextStep && result.user.nextStep.signInStep == "CONFIRM_SIGN_UP") {
+      showVerificationForm.value = true;
+      unverifiedUser.value = result.user;
+      await resendConfirmationCode(loginForm.value.username);
+    } else {
+      await checkAuthState();
+    }
+  } catch (error) {
+    console.error('Sign in failed:', error);
+    errorMessage.value = error.message || 'サインインに失敗しました';
+  }
+};
+
+const onCompleteNewPassword = async () => {
+  try {
+    if (!newPassword.value) {
+      errorMessage.value = '新しいパスワードを入力してください';
+      return;
+    }
+    await completeNewPassword(tempUser.value, newPassword.value);
+    requiresNewPassword.value = false;
+    await checkAuthState();
+  } catch (error) {
+    console.error('New password setup failed:', error);
+    errorMessage.value = error.message || 'パスワードの設定に失敗しました';
+  }
+};
+
+const onSignout = async () => {
+  try {
+    await handleSignout();
+    isAuthenticated.value = false;
+    username.value = '';
+  } catch (error) {
+    console.error('Sign out failed:', error);
+  }
+};
+
+const checkAuthState = async () => {
+  const user = await checkCurrentUser();
+  if (user) {
+    isAuthenticated.value = true;
+    username.value = user.signInDetails.loginId;
+  }
+};
+
+const confirmDeleteAccount = async () => {
+  if (confirm('アカウントを削除してもよろしいですか？この操作は取り消せません。')) {
+    try {
+      await handleDeleteAccount();
+      isAuthenticated.value = false;
+      username.value = '';
+      // ユーザー情報をクリア
+      loginForm.value = {
+        username: '',
+        email: '',
+        password: ''
+      };
+    } catch (error) {
+      console.error('Delete account failed:', error);
+      errorMessage.value = error.message || 'アカウントの削除に失敗しました';
+    }
+  }
+};
+
+onMounted(() => {
+  checkAuthState();
+});
+</script>
 
 <style scoped>
 .read-the-docs {
@@ -83,5 +315,20 @@
 .bi {
   fill: currentColor;
   vertical-align: text-bottom;
+}
+.login-form {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  z-index: 1000;
+  width: 300px;
+}
+.btn-link.active {
+  text-decoration: underline;
+  color: var(--bs-primary);
 }
 </style>
