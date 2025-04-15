@@ -1,8 +1,8 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import { Amplify } from 'aws-amplify';
-import { userPoolId, clientId } from '@/utils/env';
+import { Amplify } from 'aws-amplify'
+import { userPoolId, clientId } from '@/utils/env'
 
 import '/assets/scss/styles.scss'
 
