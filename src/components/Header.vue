@@ -259,7 +259,6 @@ const onSignup = async () => {
     unverifiedUser.value = result.user
     showVerificationForm.value = true
   } catch (error) {
-    console.error('Sign up failed:', error)
     errorMessage.value = 'サインアップに失敗しました'
   }
 }
@@ -273,7 +272,6 @@ const onVerifyCode = async () => {
     showVerificationForm.value = false
     await onSignin()
   } catch (error) {
-    console.error('Verification failed:', error)
     errorMessage.value = '認証コードの確認に失敗しました'
   }
 }
@@ -301,7 +299,6 @@ const onSignin = async () => {
       await onSigninSuccess()
     }
   } catch (error) {
-    console.error('Sign in failed:', error)
     errorMessage.value = 'サインインに失敗しました'
   }
 }
@@ -323,7 +320,6 @@ const onCompleteNewPassword = async () => {
     requiresNewPassword.value = false
     await checkAuthState()
   } catch (error) {
-    console.error('New password setup failed:', error)
     errorMessage.value = 'パスワードの設定に失敗しました'
   }
 }
@@ -334,7 +330,7 @@ const onSignout = async () => {
     isAuthenticated.value = false
     username.value = ''
   } catch (error) {
-    console.error('Sign out failed:', error)
+    errorMessage.value = '信じられないですが、ログアウトに失敗しました'
   }
 }
 
@@ -361,7 +357,6 @@ const confirmDeleteAccount = async () => {
         password: ''
       }
     } catch (error) {
-      console.error('Delete account failed:', error)
       errorMessage.value = 'アカウントの削除に失敗しました'
     }
   }
