@@ -8,7 +8,8 @@ jest.mock('vue-router', () => {
     Landing: { template: '<div>Landing</div>' },
     Develop: { template: '<div>Develop</div>' },
     ReleaseNote: { template: '<div>ReleaseNote</div>' },
-    Feedback: { template: '<div>Feedback</div>' }
+    Feedback: { template: '<div>Feedback</div>' },
+    Privacy: { template: '<div>Privacy</div>' },
   }
 
   const mockRouter = {
@@ -17,7 +18,8 @@ jest.mock('vue-router', () => {
         { path: '/', name: 'Landing', component: mockComponents.Landing },
         { path: '/develop', name: 'Develop', component: mockComponents.Develop },
         { path: '/release', name: 'ReleaseNote', component: mockComponents.ReleaseNote },
-        { path: '/feedback', name: 'Feedback', component: mockComponents.Feedback }
+        { path: '/feedback', name: 'Feedback', component: mockComponents.Feedback },
+        { path: '/privacy', name: 'Privacy', component: mockComponents.Privacy },
       ],
       history: { constructor: { name: 'WebHistory' } }
     }
@@ -32,13 +34,14 @@ jest.mock('vue-router', () => {
 describe('Router', () => {
   it('has correct routes configuration', () => {
     const routes = router.options.routes
-    expect(routes).toHaveLength(4)
+    expect(routes).toHaveLength(5)
 
     const expectedRoutes = [
       { path: '/', name: 'Landing' },
       { path: '/develop', name: 'Develop' },
       { path: '/release', name: 'ReleaseNote' },
-      { path: '/feedback', name: 'Feedback' }
+      { path: '/feedback', name: 'Feedback' },
+      { path: '/privacy', name: 'Privacy' },
     ]
 
     expectedRoutes.forEach((expectedRoute, index) => {

@@ -54,6 +54,29 @@
               >Request</router-link
             >
           </li>
+          <li>
+            <span class="nav-link px-2">
+              <a
+                href="#"
+                class="d-block text-decoration-none "
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                About
+              </a>
+              <ul class="dropdown-menu text-small" style="">
+                <li>
+                  <router-link
+                    id="linkPrivacy"
+                    to="/privacy"
+                    class="nav-link px-2"
+                    :class="{ 'link-secondary': $route.path === '/privacy' }"
+                    >Privacy</router-link
+                  >
+                </li>
+              </ul>
+            </span>
+          </li>
         </ul>
       </nav>
       <template v-if="isAuthenticated">

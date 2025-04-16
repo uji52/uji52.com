@@ -1,8 +1,15 @@
 export const releases = [
   {
     version: '2.0.4',
-    date: '2025/04/14',
+    date: '2025/04/16',
     isNew: true,
+    notes: [
+      '認証機構追加に伴うプライバシポリシの追加'
+    ]
+  },
+  {
+    version: '2.0.4',
+    date: '2025/04/14',
     notes: [
       'CognitoUserPoolを用いたSignup, Signin機構追加',
       '「ログインしたらできること」は現状無く、Cognitoテスト実装の意図'

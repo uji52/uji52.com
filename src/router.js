@@ -3,6 +3,8 @@ import Landing from './components/Landing.vue'
 import Develop from './components/Develop.vue'
 import ReleaseNote from './components/ReleaseNote.vue'
 import Feedback from './components/Feedback.vue'
+import Privacy from './components/Privacy.vue'
+
 const routes = [
   {
     path: '/',
@@ -23,6 +25,11 @@ const routes = [
     path: '/feedback',
     name: 'Feedback',
     component: Feedback
+  },
+  {
+    path: '/privacy',
+    name: 'Privacy',
+    component: Privacy
   }
 ]
 
