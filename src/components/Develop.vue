@@ -309,7 +309,7 @@ const errorMessages = {
   invalidHexadecimal: 'Invalid hexadecimal string',
   invalidBase64: 'Invalid Base64 string',
   invalidUnicode: 'Invalid Unicode string',
-  invalidURLEncoding: 'Invalid URL encoding',
+  invalidURLEncoding: 'Invalid URL encoding'
 }
 
 const plane = ref('')
@@ -554,8 +554,9 @@ watch(
       plane.value = planeValue
       encodeError.value = ''
     } catch (err) {
-      encodeError.value = "unknown error: " + err.message
-      if (err instanceof UndecodableError) encodeError.value = "文字列化できる2進数ではありません。"
+      encodeError.value = 'unknown error: ' + err.message
+      if (err instanceof UndecodableError)
+        encodeError.value = '文字列化できる2進数ではありません。'
     }
   }
 )
@@ -577,8 +578,9 @@ watch(
       plane.value = planeValue
       encodeError.value = ''
     } catch (err) {
-      encodeError.value = "unknown error: " + err.message
-      if (err instanceof UndecodableError) encodeError.value = "文字列化できる4進数ではありません。"
+      encodeError.value = 'unknown error: ' + err.message
+      if (err instanceof UndecodableError)
+        encodeError.value = '文字列化できる4進数ではありません。'
     }
   }
 )
@@ -600,8 +602,9 @@ watch(
       plane.value = planeValue
       encodeError.value = ''
     } catch (err) {
-      encodeError.value = "unknown error: " + err.message
-      if (err instanceof UndecodableError) encodeError.value = "文字列化できる10進数ではありません。"
+      encodeError.value = 'unknown error: ' + err.message
+      if (err instanceof UndecodableError)
+        encodeError.value = '文字列化できる10進数ではありません。'
     }
   }
 )
@@ -623,8 +626,9 @@ watch(
       plane.value = planeValue
       encodeError.value = ''
     } catch (err) {
-      encodeError.value = "unknown error: " + err.message
-      if (err instanceof UndecodableError) encodeError.value = "文字列化できる16進数ではありません。"
+      encodeError.value = 'unknown error: ' + err.message
+      if (err instanceof UndecodableError)
+        encodeError.value = '文字列化できる16進数ではありません。'
     }
   }
 )
@@ -652,13 +656,23 @@ watch(
     hashMd5.value = CryptoJS.enc.Hex.stringify(CryptoJS.MD5(newValue))
     hashSha1.value = CryptoJS.enc.Hex.stringify(CryptoJS.SHA1(newValue))
     hashSha1b64.value = CryptoJS.enc.Base64.stringify(CryptoJS.SHA1(newValue))
-    hashSha1b64url.value = CryptoJS.enc.Base64url.stringify(CryptoJS.SHA1(newValue))
+    hashSha1b64url.value = CryptoJS.enc.Base64url.stringify(
+      CryptoJS.SHA1(newValue)
+    )
     hashSha256.value = CryptoJS.enc.Hex.stringify(CryptoJS.SHA256(newValue))
-    hashSha256b64.value = CryptoJS.enc.Base64.stringify(CryptoJS.SHA256(newValue))
-    hashSha256b64url.value = CryptoJS.enc.Base64url.stringify(CryptoJS.SHA256(newValue))
+    hashSha256b64.value = CryptoJS.enc.Base64.stringify(
+      CryptoJS.SHA256(newValue)
+    )
+    hashSha256b64url.value = CryptoJS.enc.Base64url.stringify(
+      CryptoJS.SHA256(newValue)
+    )
     hashSha512.value = CryptoJS.enc.Hex.stringify(CryptoJS.SHA512(newValue))
-    hashSha512b64.value = CryptoJS.enc.Base64.stringify(CryptoJS.SHA512(newValue))
-    hashSha512b64url.value = CryptoJS.enc.Base64url.stringify(CryptoJS.SHA512(newValue))
+    hashSha512b64.value = CryptoJS.enc.Base64.stringify(
+      CryptoJS.SHA512(newValue)
+    )
+    hashSha512b64url.value = CryptoJS.enc.Base64url.stringify(
+      CryptoJS.SHA512(newValue)
+    )
   }
 )
 
@@ -689,7 +703,8 @@ watch(
       // 特殊文字のチェックは不要
       // eslint-disable-next-line no-control-regex
       if (/[\x00-\x1f�]/.test(hashPlain.value)) {
-        hasherror.value = '文字列として表示されている値が文字化けしてしまっている可能性があります'
+        hasherror.value =
+          '文字列として表示されている値が文字化けしてしまっている可能性があります'
       }
     } catch (err) {
       hasherror.value = 'その値は文字列化可能な16進数ではないです。'

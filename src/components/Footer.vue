@@ -11,6 +11,7 @@
       <div class="col-md-3 d-flex align-items-center">
         <span class="mb-2 mb-md-0 text-body-secondary">© 2020 uji52</span>
       </div>
+
       <ul class="nav col-md-3 justify-content-end list-unstyled d-flex">
         <li class="ms-3">
           <a class="text-body-secondary" href="https://github.com/uji52">
