@@ -38,7 +38,8 @@ const router = createRouter({
     { path: '/', name: 'Home', component: { template: '<div>Home</div>' } },
     { path: '/develop', name: 'Develop', component: { template: '<div>Develop</div>' } },
     { path: '/release', name: 'ReleaseNote', component: { template: '<div>ReleaseNote</div>' } },
-    { path: '/feedback', name: 'Request', component: { template: '<div>Request</div>' } }
+    { path: '/feedback', name: 'Request', component: { template: '<div>Request</div>' } },
+    { path: '/privacy', name: 'Privacy', component: { template: '<div>Privacy</div>' } },
   ]
 })
 
@@ -71,7 +72,7 @@ describe('Header.vue', () => {
 
   it('renders navigation links correctly', () => {
     const links = wrapper.findAll('a')
-    expect(links).toHaveLength(5) // Icon + 4 navigation links
+    expect(links).toHaveLength(7)
 
     const navItems = ['Home', 'Develop', 'ReleaseNote', 'Request']
     navItems.forEach(item => {
