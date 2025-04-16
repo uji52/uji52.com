@@ -6,6 +6,9 @@
         <h1 class="display-5 fw-bold text-body-emphasis text-center">
           機能要望等
         </h1>
+        <h2 class="display-7 fw-bold text-body-emphasis text-center">
+          サインインの上、要望を送信してください
+        </h2>
       </div>
     </section>
     <section name="head" class="section section-shaped section-lg my-0">
@@ -13,20 +16,7 @@
       <div class="container shifted">
         <form @submit.prevent="submitFeedback" class="feedback-form">
           <div class="form-group">
-            <label for="name" class="col-md-6 mb-6">(任意)Name</label>
-            <input type="text" id="name" v-model="name" class="col-md-3 mb-3" />
-          </div>
-          <div class="form-group">
-            <label for="email" class="col-md-6 mb-6">(任意)Email</label>
-            <input
-              type="email"
-              id="email"
-              v-model="email"
-              class="col-md-3 mb-3"
-            />
-          </div>
-          <div class="form-group">
-            <label for="message" class="col-md-6 mb-6">(必須)Message</label>
+            <label for="message" class="col-md-6 mb-6">Message</label>
             <textarea
               id="message"
               v-model="message"
@@ -72,38 +62,88 @@
 <script setup>
 import { ref } from 'vue'
 import { Toast } from 'bootstrap'
-import { apiUrl } from '@/utils/env'
+import { apiHost } from '@/utils/env'
+import { getSession } from '@/utils/auth'
 
-const name = ref('')
-const email = ref('')
+import { SignatureV4 } from '@aws-sdk/signature-v4'
+import { Sha256 } from '@aws-crypto/sha256-js'
+import { HttpRequest } from '@aws-sdk/protocol-http'
+
 const message = ref('')
 
 const submitFeedback = async () => {
-  const response = await fetch(apiUrl + '/email', {
-    method: 'POST',
+
+  const path = '/email'
+  const method = 'POST'
+  const region = 'ap-northeast-1'
+  const session = await getSession()
+  if (!session || !session.credentials) {
+    errorToast("サインインの上、再度お試しください。")
+    return
+  }
+
+  const body = JSON.stringify({
+    message: message.value,
+    user: JSON.stringify(session.user),
+  })
+
+  alert(JSON.stringify(session))
+  console.log(JSON.stringify(session))
+
+  const request = new HttpRequest({
+    protocol: 'https:',
+    hostname: apiHost,
+    method,
+    path,
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      host: apiHost
     },
-    body: JSON.stringify({
-      name: name.value,
-      email: email.value,
-      message: message.value
-    })
+    body
+  })
+
+  const signer = new SignatureV4({
+    credentials: {
+      accessKeyId: session.credentials.accessKeyId,
+      secretAccessKey: session.credentials.secretAccessKey,
+      sessionToken: session.credentials.sessionToken,
+    },
+    region,
+    service: 'execute-api',
+    sha256: Sha256
+  })
+
+  const signed = await signer.sign(request)
+
+  // fetch用ヘッダー変換
+  const headers = {}
+  for (const [k, v] of Object.entries(signed.headers)) {
+    headers[k] = v
+  }
+
+  const response = await fetch(`https://${apiHost}${path}`, {
+    method,
+    headers,
+    body
   })
 
   const mailToast = document.getElementById('mailToast')
-  const mailToastSubject = document.getElementById('mailToastSubject')
-  const mailToastMessage = document.getElementById('mailToastMessage')
   const toastBootstrap = new Toast(mailToast)
 
   if (response.ok) {
-    toastBootstrap.show()
+    // 成功時の処理があれば追加
   } else {
-    mailToastSubject.textContent = 'ご要望の送付に失敗しました。'
-    mailToastMessage.innerHTML =
-      '<p>申し訳ないですが</p><p>一旦要望の送付は諦めてください。</p>'
-    toastBootstrap.show()
+    errorToast()
   }
+  toastBootstrap.show()
+}
+
+const errorToast = (message) => {
+  const mailToastSubject = document.getElementById('mailToastSubject')
+  const mailToastMessage = document.getElementById('mailToastMessage')
+  mailToastSubject.textContent = 'ご要望の送付に失敗しました。'
+  mailToastMessage.innerHTML =
+    '<p>申し訳ないですが</p><p>一旦要望の送付は諦めてください。</p>' + (message ? `<p>${message}</p>` : '')
 }
 </script>
 
