@@ -1,8 +1,15 @@
 export const releases = [
   {
+    version: '2.0.5',
+    date: '2025/04/19',
+    isNew: true,
+    notes: [
+      '要望はログイン後に送付可能に変更'
+    ]
+  },
+  {
     version: '2.0.4',
     date: '2025/04/16',
-    isNew: true,
     notes: [
       '認証機構追加に伴うプライバシポリシの追加'
     ]

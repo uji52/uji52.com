@@ -67,7 +67,7 @@ Resources:
       RestApiId: !Ref APIGW
       ResourceId: !Ref EmailResource
       HttpMethod: POST
-      AuthorizationType: NONE
+      AuthorizationType: AWS_IAM
       Integration:
         Type: AWS
         IntegrationHttpMethod: POST
@@ -79,7 +79,7 @@ Resources:
         IntegrationResponses:
           - StatusCode: "200"
             ResponseParameters:
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-Content-Sha256'"
               method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
               method.response.header.Access-Control-Allow-Origin: !If [ IsDev, "'https://dev.uji52.com'", "'https://www.uji52.com'" ]
       MethodResponses:
@@ -102,7 +102,7 @@ Resources:
         IntegrationResponses:
           - StatusCode: "200"
             ResponseParameters:
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-Content-Sha256'"
               method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
               method.response.header.Access-Control-Allow-Origin: !If [ IsDev, "'https://dev.uji52.com'", "'https://www.uji52.com'" ]
       MethodResponses:
