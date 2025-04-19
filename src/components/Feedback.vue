@@ -84,11 +84,8 @@ const submitFeedback = async () => {
 
   const body = JSON.stringify({
     message: message.value,
-    user: JSON.stringify(session.user),
+    sub: session.userSub,
   })
-
-  alert(JSON.stringify(session))
-  console.log(JSON.stringify(session))
 
   const request = new HttpRequest({
     protocol: 'https:',
