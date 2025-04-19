@@ -6,7 +6,8 @@ import {
   confirmSignIn,
   signOut,
   getCurrentUser,
-  deleteUser
+  deleteUser,
+  fetchAuthSession,
 } from '@aws-amplify/auth'
 
 export const handleSignup = async (username, email, password) => {
@@ -111,5 +112,14 @@ export const handleDeleteAccount = async () => {
   } catch (error) {
     console.error('Error deleting account:', error)
     throw error
+  }
+}
+
+export const getSession = async () => {
+  try {
+    return await fetchAuthSession()
+  } catch (error) {
+    console.error('Error getting credentials:', error)
+    return null
   }
 }
