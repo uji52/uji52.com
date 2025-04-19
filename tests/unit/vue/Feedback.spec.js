@@ -1,10 +1,6 @@
 import { mount } from '@vue/test-utils'
 import Feedback from '@/components/Feedback.vue'
 
-jest.mock('@/utils/env', () => ({
-  apiUrl: 'https://api-dev.uji52.com',
-}))
-
 jest.mock('bootstrap', () => {
   return {
     Toast: jest.fn().mockImplementation(() => {
@@ -113,24 +109,8 @@ describe('Feedback.vue', () => {
         })
       }
     )
+    const { getSession } = require('@/utils/auth')
+    expect(getSession).toHaveBeenCalled()
     expect(document.getElementById('mailToastSubject').textContent).toBe('ご要望を送付しました。')
   })
-
-  /*
-  it('handles feedback submission failure', async () => {
-    await wrapper.find('#message').setValue(TEST_MESSAGE)
-    await wrapper.find('form').trigger('submit.prevent')
-
-    expect(mockApiPost).toHaveBeenCalledWith(
-      'https://api-dev.uji52.com',
-      '/email',
-      expect.objectContaining({
-        body: {
-          message: TEST_MESSAGE,
-        },
-      })
-    )
-    expect(document.getElementById('mailToastSubject').textContent).toBe('ご要望の送付に失敗しました。')
-  })
-  */
 })
