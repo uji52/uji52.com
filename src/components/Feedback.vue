@@ -73,6 +73,9 @@ const message = ref('')
 
 const submitFeedback = async () => {
 
+  const mailToast = document.getElementById('mailToast')
+  const toastBootstrap = new Toast(mailToast)
+
   const path = '/email'
   const method = 'POST'
   const region = 'ap-northeast-1'
@@ -123,9 +126,6 @@ const submitFeedback = async () => {
     headers,
     body
   })
-
-  const mailToast = document.getElementById('mailToast')
-  const toastBootstrap = new Toast(mailToast)
 
   if (response.ok) {
     // 成功時の処理があれば追加
