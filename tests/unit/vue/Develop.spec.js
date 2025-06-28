@@ -65,10 +65,7 @@ describe('Develop.vue', () => {
     expect(wrapper.vm.b64urlstr).toBe('')
     expect(wrapper.vm.urlencode).toBe('')
     expect(wrapper.vm.unicode).toBe('')
-    expect(wrapper.vm.bin).toBe('')
-    expect(wrapper.vm.quat).toBe('')
-    expect(wrapper.vm.dec).toBe('')
-    expect(wrapper.vm.hex).toBe('')
+    expect(wrapper.vm.strHex).toBe('')
     expect(wrapper.vm.encodeError).toBe('')
 
     // DOM の更新も確認
@@ -77,20 +74,14 @@ describe('Develop.vue', () => {
     const urlstrInput = wrapper.find('input[id="b64urlstr"]')
     const urlInput = wrapper.find('input[id="urlencode"]')
     const unicodeInput = wrapper.find('input[id="unicode"]')
-    const binInput = wrapper.find('input[id="bin"]')
-    const quatInput = wrapper.find('input[id="quat"]')
-    const decInput = wrapper.find('input[id="dec"]')
-    const hexInput = wrapper.find('input[id="hex"]')
+    const strHexInput = wrapper.find('input[id="strHex"]')
 
     expect(planeInput.element.value).toBe('')
     expect(strInput.element.value).toBe('')
     expect(urlstrInput.element.value).toBe('')
     expect(urlInput.element.value).toBe('')
     expect(unicodeInput.element.value).toBe('')
-    expect(binInput.element.value).toBe('')
-    expect(quatInput.element.value).toBe('')
-    expect(decInput.element.value).toBe('')
-    expect(hexInput.element.value).toBe('')
+    expect(strHexInput.element.value).toBe('')
     expect(wrapper.vm.encodeError).toBe('')
 
   }
@@ -101,10 +92,7 @@ describe('Develop.vue', () => {
     expect(wrapper.vm.b64urlstr).toBe('dGVzdA')
     expect(wrapper.vm.urlencode).toBe('test')
     expect(wrapper.vm.unicode).toBe('\\u0074\\u0065\\u0073\\u0074')
-    expect(wrapper.vm.bin).toBe('01110100011001010111001101110100')
-    expect(wrapper.vm.quat).toBe('1310121113031310')
-    expect(wrapper.vm.dec).toBe('116101115116')
-    expect(wrapper.vm.hex).toBe('74657374')
+    expect(wrapper.vm.strHex).toBe('74657374')
     expect(wrapper.vm.encodeError).toBe('')
 
     // DOM の更新も確認
@@ -113,20 +101,14 @@ describe('Develop.vue', () => {
     const urlstrInput = wrapper.find('input[id="b64urlstr"]')
     const urlInput = wrapper.find('input[id="urlencode"]')
     const unicodeInput = wrapper.find('input[id="unicode"]')
-    const binInput = wrapper.find('input[id="bin"]')
-    const quatInput = wrapper.find('input[id="quat"]')
-    const decInput = wrapper.find('input[id="dec"]')
-    const hexInput = wrapper.find('input[id="hex"]')
+    const strHexInput = wrapper.find('input[id="strHex"]')
 
     expect(planeInput.element.value).toBe('test')
     expect(strInput.element.value).toBe('dGVzdA==')
     expect(urlstrInput.element.value).toBe('dGVzdA')
     expect(urlInput.element.value).toBe('test')
     expect(unicodeInput.element.value).toBe('\\u0074\\u0065\\u0073\\u0074')
-    expect(binInput.element.value).toBe('01110100011001010111001101110100')
-    expect(quatInput.element.value).toBe('1310121113031310')
-    expect(decInput.element.value).toBe('116101115116')
-    expect(hexInput.element.value).toBe('74657374')
+    expect(strHexInput.element.value).toBe('74657374')
     expect(wrapper.vm.encodeError).toBe('')
   }
 
@@ -136,10 +118,7 @@ describe('Develop.vue', () => {
     expect(wrapper.vm.b64urlstr).toBe('dGVzdCA')
     expect(wrapper.vm.urlencode).toBe('test%20')
     expect(wrapper.vm.unicode).toBe('\\u0074\\u0065\\u0073\\u0074\\u0020')
-    expect(wrapper.vm.bin).toBe('0111010001100101011100110111010000100000')
-    expect(wrapper.vm.quat).toBe('1310121113031310200')
-    expect(wrapper.vm.dec).toBe('116101115116032')
-    expect(wrapper.vm.hex).toBe('7465737420')
+    expect(wrapper.vm.strHex).toBe('7465737420')
     expect(wrapper.vm.encodeError).toBe('')
 
     // DOM の更新も確認
@@ -148,20 +127,14 @@ describe('Develop.vue', () => {
     const urlstrInput = wrapper.find('input[id="b64urlstr"]')
     const urlInput = wrapper.find('input[id="urlencode"]')
     const unicodeInput = wrapper.find('input[id="unicode"]')
-    const binInput = wrapper.find('input[id="bin"]')
-    const quatInput = wrapper.find('input[id="quat"]')
-    const decInput = wrapper.find('input[id="dec"]')
-    const hexInput = wrapper.find('input[id="hex"]')
+    const strHexInput = wrapper.find('input[id="strHex"]')
 
     expect(planeInput.element.value).toBe('test ')
     expect(strInput.element.value).toBe('dGVzdCA=')
     expect(urlstrInput.element.value).toBe('dGVzdCA')
     expect(urlInput.element.value).toBe('test%20')
     expect(unicodeInput.element.value).toBe('\\u0074\\u0065\\u0073\\u0074\\u0020')
-    expect(binInput.element.value).toBe('0111010001100101011100110111010000100000')
-    expect(quatInput.element.value).toBe('1310121113031310200')
-    expect(decInput.element.value).toBe('116101115116032')
-    expect(hexInput.element.value).toBe('7465737420')
+    expect(strHexInput.element.value).toBe('7465737420')
     expect(wrapper.vm.encodeError).toBe('')
   }
 
@@ -288,131 +261,10 @@ describe('Develop.vue', () => {
     // expect(b64Error.element.text).toBe('')
   })
 
-  it('encode bin', async () => {
-    expectEncodeInitialValues()
-
-    const input = wrapper.find('input[id="bin"]')
-    await input.setValue('01110100011001010111001101110100')
-
-    expectEncodeTestValues()
-  })
-
-  it('encode bin error', async () => {
-    expectEncodeInitialValues()
-
-    const input = wrapper.find('input[id="bin"]')
-    await input.setValue('z')
-    await nextTick()
-
-    expect(wrapper.vm.encodeError).toBe('その値はBase64エンコードされた2進数ではないです。')
-
-    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
-    // const b64Error = wrapper.find('p[id="b64error"]')
-    // expect(b64Error.element.text).toBe('')
-  })
-
-  it('encode bin error UndecodableError', async () => {
-    expectEncodeInitialValues()
-
-    const input = wrapper.find('input[id="bin"]')
-    await input.setValue('1')
-    await nextTick()
-
-    expect(wrapper.vm.encodeError).toBe('文字列化できる2進数ではありません。')
-
-    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
-    // const b64Error = wrapper.find('p[id="b64error"]')
-    // expect(b64Error.element.text).toBe('')
-  })
-
-  it('encode quat', async () => {
-    expectEncodeInitialValues()
-
-    const input = wrapper.find('input[id="quat"]')
-    await input.setValue('1310121113031310')
-
-    expectEncodeTestValues()
-  })
-
-  it('encode quat error', async () => {
-    expectEncodeInitialValues()
-
-    const input = wrapper.find('input[id="quat"]')
-    await input.setValue('z')
-    await nextTick()
-
-    expect(wrapper.vm.encodeError).toBe('その値はBase64エンコードされた4進数ではないです。')
-
-    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
-    // const b64Error = wrapper.find('p[id="b64error"]')
-    // expect(b64Error.element.text).toBe('')
-  })
-
-  it('encode quat error UndecodableError', async () => {
-    expectEncodeInitialValues()
-
-    const input = wrapper.find('input[id="quat"]')
-    await input.setValue('1')
-    await nextTick()
-
-    expect(wrapper.vm.encodeError).toBe('文字列化できる4進数ではありません。')
-
-    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
-    // const b64Error = wrapper.find('p[id="b64error"]')
-    // expect(b64Error.element.text).toBe('')
-  })
-
-  it('encode dec', async () => {
-    expectEncodeInitialValues()
-
-    const input = wrapper.find('input[id="dec"]')
-    await input.setValue('116101115116')
-
-    expectEncodeTestValues()
-  })
-
-  it('encode dec error', async () => {
-    expectEncodeInitialValues()
-
-    const input = wrapper.find('input[id="dec"]')
-    await input.setValue('z')
-    await nextTick()
-
-    expect(wrapper.vm.encodeError).toBe('その値はBase64エンコードされた10進数ではないです。')
-
-    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
-    // const b64Error = wrapper.find('p[id="b64error"]')
-    // expect(b64Error.element.text).toBe('')
-  })
-
-  it('encode dec error UndecodableError', async () => {
-    expectEncodeInitialValues()
-
-    const input = wrapper.find('input[id="dec"]')
-    await input.setValue('1')
-    await nextTick()
-
-    expect(wrapper.vm.encodeError).toBe('文字列化できる10進数ではありません。')
-
-    // DOM の更新も確認(表示されるがテストが通過しない。原因特定は別途実施。)
-    // const b64Error = wrapper.find('p[id="b64error"]')
-    // expect(b64Error.element.text).toBe('')
-  })
-
-  it('encode hex', async () => {
-    expectEncodeInitialValues()
-
-    const input = wrapper.find('input[id="hex"]')
-    await input.setValue('74657374')
-
-    expectEncodeTestValues()
-
-  })
-
   it('encode hex error', async () => {
     expectEncodeInitialValues()
 
-    const input = wrapper.find('input[id="hex"]')
+    const input = wrapper.find('input[id="strHex"]')
     await input.setValue('z')
     await nextTick()
 
@@ -426,7 +278,7 @@ describe('Develop.vue', () => {
   it('encode hex error UndecodableError', async () => {
     expectEncodeInitialValues()
 
-    const input = wrapper.find('input[id="hex"]')
+    const input = wrapper.find('input[id="strHex"]')
     await input.setValue('1')
     await nextTick()
 
@@ -542,4 +394,110 @@ describe('Develop.vue', () => {
     const randomValue = wrapper.vm.randomvalue
     expect(randomValue).toHaveLength(10)
   })
+
+  it('2進数(bin)入力で他フィールドが変換される', async () => {
+    const binInput = wrapper.find('input[id="bin"]')
+    await binInput.setValue('1010')
+    await nextTick()
+    expect(wrapper.vm.quat).toBe('22')
+    expect(wrapper.vm.oct).toBe('12')
+    expect(wrapper.vm.dec).toBe('10')
+    expect(wrapper.vm.hex).toBe('a')
+    expect(wrapper.vm.numberConversionError).toBe('')
+  })
+
+  it('4進数(quat)入力で他フィールドが変換される', async () => {
+    const quatInput = wrapper.find('input[id="quat"]')
+    await quatInput.setValue('22')
+    await nextTick()
+    expect(wrapper.vm.bin).toBe('1010')
+    expect(wrapper.vm.oct).toBe('12')
+    expect(wrapper.vm.dec).toBe('10')
+    expect(wrapper.vm.hex).toBe('a')
+    expect(wrapper.vm.numberConversionError).toBe('')
+  })
+
+  it('8進数(oct)入力で他フィールドが変換される', async () => {
+    const octInput = wrapper.find('input[id="oct"]')
+    await octInput.setValue('12')
+    await nextTick()
+    expect(wrapper.vm.bin).toBe('1010')
+    expect(wrapper.vm.quat).toBe('22')
+    expect(wrapper.vm.dec).toBe('10')
+    expect(wrapper.vm.hex).toBe('a')
+    expect(wrapper.vm.numberConversionError).toBe('')
+  })
+
+  it('10進数(dec)入力で他フィールドが変換される', async () => {
+    const decInput = wrapper.find('input[id="dec"]')
+    await decInput.setValue('10')
+    await nextTick()
+    expect(wrapper.vm.bin).toBe('1010')
+    expect(wrapper.vm.quat).toBe('22')
+    expect(wrapper.vm.oct).toBe('12')
+    expect(wrapper.vm.hex).toBe('a')
+    expect(wrapper.vm.numberConversionError).toBe('')
+  })
+
+  it('16進数(hex)入力で他フィールドが変換される', async () => {
+    const hexInput = wrapper.find('input[id="hex"]')
+    await hexInput.setValue('a')
+    await nextTick()
+    expect(wrapper.vm.bin).toBe('1010')
+    expect(wrapper.vm.quat).toBe('22')
+    expect(wrapper.vm.oct).toBe('12')
+    expect(wrapper.vm.dec).toBe('10')
+    expect(wrapper.vm.numberConversionError).toBe('')
+  })
+
+  it('2進数(bin)に不正値を入力するとエラー', async () => {
+    const binInput = wrapper.find('input[id="bin"]')
+    await binInput.setValue('102')
+    await nextTick()
+    expect(wrapper.vm.numberConversionError).toBe('その値は2進数の値ではありません')
+  })
+
+  it('4進数(quat)に不正値を入力するとエラー', async () => {
+    const quatInput = wrapper.find('input[id="quat"]')
+    await quatInput.setValue('24')
+    await nextTick()
+    expect(wrapper.vm.numberConversionError).toBe('その値は4進数の値ではありません')
+  })
+
+  it('8進数(oct)に不正値を入力するとエラー', async () => {
+    const octInput = wrapper.find('input[id="oct"]')
+    await octInput.setValue('19')
+    await nextTick()
+    expect(wrapper.vm.numberConversionError).toBe('その値は8進数の値ではありません')
+  })
+
+  it('10進数(dec)に不正値を入力するとエラー', async () => {
+    const decInput = wrapper.find('input[id="dec"]')
+    await decInput.setValue('10a')
+    await nextTick()
+    expect(wrapper.vm.numberConversionError).toBe('その値は10進数の値ではありません')
+  })
+
+  it('16進数(hex)に不正値を入力するとエラー', async () => {
+    const hexInput = wrapper.find('input[id="hex"]')
+    await hexInput.setValue('g')
+    await nextTick()
+    expect(wrapper.vm.numberConversionError).toBe('その値は16進数の値ではありません')
+  })
+
+  it('どれかのフィールドを空にすると他もリセットされる', async () => {
+    // まず値をセット
+    await wrapper.find('input[id="bin"]').setValue('1010')
+    await nextTick()
+    // 空にする
+    await wrapper.find('input[id="bin"]').setValue('')
+    await nextTick()
+    expect(wrapper.vm.hex).toBe('')
+    expect(wrapper.vm.quat).toBe('')
+    expect(wrapper.vm.oct).toBe('')
+    expect(wrapper.vm.dec).toBe('')
+    expect(wrapper.vm.numberConversionError).toBe('')
+  })
 })
+
+//
