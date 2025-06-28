@@ -441,12 +441,12 @@ const cleanEncodeValues = () => {
 /*
  * 数値変換初期化
  */
-const cleanNumberConvertValues = () => {
-  bin.value = ''
-  quat.value = ''
-  oct.value = ''
-  dec.value = ''
-  hex.value = ''
+const cleanNumberConvertValues = (excludeField = '') => {
+  if (excludeField !== 'bin') bin.value = ''
+  if (excludeField !== 'quat') quat.value = ''
+  if (excludeField !== 'oct') oct.value = ''
+  if (excludeField !== 'dec') dec.value = ''
+  if (excludeField !== 'hex') hex.value = ''
 }
 
 // watchers
@@ -536,7 +536,7 @@ watch(
       cleanEncodeValues()
       return
     }
-    const regex = /^[0-9a-f]+$/
+    const regex = /^[0-9a-fA-F]+$/
     if (!regex.test(newValue)) {
       encodeError.value = 'その値はBase64エンコードされた16進数ではないです。'
       return
@@ -642,7 +642,7 @@ watch(
   () => bin.value,
   (newValue) => {
     if (!newValue) {
-      cleanNumberConvertValues()
+      cleanNumberConvertValues('bin')
       return
     }
     const regex = /^[0-1]+$/
@@ -668,7 +668,7 @@ watch(
   () => quat.value,
   (newValue) => {
     if (!newValue) {
-      cleanNumberConvertValues()
+      cleanNumberConvertValues('quat')
       return
     }
     const regex = /^[0-3]+$/
@@ -694,7 +694,7 @@ watch(
   () => oct.value,
   (newValue) => {
     if (!newValue) {
-      cleanNumberConvertValues()
+      cleanNumberConvertValues('oct')
       return
     }
     const regex = /^[0-7]+$/
@@ -712,7 +712,7 @@ watch(
     } catch (err) {
       numberConversionError.value = 'unknown error: ' + err.message
     }
-    /* c8 ignore start */
+    /* c8 ignore stop */
   }
 )
 
@@ -720,7 +720,7 @@ watch(
   () => dec.value,
   (newValue) => {
     if (!newValue) {
-      cleanNumberConvertValues()
+      cleanNumberConvertValues('dec')
       return
     }
     const regex = /^[0-9]+$/
@@ -746,10 +746,10 @@ watch(
   () => hex.value,
   (newValue) => {
     if (!newValue) {
-      cleanNumberConvertValues()
+      cleanNumberConvertValues('hex')
       return
     }
-    const regex = /^[0-9a-f]+$/
+    const regex = /^[0-9a-fA-F]+$/
     if (!regex.test(newValue)) {
       numberConversionError.value = 'その値は16進数の値ではありません'
       return
