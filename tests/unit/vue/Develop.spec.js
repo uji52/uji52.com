@@ -498,6 +498,45 @@ describe('Develop.vue', () => {
     expect(wrapper.vm.dec).toBe('')
     expect(wrapper.vm.numberConversionError).toBe('')
   })
+
+  it('cleanNumberConvertValues: 全フィールドがリセットされる', async () => {
+    // まず値をセット
+    wrapper.vm.bin = '1010'
+    wrapper.vm.quat = '22'
+    wrapper.vm.oct = '12'
+    wrapper.vm.dec = '10'
+    wrapper.vm.hex = 'a'
+
+    // 実行
+    wrapper.vm.cleanNumberConvertValues()
+
+    // すべて空になることを確認
+    expect(wrapper.vm.bin).toBe('')
+    expect(wrapper.vm.quat).toBe('')
+    expect(wrapper.vm.oct).toBe('')
+    expect(wrapper.vm.dec).toBe('')
+    expect(wrapper.vm.hex).toBe('')
+  })
+
+  it('cleanNumberConvertValues: 除外フィールド以外がリセットされる', async () => {
+    // まず値をセット
+    wrapper.vm.bin = '1010'
+    wrapper.vm.quat = '22'
+    wrapper.vm.oct = '12'
+    wrapper.vm.dec = '10'
+    wrapper.vm.hex = 'a'
+
+    // 例えば 'oct' を除外
+    wrapper.vm.cleanNumberConvertValues('oct')
+
+    // oct だけ残り、他は空になることを確認
+    expect(wrapper.vm.bin).toBe('')
+    expect(wrapper.vm.quat).toBe('')
+    expect(wrapper.vm.oct).toBe('12')
+    expect(wrapper.vm.dec).toBe('')
+    expect(wrapper.vm.hex).toBe('')
+  })
+
 })
 
 //
