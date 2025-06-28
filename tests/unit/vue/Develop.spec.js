@@ -498,6 +498,45 @@ describe('Develop.vue', () => {
     expect(wrapper.vm.dec).toBe('')
     expect(wrapper.vm.numberConversionError).toBe('')
   })
+
+  it('cleanNumberConvertValues: 全フィールドがリセットされる', async () => {
+    // まず値をセット
+    await wrapper.find('input[id="bin"]').setValue('1010')
+    await wrapper.find('input[id="quat"]').setValue('22')
+    await wrapper.find('input[id="oct"]').setValue('12')
+    await wrapper.find('input[id="dec"]').setValue('10')
+    await wrapper.find('input[id="hex"]').setValue('a')
+
+    // 実行
+    wrapper.vm.cleanNumberConvertValues()
+
+    // すべて空になることを確認
+    expect(wrapper.vm.bin).toBe('')
+    expect(wrapper.vm.quat).toBe('')
+    expect(wrapper.vm.oct).toBe('')
+    expect(wrapper.vm.dec).toBe('')
+    expect(wrapper.vm.hex).toBe('')
+  })
+
+  it('cleanNumberConvertValues: 除外フィールド以外がリセットされる', async () => {
+    // まず値をセット
+    await wrapper.find('input[id="bin"]').setValue('1010')
+    await wrapper.find('input[id="quat"]').setValue('22')
+    await wrapper.find('input[id="oct"]').setValue('12')
+    await wrapper.find('input[id="dec"]').setValue('10')
+    await wrapper.find('input[id="hex"]').setValue('a')
+
+    // 例えば 'oct' を除外
+    wrapper.vm.cleanNumberConvertValues('oct')
+
+    // oct だけ残り、他は空になることを確認
+    expect(wrapper.vm.bin).toBe('')
+    expect(wrapper.vm.quat).toBe('')
+    expect(wrapper.vm.oct).toBe('12')
+    expect(wrapper.vm.dec).toBe('')
+    expect(wrapper.vm.hex).toBe('')
+  })
+
 })
 
 //
