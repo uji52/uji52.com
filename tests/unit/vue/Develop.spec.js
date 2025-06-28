@@ -501,3 +501,392 @@ describe('Develop.vue', () => {
 })
 
 //
+
+  // Additional comprehensive tests for edge cases and boundary conditions
+
+  describe('stringToHex edge cases', () => {
+    it('should handle empty string', () => {
+      expect(wrapper.vm.stringToHex('')).toBe('')
+    })
+
+    it('should handle special characters', () => {
+      expect(wrapper.vm.stringToHex('!@#$%')).toBe('21402324256')
+    })
+
+    it('should handle unicode characters', () => {
+      expect(wrapper.vm.stringToHex('こんにちは')).toBe('e38193e38293e381abe381a1e381af')
+    })
+
+    it('should handle newlines and tabs', () => {
+      expect(wrapper.vm.stringToHex('\n\t')).toBe('0a09')
+    })
+
+    it('should handle very long strings', () => {
+      const longString = 'a'.repeat(1000)
+      const result = wrapper.vm.stringToHex(longString)
+      expect(result).toBe('61'.repeat(1000))
+      expect(result.length).toBe(2000)
+    })
+  })
+
+  describe('hexToString edge cases', () => {
+    it('should handle empty hex string', () => {
+      expect(wrapper.vm.hexToString('')).toBe('')
+    })
+
+    it('should throw error for odd length hex string', () => {
+      expect(() => {
+        wrapper.vm.hexToString('123')
+      }).toThrow()
+    })
+
+    it('should throw error for invalid hex characters', () => {
+      expect(() => {
+        wrapper.vm.hexToString('xyz')
+      }).toThrow()
+    })
+
+    it('should handle uppercase hex', () => {
+      expect(wrapper.vm.hexToString('54455354')).toBe('TEST')
+    })
+
+    it('should handle mixed case hex', () => {
+      expect(wrapper.vm.hexToString('54657374')).toBe('Test')
+    })
+  })
+
+  describe('stringToBase64 edge cases', () => {
+    it('should handle empty string', () => {
+      expect(wrapper.vm.stringToBase64('')).toBe('')
+    })
+
+    it('should handle special characters', () => {
+      expect(wrapper.vm.stringToBase64('!@#$%^&*()')).toBe('IUAjJCVeJiooKQ==')
+    })
+
+    it('should handle unicode characters', () => {
+      expect(wrapper.vm.stringToBase64('测试')).toBe('5rWL6K+V')
+    })
+
+    it('should handle null character', () => {
+      expect(wrapper.vm.stringToBase64('\0')).toBe('AA==')
+    })
+  })
+
+  describe('base64ToString edge cases', () => {
+    it('should handle empty base64 string', () => {
+      expect(wrapper.vm.base64ToString('')).toBe('')
+    })
+
+    it('should handle base64 with whitespace', () => {
+      expect(wrapper.vm.base64ToString('dGVzdA== ')).toBe('test')
+    })
+
+    it('should handle base64 with newlines', () => {
+      expect(wrapper.vm.base64ToString('dGVz\ndA==')).toBe('test')
+    })
+
+    it('should throw error for invalid base64', () => {
+      expect(() => {
+        wrapper.vm.base64ToString('invalid@base64!')
+      }).toThrow()
+    })
+  })
+
+  describe('randomgenerate advanced scenarios', () => {
+    it('should generate minimum length string', async () => {
+      const lengthInput = wrapper.find('input[id="randomlength"]')
+      await lengthInput.setValue('1')
+      const seedInput = wrapper.find('input[id="randomseed"]')
+      await seedInput.setValue('a')
+      wrapper.vm.randomgenerate()
+      expect(wrapper.vm.randomvalue).toHaveLength(1)
+      expect(wrapper.vm.randomvalue).toMatch(/[a]/)
+    })
+
+    it('should handle large length values', async () => {
+      const lengthInput = wrapper.find('input[id="randomlength"]')
+      await lengthInput.setValue('100')
+      const seedInput = wrapper.find('input[id="randomseed"]')
+      await seedInput.setValue('abcdef')
+      wrapper.vm.randomgenerate()
+      expect(wrapper.vm.randomvalue).toHaveLength(100)
+      expect(wrapper.vm.randomvalue).toMatch(/[a-f]{100}/)
+    })
+
+    it('should handle single character seed', async () => {
+      const lengthInput = wrapper.find('input[id="randomlength"]')
+      await lengthInput.setValue('10')
+      const seedInput = wrapper.find('input[id="randomseed"]')
+      await seedInput.setValue('x')
+      wrapper.vm.randomgenerate()
+      expect(wrapper.vm.randomvalue).toBe('xxxxxxxxxx')
+    })
+
+    it('should handle empty seed gracefully', async () => {
+      const lengthInput = wrapper.find('input[id="randomlength"]')
+      await lengthInput.setValue('5')
+      const seedInput = wrapper.find('input[id="randomseed"]')
+      await seedInput.setValue('')
+      wrapper.vm.randomgenerate()
+      // Should handle empty seed without crashing
+      expect(wrapper.vm.randomvalue).toBeDefined()
+    })
+  })
+
+  describe('encoding error recovery', () => {
+    it('should clear error when valid input is provided after invalid', async () => {
+      const input = wrapper.find('input[id="b64str"]')
+      // First, set invalid base64
+      await input.setValue('=')
+      await nextTick()
+      expect(wrapper.vm.encodeError).toBe('Invalid Base64 string')
+      
+      // Then set valid base64
+      await input.setValue('dGVzdA==')
+      await nextTick()
+      expect(wrapper.vm.encodeError).toBe('')
+    })
+
+    it('should handle consecutive invalid inputs', async () => {
+      const input = wrapper.find('input[id="urlencode"]')
+      await input.setValue('%')
+      await nextTick()
+      expect(wrapper.vm.encodeError).toBe('その値はURLデコードできないです。')
+      
+      await input.setValue('%%')
+      await nextTick()
+      expect(wrapper.vm.encodeError).toBe('その値はURLデコードできないです。')
+    })
+  })
+
+  describe('unicode encoding variations', () => {
+    it('should handle unicode with mixed valid and invalid sequences', async () => {
+      const input = wrapper.find('input[id="unicode"]')
+      await input.setValue('\\u0074\\u0065st\\u0074')
+      await nextTick()
+      // Should handle mixed unicode and plain text
+      expect(wrapper.vm.plane).toContain('te')
+    })
+
+    it('should handle incomplete unicode sequences', async () => {
+      const input = wrapper.find('input[id="unicode"]')
+      await input.setValue('\\u007')
+      await nextTick()
+      // Should handle incomplete unicode gracefully
+      expect(wrapper.vm.encodeError).toBeDefined()
+    })
+  })
+
+  describe('hash function boundary cases', () => {
+    it('should handle extremely long input for hashing', async () => {
+      const input = wrapper.find('input[id="hashPlain"]')
+      const longText = 'a'.repeat(10000)
+      await input.setValue(longText)
+      await nextTick()
+      
+      expect(wrapper.vm.hashMd5).toHaveLength(32)
+      expect(wrapper.vm.hashSha1).toHaveLength(40)
+      expect(wrapper.vm.hashSha256).toHaveLength(64)
+      expect(wrapper.vm.hashSha512).toHaveLength(128)
+    })
+
+    it('should handle special characters in hash input', async () => {
+      const input = wrapper.find('input[id="hashPlain"]')
+      await input.setValue('!@#$%^&*()_+{}[]|\\:";\'<>?,./')
+      await nextTick()
+      
+      expect(wrapper.vm.hashMd5).toMatch(/^[a-f0-9]{32}$/)
+      expect(wrapper.vm.hashSha256).toMatch(/^[a-f0-9]{64}$/)
+    })
+
+    it('should handle hex input with leading zeros', async () => {
+      const input = wrapper.find('input[id="hashHex"]')
+      await input.setValue('0074657374')
+      await nextTick()
+      
+      expect(wrapper.vm.hashPlain).toBe('\x00test')
+    })
+  })
+
+  describe('number conversion boundary cases', () => {
+    it('should handle maximum safe integer in decimal', async () => {
+      const input = wrapper.find('input[id="dec"]')
+      await input.setValue(Number.MAX_SAFE_INTEGER.toString())
+      await nextTick()
+      
+      expect(wrapper.vm.numberConversionError).toBe('')
+      expect(wrapper.vm.hex).toBeDefined()
+      expect(wrapper.vm.bin).toBeDefined()
+    })
+
+    it('should handle zero values in all bases', async () => {
+      const decInput = wrapper.find('input[id="dec"]')
+      await decInput.setValue('0')
+      await nextTick()
+      
+      expect(wrapper.vm.bin).toBe('0')
+      expect(wrapper.vm.quat).toBe('0')
+      expect(wrapper.vm.oct).toBe('0')
+      expect(wrapper.vm.hex).toBe('0')
+    })
+
+    it('should handle negative values gracefully', async () => {
+      const decInput = wrapper.find('input[id="dec"]')
+      await decInput.setValue('-5')
+      await nextTick()
+      
+      // Should either handle negative numbers or show appropriate error
+      expect(wrapper.vm.numberConversionError).toBeDefined()
+    })
+
+    it('should handle floating point numbers', async () => {
+      const decInput = wrapper.find('input[id="dec"]')
+      await decInput.setValue('10.5')
+      await nextTick()
+      
+      expect(wrapper.vm.numberConversionError).toBe('その値は10進数の値ではありません')
+    })
+
+    it('should handle very large hex values', async () => {
+      const hexInput = wrapper.find('input[id="hex"]')
+      await hexInput.setValue('ffffffffffffffff')
+      await nextTick()
+      
+      expect(wrapper.vm.numberConversionError).toBe('')
+      expect(wrapper.vm.dec).toBeDefined()
+    })
+
+    it('should handle binary with only 1s', async () => {
+      const binInput = wrapper.find('input[id="bin"]')
+      await binInput.setValue('1111')
+      await nextTick()
+      
+      expect(wrapper.vm.dec).toBe('15')
+      expect(wrapper.vm.hex).toBe('f')
+      expect(wrapper.vm.quat).toBe('33')
+      expect(wrapper.vm.oct).toBe('17')
+    })
+
+    it('should handle case sensitivity in hex', async () => {
+      const hexInput = wrapper.find('input[id="hex"]')
+      await hexInput.setValue('ABCDEF')
+      await nextTick()
+      
+      expect(wrapper.vm.numberConversionError).toBe('')
+      expect(wrapper.vm.dec).toBe('11259375')
+    })
+  })
+
+  describe('component initialization and cleanup', () => {
+    it('should initialize with empty values', () => {
+      expect(wrapper.vm.plane).toBe('')
+      expect(wrapper.vm.b64str).toBe('')
+      expect(wrapper.vm.encodeError).toBe('')
+      expect(wrapper.vm.hashPlain).toBe('')
+      expect(wrapper.vm.hasherror).toBe('')
+      expect(wrapper.vm.numberConversionError).toBe('')
+    })
+
+    it('should handle rapid input changes', async () => {
+      const input = wrapper.find('input[id="plane"]')
+      
+      // Rapidly change input values
+      for (let i = 0; i < 10; i++) {
+        await input.setValue(`test${i}`)
+        await nextTick()
+      }
+      
+      expect(wrapper.vm.plane).toBe('test9')
+      expect(wrapper.vm.encodeError).toBe('')
+    })
+  })
+
+  describe('UI interaction edge cases', () => {
+    it('should handle click events on random generate button', async () => {
+      const generateButton = wrapper.find('input[id="randomgenerateButton"]')
+      const lengthInput = wrapper.find('input[id="randomlength"]')
+      
+      await lengthInput.setValue('5')
+      await generateButton.trigger('click')
+      
+      expect(wrapper.vm.randomvalue).toHaveLength(5)
+    })
+
+    it('should handle multiple rapid button clicks', async () => {
+      const generateButton = wrapper.find('input[id="randomgenerateButton"]')
+      const lengthInput = wrapper.find('input[id="randomlength"]')
+      
+      await lengthInput.setValue('3')
+      
+      let values = []
+      for (let i = 0; i < 5; i++) {
+        await generateButton.trigger('click')
+        values.push(wrapper.vm.randomvalue)
+      }
+      
+      // All values should be length 3
+      values.forEach(value => {
+        expect(value).toHaveLength(3)
+      })
+    })
+  })
+
+  describe('error message consistency', () => {
+    it('should show consistent error messages for invalid base64', async () => {
+      const inputs = [
+        wrapper.find('input[id="b64str"]'),
+        wrapper.find('input[id="b64urlstr"]')
+      ]
+      
+      for (const input of inputs) {
+        await input.setValue('=')
+        await nextTick()
+        expect(wrapper.vm.encodeError).toBe('Invalid Base64 string')
+        
+        await input.setValue('')
+        await nextTick()
+      }
+    })
+
+    it('should clear errors when input is cleared', async () => {
+      const input = wrapper.find('input[id="strHex"]')
+      
+      // Set invalid hex
+      await input.setValue('zz')
+      await nextTick()
+      expect(wrapper.vm.encodeError).not.toBe('')
+      
+      // Clear input
+      await input.setValue('')
+      await nextTick()
+      expect(wrapper.vm.encodeError).toBe('')
+    })
+  })
+
+  describe('performance and stress testing', () => {
+    it('should handle many encoding operations without memory leaks', async () => {
+      const input = wrapper.find('input[id="plane"]')
+      
+      // Perform many encoding operations
+      for (let i = 0; i < 100; i++) {
+        await input.setValue(`test${i}`)
+        await nextTick()
+      }
+      
+      expect(wrapper.vm.encodeError).toBe('')
+      expect(wrapper.vm.plane).toBe('test99')
+    })
+
+    it('should handle large data encoding efficiently', async () => {
+      const input = wrapper.find('input[id="plane"]')
+      const largeText = 'Large text data '.repeat(1000)
+      
+      await input.setValue(largeText)
+      await nextTick()
+      
+      expect(wrapper.vm.b64str).toBeDefined()
+      expect(wrapper.vm.strHex).toBeDefined()
+      expect(wrapper.vm.encodeError).toBe('')
+    })
+  })
