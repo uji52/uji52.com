@@ -394,4 +394,110 @@ describe('Develop.vue', () => {
     const randomValue = wrapper.vm.randomvalue
     expect(randomValue).toHaveLength(10)
   })
+
+  it('2進数(bin)入力で他フィールドが変換される', async () => {
+    const binInput = wrapper.find('input[id="bin"]')
+    await binInput.setValue('1010')
+    await nextTick()
+    expect(wrapper.vm.quat).toBe('22')
+    expect(wrapper.vm.oct).toBe('12')
+    expect(wrapper.vm.dec).toBe('10')
+    expect(wrapper.vm.hex).toBe('a')
+    expect(wrapper.vm.numberConversionError).toBe('')
+  })
+
+  it('4進数(quat)入力で他フィールドが変換される', async () => {
+    const quatInput = wrapper.find('input[id="quat"]')
+    await quatInput.setValue('22')
+    await nextTick()
+    expect(wrapper.vm.bin).toBe('1010')
+    expect(wrapper.vm.oct).toBe('12')
+    expect(wrapper.vm.dec).toBe('10')
+    expect(wrapper.vm.hex).toBe('a')
+    expect(wrapper.vm.numberConversionError).toBe('')
+  })
+
+  it('8進数(oct)入力で他フィールドが変換される', async () => {
+    const octInput = wrapper.find('input[id="oct"]')
+    await octInput.setValue('12')
+    await nextTick()
+    expect(wrapper.vm.bin).toBe('1010')
+    expect(wrapper.vm.quat).toBe('22')
+    expect(wrapper.vm.dec).toBe('10')
+    expect(wrapper.vm.hex).toBe('a')
+    expect(wrapper.vm.numberConversionError).toBe('')
+  })
+
+  it('10進数(dec)入力で他フィールドが変換される', async () => {
+    const decInput = wrapper.find('input[id="dec"]')
+    await decInput.setValue('10')
+    await nextTick()
+    expect(wrapper.vm.bin).toBe('1010')
+    expect(wrapper.vm.quat).toBe('22')
+    expect(wrapper.vm.oct).toBe('12')
+    expect(wrapper.vm.hex).toBe('a')
+    expect(wrapper.vm.numberConversionError).toBe('')
+  })
+
+  it('16進数(hex)入力で他フィールドが変換される', async () => {
+    const hexInput = wrapper.find('input[id="hex"]')
+    await hexInput.setValue('a')
+    await nextTick()
+    expect(wrapper.vm.bin).toBe('1010')
+    expect(wrapper.vm.quat).toBe('22')
+    expect(wrapper.vm.oct).toBe('12')
+    expect(wrapper.vm.dec).toBe('10')
+    expect(wrapper.vm.numberConversionError).toBe('')
+  })
+
+  it('2進数(bin)に不正値を入力するとエラー', async () => {
+    const binInput = wrapper.find('input[id="bin"]')
+    await binInput.setValue('102')
+    await nextTick()
+    expect(wrapper.vm.numberConversionError).toBe('その値は2進数の値ではありません')
+  })
+
+  it('4進数(quat)に不正値を入力するとエラー', async () => {
+    const quatInput = wrapper.find('input[id="quat"]')
+    await quatInput.setValue('24')
+    await nextTick()
+    expect(wrapper.vm.numberConversionError).toBe('その値は4進数の値ではありません')
+  })
+
+  it('8進数(oct)に不正値を入力するとエラー', async () => {
+    const octInput = wrapper.find('input[id="oct"]')
+    await octInput.setValue('19')
+    await nextTick()
+    expect(wrapper.vm.numberConversionError).toBe('その値は8進数の値ではありません')
+  })
+
+  it('10進数(dec)に不正値を入力するとエラー', async () => {
+    const decInput = wrapper.find('input[id="dec"]')
+    await decInput.setValue('10a')
+    await nextTick()
+    expect(wrapper.vm.numberConversionError).toBe('その値は10進数の値ではありません')
+  })
+
+  it('16進数(hex)に不正値を入力するとエラー', async () => {
+    const hexInput = wrapper.find('input[id="hex"]')
+    await hexInput.setValue('g')
+    await nextTick()
+    expect(wrapper.vm.numberConversionError).toBe('その値は16進数の値ではありません')
+  })
+
+  it('どれかのフィールドを空にすると他もリセットされる', async () => {
+    // まず値をセット
+    await wrapper.find('input[id="bin"]').setValue('1010')
+    await nextTick()
+    // 空にする
+    await wrapper.find('input[id="bin"]').setValue('')
+    await nextTick()
+    expect(wrapper.vm.hex).toBe('')
+    expect(wrapper.vm.quat).toBe('')
+    expect(wrapper.vm.oct).toBe('')
+    expect(wrapper.vm.dec).toBe('')
+    expect(wrapper.vm.numberConversionError).toBe('')
+  })
 })
+
+//

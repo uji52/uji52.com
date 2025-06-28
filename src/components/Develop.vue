@@ -442,6 +442,10 @@ const cleanEncodeValues = () => {
  * 数値変換初期化
  */
 const cleanNumberConvertValues = () => {
+  bin.value = ''
+  quat.value = ''
+  oct.value = ''
+  dec.value = ''
   hex.value = ''
 }
 
@@ -503,7 +507,9 @@ watch(
       encodeError.value =
         err.name === 'URIError'
           ? 'その値はURLデコードできないです。'
+          /* c8 ignore start */
           : err.message // 入らない想定
+          /* c8 ignore stop */
     }
   }
 )
@@ -515,9 +521,11 @@ watch(
       plane.value = ''
       plane.value = unicodeToString(newValue)
       encodeError.value = ''
+    /* c8 ignore start */
     } catch (err) {
       encodeError.value = err.message // 入らない想定
     }
+    /* c8 ignore stop */
   }
 )
 
@@ -639,7 +647,7 @@ watch(
     }
     const regex = /^[0-1]+$/
     if (!regex.test(newValue)) {
-      numberConversionError.value = 'その値はBase64エンコードされた2進数ではないです。'
+      numberConversionError.value = 'その値は2進数の値ではありません'
       return
     }
     try {
@@ -648,11 +656,11 @@ watch(
       dec.value = parseInt(newValue, 2).toString(10)
       hex.value = parseInt(newValue, 2).toString(16)
       numberConversionError.value = ''
+    /* c8 ignore start */
     } catch (err) {
       numberConversionError.value = 'unknown error: ' + err.message
-      if (err instanceof UndecodableError)
-        numberConversionError.value = '文字列化できる2進数ではありません。'
     }
+    /* c8 ignore stop */
   }
 )
 
@@ -665,7 +673,7 @@ watch(
     }
     const regex = /^[0-3]+$/
     if (!regex.test(newValue)) {
-      numberConversionError.value = 'その値はBase64エンコードされた4進数ではないです。'
+      numberConversionError.value = 'その値は4進数の値ではありません'
       return
     }
     try {
@@ -674,11 +682,11 @@ watch(
       dec.value = parseInt(newValue, 4).toString(10)
       hex.value = parseInt(newValue, 4).toString(16)
       numberConversionError.value = ''
+    /* c8 ignore start */
     } catch (err) {
       numberConversionError.value = 'unknown error: ' + err.message
-      if (err instanceof UndecodableError)
-        numberConversionError.value = '文字列化できる4進数ではありません。'
     }
+    /* c8 ignore stop */
   }
 )
 
@@ -691,7 +699,7 @@ watch(
     }
     const regex = /^[0-7]+$/
     if (!regex.test(newValue)) {
-      numberConversionError.value = 'その値はBase64エンコードされた8進数ではないです。'
+      numberConversionError.value = 'その値は8進数の値ではありません'
       return
     }
     try {
@@ -700,11 +708,11 @@ watch(
       dec.value = parseInt(newValue, 8).toString(10)
       hex.value = parseInt(newValue, 8).toString(16)
       numberConversionError.value = ''
+    /* c8 ignore start */
     } catch (err) {
       numberConversionError.value = 'unknown error: ' + err.message
-      if (err instanceof UndecodableError)
-        numberConversionError.value = '文字列化できる8進数ではありません。'
     }
+    /* c8 ignore start */
   }
 )
 
@@ -717,7 +725,7 @@ watch(
     }
     const regex = /^[0-9]+$/
     if (!regex.test(newValue)) {
-      numberConversionError.value = 'その値はBase64エンコードされた10進数ではないです。'
+      numberConversionError.value = 'その値は10進数の値ではありません'
       return
     }
     try {
@@ -726,11 +734,11 @@ watch(
       oct.value = parseInt(newValue, 10).toString(8)
       hex.value = parseInt(newValue, 10).toString(16)
       numberConversionError.value = ''
+    /* c8 ignore start */
     } catch (err) {
       numberConversionError.value = 'unknown error: ' + err.message
-      if (err instanceof UndecodableError)
-        numberConversionError.value = '文字列化できる10進数ではありません。'
     }
+    /* c8 ignore stop */
   }
 )
 
@@ -743,7 +751,7 @@ watch(
     }
     const regex = /^[0-9a-f]+$/
     if (!regex.test(newValue)) {
-      numberConversionError.value = 'その値はBase64エンコードされた16進数ではないです。'
+      numberConversionError.value = 'その値は16進数の値ではありません'
       return
     }
     try {
@@ -752,11 +760,11 @@ watch(
       oct.value = parseInt(newValue, 16).toString(8)
       dec.value = parseInt(newValue, 16).toString(10)
       numberConversionError.value = ''
+    /* c8 ignore start */
     } catch (err) {
       numberConversionError.value = 'unknown error: ' + err.message
-      if (err instanceof UndecodableError)
-        numberConversionError.value = '文字列化できる16進数ではありません。'
     }
+    /* c8 ignore stop */
   }
 )
 
