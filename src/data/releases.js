@@ -1,8 +1,16 @@
 export const releases = [
   {
+    version: '2.0.6',
+    date: '2025/06/28',
+    isNew: true,
+    notes: [
+      'ASCII変換に使う目的のため、エンコードのパートから16進数以外の表記を削除',
+      '数値変換を追加'
+    ]
+  },
+  {
     version: '2.0.5',
     date: '2025/04/19',
-    isNew: true,
     notes: [
       '要望はログイン後に送付可能に変更'
     ]

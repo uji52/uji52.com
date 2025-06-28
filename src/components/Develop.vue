@@ -64,38 +64,11 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-md-2 mb-3">
-              <label for="bin">2進数</label>
+            <div class="col-md-6 mb-3">
+              <label for="strHex">16進数</label>
               <input
-                id="bin"
-                v-model="bin"
-                class="form-control"
-                placeholder="2進数"
-              />
-            </div>
-            <div class="col-md-2 mb-3">
-              <label for="quat">4進数</label>
-              <input
-                id="quat"
-                v-model="quat"
-                class="form-control"
-                placeholder="4進数"
-              />
-            </div>
-            <div class="col-md-2 mb-3">
-              <label for="dec">10進数</label>
-              <input
-                id="dec"
-                v-model="dec"
-                class="form-control"
-                placeholder="10進数"
-              />
-            </div>
-            <div class="col-md-2 mb-3">
-              <label for="hex">16進数</label>
-              <input
-                id="hex"
-                v-model="hex"
+                id="strHex"
+                v-model="strHex"
                 class="form-control"
                 placeholder="16進数"
               />
@@ -237,6 +210,57 @@
           </div>
           <p id="hasherror">{{ hasherror }}</p>
         </form>
+        <h2>数値変換</h2>
+        <form>
+          <div class="row">
+            <div class="col-md-2 mb-3">
+              <label for="bin">2進数</label>
+              <input
+                id="bin"
+                v-model="bin"
+                class="form-control"
+                placeholder="2進数"
+              />
+            </div>
+            <div class="col-md-2 mb-3">
+              <label for="quat">4進数</label>
+              <input
+                id="quat"
+                v-model="quat"
+                class="form-control"
+                placeholder="4進数"
+              />
+            </div>
+            <div class="col-md-2 mb-3">
+              <label for="oct">8進数</label>
+              <input
+                id="oct"
+                v-model="oct"
+                class="form-control"
+                placeholder="8進数"
+              />
+            </div>
+            <div class="col-md-2 mb-3">
+              <label for="dec">10進数</label>
+              <input
+                id="dec"
+                v-model="dec"
+                class="form-control"
+                placeholder="10進数"
+              />
+            </div>
+            <div class="col-md-2 mb-3">
+              <label for="hex">16進数</label>
+              <input
+                id="hex"
+                v-model="hex"
+                class="form-control"
+                placeholder="16進数"
+              />
+            </div>
+          </div>
+          <p id="numberConversionError">{{ numberConversionError }}</p>
+        </form>
         <h2>Random</h2>
         <form>
           <div class="row">
@@ -313,10 +337,7 @@ const errorMessages = {
 }
 
 const plane = ref('')
-const bin = ref('')
-const quat = ref('')
-const dec = ref('')
-const hex = ref('')
+const strHex = ref('')
 const b64str = ref('')
 const b64urlstr = ref('')
 const unicode = ref('')
@@ -337,6 +358,13 @@ const hashSha512b64 = ref('')
 const hashSha512b64url = ref('')
 const hasherror = ref('')
 
+const bin = ref('')
+const quat = ref('')
+const oct = ref('')
+const dec = ref('')
+const hex = ref('')
+const numberConversionError = ref('')
+
 const randomseed = ref(
   'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 !"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
 )
@@ -345,58 +373,10 @@ const randomvalue = ref('')
 const randomerror = ref('')
 
 // functions
-const stringToBin = (str) => {
-  return Array.from(new TextEncoder().encode(str))
-    .map((b) => b.toString(2).padStart(8, '0'))
-    .join('')
-}
-
-const stringToQuat = (str) => {
-  return Array.from(new TextEncoder().encode(str))
-    .map((b) => b.toString(4).padStart(2, '0'))
-    .join('')
-}
-
-const stringToDec = (str) => {
-  return Array.from(new TextEncoder().encode(str))
-    .map((b) => b.toString(10).padStart(3, '0'))
-    .join('')
-}
-
 const stringToHex = (str) => {
   return Array.from(new TextEncoder().encode(str))
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('')
-}
-
-const binToString = (bin) => {
-  if (!/^[01]+$/i.test(bin) || bin.length % 8 !== 0) {
-    throw new UndecodableError(errorMessages.invalidBinary)
-  }
-  const bytes = new Uint8Array(
-    bin.match(/.{8}/g).map((byte) => parseInt(byte, 2))
-  )
-  return new TextDecoder().decode(bytes)
-}
-
-const quatToString = (quat) => {
-  if (!/^[0-3]+$/i.test(quat) || quat.length % 2 !== 0) {
-    throw new UndecodableError(errorMessages.invalidQuaternary)
-  }
-  const bytes = new Uint8Array(
-    quat.match(/.{4}/g).map((byte) => parseInt(byte, 4))
-  )
-  return new TextDecoder().decode(bytes)
-}
-
-const decToString = (dec) => {
-  if (!/^[0-9]+$/i.test(dec) || dec.length % 3 !== 0) {
-    throw new UndecodableError(errorMessages.invalidDecimal)
-  }
-  const bytes = new Uint8Array(
-    dec.match(/.{3}/g).map((byte) => parseInt(byte, 10))
-  )
-  return new TextDecoder().decode(bytes)
 }
 
 const hexToString = (hex) => {
@@ -455,13 +435,20 @@ const cleanEncodeValues = () => {
   b64urlstr.value = ''
   urlencode.value = ''
   unicode.value = ''
-  bin.value = ''
-  quat.value = ''
-  dec.value = ''
+  strHex.value = ''
+}
+
+/*
+ * 数値変換初期化
+ */
+const cleanNumberConvertValues = () => {
   hex.value = ''
 }
 
 // watchers
+/**
+ * 文字列変換
+ */
 watch(
   () => plane.value,
   (newValue) => {
@@ -477,10 +464,7 @@ watch(
     b64urlstr.value = urlstrValue
     urlencode.value = encodeURIComponent(newValue)
     unicode.value = stringToUnicode(newValue)
-    bin.value = stringToBin(newValue)
-    quat.value = stringToQuat(newValue)
-    dec.value = stringToDec(newValue)
-    hex.value = stringToHex(newValue)
+    strHex.value = stringToHex(newValue)
   }
 )
 
@@ -538,79 +522,7 @@ watch(
 )
 
 watch(
-  () => bin.value,
-  (newValue) => {
-    if (!newValue) {
-      cleanEncodeValues()
-      return
-    }
-    const regex = /^[0-1]+$/
-    if (!regex.test(newValue)) {
-      encodeError.value = 'その値はBase64エンコードされた2進数ではないです。'
-      return
-    }
-    try {
-      const planeValue = binToString(newValue)
-      plane.value = planeValue
-      encodeError.value = ''
-    } catch (err) {
-      encodeError.value = 'unknown error: ' + err.message
-      if (err instanceof UndecodableError)
-        encodeError.value = '文字列化できる2進数ではありません。'
-    }
-  }
-)
-
-watch(
-  () => quat.value,
-  (newValue) => {
-    if (!newValue) {
-      cleanEncodeValues()
-      return
-    }
-    const regex = /^[0-3]+$/
-    if (!regex.test(newValue)) {
-      encodeError.value = 'その値はBase64エンコードされた4進数ではないです。'
-      return
-    }
-    try {
-      const planeValue = quatToString(newValue)
-      plane.value = planeValue
-      encodeError.value = ''
-    } catch (err) {
-      encodeError.value = 'unknown error: ' + err.message
-      if (err instanceof UndecodableError)
-        encodeError.value = '文字列化できる4進数ではありません。'
-    }
-  }
-)
-
-watch(
-  () => dec.value,
-  (newValue) => {
-    if (!newValue) {
-      cleanEncodeValues()
-      return
-    }
-    const regex = /^[0-9]+$/
-    if (!regex.test(newValue)) {
-      encodeError.value = 'その値はBase64エンコードされた10進数ではないです。'
-      return
-    }
-    try {
-      const planeValue = decToString(newValue)
-      plane.value = planeValue
-      encodeError.value = ''
-    } catch (err) {
-      encodeError.value = 'unknown error: ' + err.message
-      if (err instanceof UndecodableError)
-        encodeError.value = '文字列化できる10進数ではありません。'
-    }
-  }
-)
-
-watch(
-  () => hex.value,
+  () => strHex.value,
   (newValue) => {
     if (!newValue) {
       cleanEncodeValues()
@@ -633,6 +545,9 @@ watch(
   }
 )
 
+/**
+ * Hash化
+ */
 watch(
   () => hashPlain.value,
   (newValue) => {
@@ -711,6 +626,140 @@ watch(
     }
   }
 )
+
+/**
+ * 数値変換
+ */
+watch(
+  () => bin.value,
+  (newValue) => {
+    if (!newValue) {
+      cleanNumberConvertValues()
+      return
+    }
+    const regex = /^[0-1]+$/
+    if (!regex.test(newValue)) {
+      numberConversionError.value = 'その値はBase64エンコードされた2進数ではないです。'
+      return
+    }
+    try {
+      quat.value = parseInt(newValue, 2).toString(4)
+      oct.value = parseInt(newValue, 2).toString(8)
+      dec.value = parseInt(newValue, 2).toString(10)
+      hex.value = parseInt(newValue, 2).toString(16)
+      numberConversionError.value = ''
+    } catch (err) {
+      numberConversionError.value = 'unknown error: ' + err.message
+      if (err instanceof UndecodableError)
+        numberConversionError.value = '文字列化できる2進数ではありません。'
+    }
+  }
+)
+
+watch(
+  () => quat.value,
+  (newValue) => {
+    if (!newValue) {
+      cleanNumberConvertValues()
+      return
+    }
+    const regex = /^[0-3]+$/
+    if (!regex.test(newValue)) {
+      numberConversionError.value = 'その値はBase64エンコードされた4進数ではないです。'
+      return
+    }
+    try {
+      bin.value = parseInt(newValue, 4).toString(2)
+      oct.value = parseInt(newValue, 4).toString(8)
+      dec.value = parseInt(newValue, 4).toString(10)
+      hex.value = parseInt(newValue, 4).toString(16)
+      numberConversionError.value = ''
+    } catch (err) {
+      numberConversionError.value = 'unknown error: ' + err.message
+      if (err instanceof UndecodableError)
+        numberConversionError.value = '文字列化できる4進数ではありません。'
+    }
+  }
+)
+
+watch(
+  () => oct.value,
+  (newValue) => {
+    if (!newValue) {
+      cleanNumberConvertValues()
+      return
+    }
+    const regex = /^[0-7]+$/
+    if (!regex.test(newValue)) {
+      numberConversionError.value = 'その値はBase64エンコードされた8進数ではないです。'
+      return
+    }
+    try {
+      bin.value = parseInt(newValue, 8).toString(2)
+      quat.value = parseInt(newValue, 8).toString(4)
+      dec.value = parseInt(newValue, 8).toString(10)
+      hex.value = parseInt(newValue, 8).toString(16)
+      numberConversionError.value = ''
+    } catch (err) {
+      numberConversionError.value = 'unknown error: ' + err.message
+      if (err instanceof UndecodableError)
+        numberConversionError.value = '文字列化できる8進数ではありません。'
+    }
+  }
+)
+
+watch(
+  () => dec.value,
+  (newValue) => {
+    if (!newValue) {
+      cleanNumberConvertValues()
+      return
+    }
+    const regex = /^[0-9]+$/
+    if (!regex.test(newValue)) {
+      numberConversionError.value = 'その値はBase64エンコードされた10進数ではないです。'
+      return
+    }
+    try {
+      bin.value = parseInt(newValue, 10).toString(2)
+      quat.value = parseInt(newValue, 10).toString(4)
+      oct.value = parseInt(newValue, 10).toString(8)
+      hex.value = parseInt(newValue, 10).toString(16)
+      numberConversionError.value = ''
+    } catch (err) {
+      numberConversionError.value = 'unknown error: ' + err.message
+      if (err instanceof UndecodableError)
+        numberConversionError.value = '文字列化できる10進数ではありません。'
+    }
+  }
+)
+
+watch(
+  () => hex.value,
+  (newValue) => {
+    if (!newValue) {
+      cleanNumberConvertValues()
+      return
+    }
+    const regex = /^[0-9a-f]+$/
+    if (!regex.test(newValue)) {
+      numberConversionError.value = 'その値はBase64エンコードされた16進数ではないです。'
+      return
+    }
+    try {
+      bin.value = parseInt(newValue, 16).toString(2)
+      quat.value = parseInt(newValue, 16).toString(4)
+      oct.value = parseInt(newValue, 16).toString(8)
+      dec.value = parseInt(newValue, 16).toString(10)
+      numberConversionError.value = ''
+    } catch (err) {
+      numberConversionError.value = 'unknown error: ' + err.message
+      if (err instanceof UndecodableError)
+        numberConversionError.value = '文字列化できる16進数ではありません。'
+    }
+  }
+)
+
 </script>
 
 <style scoped></style>
