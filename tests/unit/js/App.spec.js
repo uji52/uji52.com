@@ -45,12 +45,10 @@ describe('App.vue', () => {
   it('passes correct props to Header', async () => {
     const header = wrapper.findComponent({ name: 'Header' })  // コンポーネント検索方法を変更
     expect(header.exists()).toBe(true)
-    expect(header.props('msg')).toBe('uji52.com')
   })
 
   it('passes correct props to Footer', async () => {
     const footer = wrapper.findComponent({ name: 'Footer' })  // コンポーネント検索方法を変更
     expect(footer.exists()).toBe(true)
-    expect(footer.props('msg')).toBe('uji52')
   })
 })

@@ -1,7 +1,7 @@
 <template>
-  <Header msg="uji52.com" />
+  <Header />
   <router-view></router-view>
-  <Footer msg="uji52" />
+  <Footer />
 </template>
 
 <script setup>
