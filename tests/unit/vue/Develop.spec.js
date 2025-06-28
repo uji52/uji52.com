@@ -501,11 +501,11 @@ describe('Develop.vue', () => {
 
   it('cleanNumberConvertValues: 全フィールドがリセットされる', async () => {
     // まず値をセット
-    wrapper.vm.bin = '1010'
-    wrapper.vm.quat = '22'
-    wrapper.vm.oct = '12'
-    wrapper.vm.dec = '10'
-    wrapper.vm.hex = 'a'
+    await wrapper.find('input[id="bin"]').setValue('1010')
+    await wrapper.find('input[id="quat"]').setValue('22')
+    await wrapper.find('input[id="oct"]').setValue('12')
+    await wrapper.find('input[id="dec"]').setValue('10')
+    await wrapper.find('input[id="hex"]').setValue('a')
 
     // 実行
     wrapper.vm.cleanNumberConvertValues()
@@ -520,11 +520,11 @@ describe('Develop.vue', () => {
 
   it('cleanNumberConvertValues: 除外フィールド以外がリセットされる', async () => {
     // まず値をセット
-    wrapper.vm.bin = '1010'
-    wrapper.vm.quat = '22'
-    wrapper.vm.oct = '12'
-    wrapper.vm.dec = '10'
-    wrapper.vm.hex = 'a'
+    await wrapper.find('input[id="bin"]').setValue('1010')
+    await wrapper.find('input[id="quat"]').setValue('22')
+    await wrapper.find('input[id="oct"]').setValue('12')
+    await wrapper.find('input[id="dec"]').setValue('10')
+    await wrapper.find('input[id="hex"]').setValue('a')
 
     // 例えば 'oct' を除外
     wrapper.vm.cleanNumberConvertValues('oct')
