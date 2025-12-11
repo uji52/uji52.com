@@ -261,6 +261,68 @@
           </div>
           <p id="numberConversionError">{{ numberConversionError }}</p>
         </form>
+        <h2>時間変換</h2>
+        <form>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="totalSeconds">秒(合計)</label>
+              <input
+                id="totalSeconds"
+                v-model="totalSeconds"
+                class="form-control"
+                placeholder="秒"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-2 mb-3">
+              <label for="seconds">秒</label>
+              <input
+                id="seconds"
+                v-model="seconds"
+                class="form-control"
+                placeholder="残り秒"
+              />
+            </div>
+            <div class="col-md-2 mb-3">
+              <label for="minutes">分</label>
+              <input
+                id="minutes"
+                v-model="minutes"
+                class="form-control"
+                placeholder="分"
+              />
+            </div>
+            <div class="col-md-2 mb-3">
+              <label for="hours">時間</label>
+              <input
+                id="hours"
+                v-model="hours"
+                class="form-control"
+                placeholder="時間"
+              />
+            </div>
+            <div class="col-md-2 mb-3">
+              <label for="days">日</label>
+              <input
+                id="days"
+                v-model="days"
+                class="form-control"
+                placeholder="日"
+              />
+            </div>
+            <div class="col-md-2 mb-3">
+              <label for="weeks">週間</label>
+              <input
+                id="weeks"
+                v-model="weeks"
+                class="form-control"
+                placeholder="週間"
+              />
+            </div>
+          </div>
+          <p id="timeConversionError">{{ timeConversionError }}</p>
+        </form>
         <h2>Random</h2>
         <form>
           <div class="row">
@@ -316,7 +378,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import CryptoJS from 'crypto-js'
 
 class UndecodableError extends Error {
@@ -365,12 +427,25 @@ const dec = ref('')
 const hex = ref('')
 const numberConversionError = ref('')
 
+const totalSeconds = ref('')
+const seconds = ref('')
+const minutes = ref('')
+const hours = ref('')
+const days = ref('')
+const weeks = ref('')
+const timeConversionError = ref('')
+
 const randomseed = ref(
   'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 !"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
 )
 const randomlength = ref(10)
 const randomvalue = ref('')
 const randomerror = ref('')
+
+// 時間変換の循環更新を防ぐフラグと現在更新中のフィールド
+let isUpdatingTimeConversion = false
+// プログラムから更新しているフィールドを記録
+const programmaticUpdateFields = new Set()
 
 // functions
 const stringToHex = (str) => {
@@ -447,6 +522,18 @@ const cleanNumberConvertValues = (excludeField = '') => {
   if (excludeField !== 'oct') oct.value = ''
   if (excludeField !== 'dec') dec.value = ''
   if (excludeField !== 'hex') hex.value = ''
+}
+
+/*
+ * 時間変換初期化
+ */
+const cleanTimeConvertValues = (excludeField = '') => {
+  if (excludeField !== 'totalSeconds') totalSeconds.value = ''
+  if (excludeField !== 'seconds') seconds.value = ''
+  if (excludeField !== 'minutes') minutes.value = ''
+  if (excludeField !== 'hours') hours.value = ''
+  if (excludeField !== 'days') days.value = ''
+  if (excludeField !== 'weeks') weeks.value = ''
 }
 
 // watchers
@@ -765,6 +852,183 @@ watch(
       numberConversionError.value = 'unknown error: ' + err.message
     }
     /* c8 ignore stop */
+  }
+)
+
+/**
+ * 時間変換
+ */
+const updateTimeConversion = async (sourceField, sourceValue) => {
+  // 整数のみを許可
+  const regex = /^[0-9]+$/
+  if (!regex.test(sourceValue)) {
+    timeConversionError.value = '秒は整数である必要があります。'
+    return false
+  }
+
+    try {
+    isUpdatingTimeConversion = true
+    const value = Math.floor(sourceValue) // 整数に変換
+
+    // すべての値を秒に統一して計算
+    let totalSecs = 0
+
+    // ソースフィールドから秒に変換
+    switch (sourceField) {
+      case 'totalSeconds':
+        totalSecs = value
+        break
+      case 'minutes':
+        totalSecs = value * 60
+        break
+      case 'hours':
+        totalSecs = value * 3600
+        break
+      case 'days':
+        totalSecs = value * 86400
+        break
+      case 'weeks':
+        totalSecs = value * 604800
+        break
+    }
+
+    // 秒から各単位に計算（整数除算を使用）
+    const calcSeconds = totalSecs % 60  // 残り秒
+    const calcMinutes = Math.floor(totalSecs / 60) % 60  // 分（時間からの余り）
+    const calcHours = Math.floor(totalSecs / 3600) % 24  // 時間（日からの余り）
+    const calcDays = Math.floor(totalSecs / 86400) % 7  // 日（週間からの余り）
+    const calcWeeks = Math.floor(totalSecs / 604800)  // 週間
+
+    // プログラム更新としてマーク（watcher 側で無視するため）
+    programmaticUpdateFields.add('totalSeconds')
+    programmaticUpdateFields.add('seconds')
+    programmaticUpdateFields.add('minutes')
+    programmaticUpdateFields.add('hours')
+    programmaticUpdateFields.add('days')
+    programmaticUpdateFields.add('weeks')
+
+    totalSeconds.value = totalSecs.toString()
+    seconds.value = calcSeconds.toString()
+    minutes.value = calcMinutes.toString()
+    hours.value = calcHours.toString()
+    days.value = calcDays.toString()
+    weeks.value = calcWeeks.toString()
+
+    // 次の tick まで programmaticUpdateFields を保持して watcher の自発的再計算を防止
+    await nextTick()
+    programmaticUpdateFields.clear()
+
+    timeConversionError.value = ''
+    return true
+  } catch (err) {
+    /* c8 ignore start */
+    timeConversionError.value = 'unknown error: ' + err.message
+    return false
+    /* c8 ignore stop */
+  } finally {
+    isUpdatingTimeConversion = false
+  }
+}
+
+watch(
+  () => totalSeconds.value,
+  (newValue) => {
+    if (!newValue) {
+      cleanTimeConvertValues('totalSeconds')
+      return
+    }
+    if (isUpdatingTimeConversion || programmaticUpdateFields.has('totalSeconds')) {
+      return
+    }
+    updateTimeConversion('totalSeconds', newValue)
+  }
+)
+
+watch(
+  () => seconds.value,
+  (newValue) => {
+    if (!newValue) {
+      return
+    }
+    if (isUpdatingTimeConversion || programmaticUpdateFields.has('seconds')) {
+      return
+    }
+    // seconds + minutes * 60 で総秒数を計算
+    const remain = Math.floor(newValue)
+    const mins = minutes.value ? Math.floor(minutes.value) : 0
+    const hrs = hours.value ? Math.floor(hours.value) : 0
+    const dys = days.value ? Math.floor(days.value) : 0
+    const wks = weeks.value ? Math.floor(weeks.value) : 0
+    const totalSecs = remain + mins * 60 + hrs * 3600 + dys * 86400 + wks * 604800
+    updateTimeConversion('totalSeconds', totalSecs.toString())
+  }
+)
+
+watch(
+  () => minutes.value,
+  (newValue) => {
+    if (isUpdatingTimeConversion || programmaticUpdateFields.has('minutes')) {
+      return
+    }
+    // 残り秒 + 分 * 60 + 時間 * 3600 + 日 * 86400 + 週間 * 604800 で総秒数を計算
+    const remain = seconds.value ? Math.floor(seconds.value) : 0
+    const mins = newValue ? Math.floor(newValue) : 0
+    const hrs = hours.value ? Math.floor(hours.value) : 0
+    const dys = days.value ? Math.floor(days.value) : 0
+    const wks = weeks.value ? Math.floor(weeks.value) : 0
+    const totalSecs = remain + mins * 60 + hrs * 3600 + dys * 86400 + wks * 604800
+    updateTimeConversion('totalSeconds', totalSecs.toString())
+  }
+)
+
+watch(
+  () => hours.value,
+  (newValue) => {
+    if (isUpdatingTimeConversion || programmaticUpdateFields.has('hours')) {
+      return
+    }
+    // 残り秒 + 分 * 60 + 時間 * 3600 + 日 * 86400 + 週間 * 604800 で総秒数を計算
+    const remain = seconds.value ? Math.floor(seconds.value) : 0
+    const mins = minutes.value ? Math.floor(minutes.value) : 0
+    const hrs = newValue ? Math.floor(newValue) : 0
+    const dys = days.value ? Math.floor(days.value) : 0
+    const wks = weeks.value ? Math.floor(weeks.value) : 0
+    const totalSecs = remain + mins * 60 + hrs * 3600 + dys * 86400 + wks * 604800
+    updateTimeConversion('totalSeconds', totalSecs.toString())
+  }
+)
+
+watch(
+  () => days.value,
+  (newValue) => {
+    if (isUpdatingTimeConversion || programmaticUpdateFields.has('days')) {
+      return
+    }
+    // 残り秒 + 分 * 60 + 時間 * 3600 + 日 * 86400 + 週間 * 604800 で総秒数を計算
+    const remain = seconds.value ? Math.floor(seconds.value) : 0
+    const mins = minutes.value ? Math.floor(minutes.value) : 0
+    const hrs = hours.value ? Math.floor(hours.value) : 0
+    const dys = newValue ? Math.floor(newValue) : 0
+    const wks = weeks.value ? Math.floor(weeks.value) : 0
+    const totalSecs = remain + mins * 60 + hrs * 3600 + dys * 86400 + wks * 604800
+    updateTimeConversion('totalSeconds', totalSecs.toString())
+  }
+)
+
+watch(
+  () => weeks.value,
+  (newValue) => {
+    if (isUpdatingTimeConversion || programmaticUpdateFields.has('weeks')) {
+      return
+    }
+    // 残り秒 + 分 * 60 + 時間 * 3600 + 日 * 86400 + 週間 * 604800 で総秒数を計算
+    const remain = seconds.value ? Math.floor(seconds.value) : 0
+    const mins = minutes.value ? Math.floor(minutes.value) : 0
+    const hrs = hours.value ? Math.floor(hours.value) : 0
+    const dys = days.value ? Math.floor(days.value) : 0
+    const wks = newValue ? Math.floor(newValue) : 0
+    const totalSecs = remain + mins * 60 + hrs * 3600 + dys * 86400 + wks * 604800
+    updateTimeConversion('totalSeconds', totalSecs.toString())
   }
 )
 

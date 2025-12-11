@@ -1,8 +1,15 @@
 export const releases = [
   {
+    version: '2.0.7',
+    date: '2025/12/12',
+    isNew: true,
+    notes: [
+      '秒換算による時間変換を追加'
+    ]
+  },
+  {
     version: '2.0.6',
     date: '2025/06/28',
-    isNew: true,
     notes: [
       'ASCII変換に使う目的のため、エンコードのパートから16進数以外の表記を削除',
       '数値変換を追加'
