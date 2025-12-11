@@ -534,6 +534,7 @@ const cleanTimeConvertValues = (excludeField = '') => {
   if (excludeField !== 'hours') hours.value = ''
   if (excludeField !== 'days') days.value = ''
   if (excludeField !== 'weeks') weeks.value = ''
+  timeConversionError.value = ''
 }
 
 // watchers

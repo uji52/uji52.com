@@ -592,6 +592,8 @@ describe('Develop.vue', () => {
     expect(wrapper.vm.hours).toBe('')
     expect(wrapper.vm.days).toBe('')
     expect(wrapper.vm.weeks).toBe('')
+    // エラー状態もクリアされていることを確認
+    expect(wrapper.vm.timeConversionError).toBe('')
   })
 
   it('時間変換: 整数計算で浮動小数点誤差がない（秒から分）', async () => {
