@@ -537,6 +537,135 @@ describe('Develop.vue', () => {
     expect(wrapper.vm.hex).toBe('')
   })
 
-})
+  // 時間変換テスト - 新しい仕様：秒のみ入力列可能、他を自動計算
+  it('秒(totalSeconds)入力で残り秒と分が自動計算される', async () => {
+    // 前のテストの影響を排除
+    wrapper.vm.cleanTimeConvertValues()
+    const totalSecondsInput = wrapper.find('input[id="totalSeconds"]')
+    await totalSecondsInput.setValue('121')
+    await nextTick()
+    expect(wrapper.vm.totalSeconds).toBe('121')
+    expect(wrapper.vm.seconds).toBe('1')  // 121 % 60 = 1
+    expect(wrapper.vm.minutes).toBe('2')  // (121 / 60) % 60 = 2
+  })
 
-//
+  it('秒(totalSeconds)入力で全ての単位が計算される', async () => {
+    // 前のテストの影響を排除
+    wrapper.vm.cleanTimeConvertValues()
+    const totalSecondsInput = wrapper.find('input[id="totalSeconds"]')
+    await totalSecondsInput.setValue('604800')  // 1週間
+    await nextTick()
+    expect(wrapper.vm.totalSeconds).toBe('604800')
+    expect(wrapper.vm.seconds).toBe('0')  // 604800 % 60 = 0
+    expect(wrapper.vm.minutes).toBe('0')  // (604800 / 60) % 60 = 0
+    expect(wrapper.vm.hours).toBe('0')  // (604800 / 3600) % 24 = 0
+    expect(wrapper.vm.days).toBe('0')  // (604800 / 86400) % 7 = 0
+    expect(wrapper.vm.weeks).toBe('1')  // 604800 / 604800 = 1
+  })
+
+  it('時間変換: 秒に不正値を入力するとエラー', async () => {
+    // 前のテストの影響を排除
+    wrapper.vm.cleanTimeConvertValues()
+    const totalSecondsInput = wrapper.find('input[id="totalSeconds"]')
+    await totalSecondsInput.setValue('10.5')
+    await nextTick()
+    expect(wrapper.vm.timeConversionError).toBe('秒は整数である必要があります。')
+  })
+
+  it('時間変換: 秒に小数値を入力するとエラー', async () => {
+    // 前のテストの影響を排除
+    wrapper.vm.cleanTimeConvertValues()
+    const totalSecondsInput = wrapper.find('input[id="totalSeconds"]')
+    await totalSecondsInput.setValue('abc')
+    await nextTick()
+    expect(wrapper.vm.timeConversionError).toBe('秒は整数である必要があります。')
+  })
+
+  it('時間変換: cleanTimeConvertValues で全フィールドがリセットされる（初期状態確認）', async () => {
+    // 前のテストの影響を排除するためのテスト
+    wrapper.vm.cleanTimeConvertValues()
+    await nextTick()
+    // すべてが空になることを確認
+    expect(wrapper.vm.totalSeconds).toBe('')
+    expect(wrapper.vm.seconds).toBe('')
+    expect(wrapper.vm.minutes).toBe('')
+    expect(wrapper.vm.hours).toBe('')
+    expect(wrapper.vm.days).toBe('')
+    expect(wrapper.vm.weeks).toBe('')
+    // エラー状態もクリアされていることを確認
+    expect(wrapper.vm.timeConversionError).toBe('')
+  })
+
+  it('時間変換: 整数計算で浮動小数点誤差がない（秒から分）', async () => {
+      // 前のテストの影響を排除
+      wrapper.vm.cleanTimeConvertValues()
+    const totalSecondsInput = wrapper.find('input[id="totalSeconds"]')
+    await totalSecondsInput.setValue('120')
+      await nextTick()
+    await nextTick()
+    expect(wrapper.vm.totalSeconds).toBe('120')
+    expect(wrapper.vm.seconds).toBe('0')  // 120 % 60 = 0
+    expect(wrapper.vm.minutes).toBe('2')  // (120 / 60) % 60 = 2
+    expect(wrapper.vm.hours).toBe('0')  // (120 / 3600) % 24 = 0
+    expect(wrapper.vm.days).toBe('0')  // (120 / 86400) % 7 = 0
+    expect(wrapper.vm.weeks).toBe('0')  // 120 / 604800 = 0
+  })
+
+  it('時間変換: 整数計算で浮動小数点誤差がない（秒から日）', async () => {
+    // 前のテストの影響を排除
+    wrapper.vm.cleanTimeConvertValues()
+    // 直接値をセット
+    wrapper.vm.totalSeconds = '86400'
+    await nextTick()
+    expect(wrapper.vm.totalSeconds).toBe('86400')
+    expect(wrapper.vm.seconds).toBe('0')  // 86400 % 60 = 0
+    expect(wrapper.vm.minutes).toBe('0')  // (86400 / 60) % 60 = 0
+    expect(wrapper.vm.hours).toBe('0')  // (86400 / 3600) % 24 = 0
+    expect(wrapper.vm.days).toBe('1')  // (86400 / 86400) % 7 = 1
+    expect(wrapper.vm.weeks).toBe('0')  // 86400 / 604800 = 0
+  })
+
+  it('時間変換: cleanTimeConvertValues で全フィールドがリセットされる', async () => {
+    // 前のテストの影響を排除
+    wrapper.vm.cleanTimeConvertValues()
+    // まず値をセット
+    await wrapper.find('input[id="totalSeconds"]').setValue('604800')
+    await nextTick()
+
+    // 実行
+    wrapper.vm.cleanTimeConvertValues()
+
+    // すべて空になることを確認
+    expect(wrapper.vm.totalSeconds).toBe('')
+    expect(wrapper.vm.minutes).toBe('')
+    expect(wrapper.vm.hours).toBe('')
+    expect(wrapper.vm.days).toBe('')
+    expect(wrapper.vm.weeks).toBe('')
+  })
+
+  it('時間変換: cleanTimeConvertValues で除外フィールド以外がリセットされる', async () => {
+    // 前のテストの影響を排除
+    wrapper.vm.cleanTimeConvertValues()
+    // 各フィールドに値を直接セット
+    wrapper.vm.totalSeconds = '100'
+    wrapper.vm.seconds = '50'
+    wrapper.vm.minutes = '1'
+    wrapper.vm.hours = '2'
+    wrapper.vm.days = '3'
+    wrapper.vm.weeks = '1'
+    await nextTick()
+
+    // 'days' を除外してクリア
+    wrapper.vm.cleanTimeConvertValues('days')
+
+    // days だけ残り、他は空になることを確認
+    // (計算が再度実行されるため、days は計算値 0 になる)
+    expect(wrapper.vm.totalSeconds).toBe('')
+    expect(wrapper.vm.seconds).toBe('')
+    expect(wrapper.vm.minutes).toBe('')
+    expect(wrapper.vm.hours).toBe('')
+    expect(wrapper.vm.days).toBe('0')
+    expect(wrapper.vm.weeks).toBe('')
+  })
+
+})
