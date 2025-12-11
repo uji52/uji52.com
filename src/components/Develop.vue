@@ -857,6 +857,9 @@ watch(
 
 /**
  * 時間変換
+ * @param {string} sourceField - 変換元フィールド名
+ * @param {string} sourceValue - 変換元の値（秒数の文字列）
+ * @returns {Promise<boolean>} 変換成功時はtrue、失敗時はfalse
  */
 const updateTimeConversion = async (sourceField, sourceValue) => {
   // 整数のみを許可
@@ -866,7 +869,7 @@ const updateTimeConversion = async (sourceField, sourceValue) => {
     return false
   }
 
-    try {
+  try {
     isUpdatingTimeConversion = true
     const value = Math.floor(sourceValue) // 整数に変換
 

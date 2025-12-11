@@ -581,7 +581,7 @@ describe('Develop.vue', () => {
     expect(wrapper.vm.timeConversionError).toBe('秒は整数である必要があります。')
   })
 
-  it('時間変換: cleanTimeConvertValues で全フィールドがリセットされる前のテストの影響を排除', async () => {
+  it('時間変換: cleanTimeConvertValues で全フィールドがリセットされる（初期状態確認）', async () => {
     // 前のテストの影響を排除するためのテスト
     wrapper.vm.cleanTimeConvertValues()
     await nextTick()
