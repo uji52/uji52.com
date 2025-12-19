@@ -1,5 +1,6 @@
 module.exports = {
   testEnvironment: 'jsdom',
+  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/tools/generate_cloudfront_signed_cookies.js'],
   moduleFileExtensions: ['js', 'vue'],
   transform: {
     '^.+\\.vue$': '@vue/vue3-jest',
