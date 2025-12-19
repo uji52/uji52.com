@@ -51,6 +51,10 @@ function base64UrlEncode(input) {
   return input.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
+function base64Encode(input) {
+  return input.toString('base64');
+}
+
 function makePolicy(resource, expireEpoch, ipCidr) {
   const stmt = {
     Statement: [
@@ -76,14 +80,21 @@ function signPolicy(policyStr, privateKey) {
   return base64UrlEncode(signature);
 }
 
+function signPolicyAsBase64(policyStr, privateKey) {
+  const signer = crypto.createSign('RSA-SHA1');
+  signer.update(policyStr);
+  const signature = signer.sign(privateKey);
+  return base64Encode(signature);
+}
+
 (async function main() {
   const now = Math.floor(Date.now() / 1000);
   const expire = now + (isNaN(expiresSec) ? 3600 : expiresSec);
   const resource = `https://${domain}/*`;
 
   const policy = makePolicy(resource, expire, ip);
-  const policyB64 = base64UrlEncode(Buffer.from(policy, 'utf8'));
-  const signature = signPolicy(policy, privateKeyPem);
+  const policyB64 = encodeURIComponent(base64Encode(Buffer.from(policy, 'utf8')));
+  const signature = encodeURIComponent(signPolicyAsBase64(policy, privateKeyPem));
 
   // CloudFront の署名付きクッキーに使う名前
   // カスタムポリシー: CloudFront-Policy, CloudFront-Signature, CloudFront-Key-Pair-Id
