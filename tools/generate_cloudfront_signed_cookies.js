@@ -47,10 +47,6 @@ if (!fs.existsSync(privateKeyPath)) {
 
 const privateKeyPem = fs.readFileSync(privateKeyPath, 'utf8');
 
-function base64UrlEncode(input) {
-  return input.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
-
 function base64Encode(input) {
   return input.toString('base64');
 }
@@ -70,14 +66,6 @@ function makePolicy(resource, expireEpoch, ipCidr) {
     stmt.Statement[0].Condition.IpAddress = { 'AWS:SourceIp': ipCidr };
   }
   return JSON.stringify(stmt);
-}
-
-function signPolicy(policyStr, privateKey) {
-  // Use RSA-SHA1 for compatibility with CloudFront signed-cookie examples
-  const signer = crypto.createSign('RSA-SHA1');
-  signer.update(policyStr);
-  const signature = signer.sign(privateKey);
-  return base64UrlEncode(signature);
 }
 
 function signPolicyAsBase64(policyStr, privateKey) {

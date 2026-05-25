@@ -8,15 +8,41 @@ reviews:
     collapse_walkthrough: true
     path_filters:
         - "!**/*.xml"
+        - "!dist/**"
+        - "!coverage/**"
+        - "!*.lock"
     path_instructions:
+        - path: "**/*"
+          instructions: |
+            以下の点について、レビューを行ってください：
+            - コードの品質
+            - セキュリティ上の問題
+            - パフォーマンスの考慮
+            ただし、PRのタイトルが "AutoPR: " で始まる場合は、タイトルの形式に関する指摘は行わないでください。
         - path: "**/*.js"
           instructions: |
-            Review the JavaScript code for conformity with the Google JavaScript style guide, highlighting any deviations.
+            以下の点に注意してJavaScriptコードをレビューしてください：
+            - Google JavaScriptスタイルガイドへの準拠
+            - コードの可読性と保守性
+            - 命名規則の一貫性
+            - エラー処理の適切性
+            - パフォーマンスへの考慮
+        - path: "**/*.vue"
+          instructions: |
+            Vueコンポーネントについて以下の点を確認してください：
+            - コンポーネントの責務が適切か
+            - プロパティとイベントの定義が明確か
+            - コンポーネントの再利用性
+            - パフォーマンスの最適化
+            - TypeScriptの型定義の適切性
         - path: "tests/**/*"
           instructions: |
-              Assess the unit test code employing the Mocha testing framework. Confirm that:
-              - The tests adhere to Mocha's established best practices.
-              - Test descriptions are sufficiently detailed to clarify the purpose of each test.
+            テストコードについて以下の点を確認してください：
+            - テストケースの網羅性
+            - テストの記述が明確で理解しやすいか
+            - テストの独立性が保たれているか
+            - モックやスタブの適切な使用
+            - エッジケースのテスト
     auto_review:
         enabled: true
         ignore_title_keywords:
@@ -32,3 +58,4 @@ reviews:
             - "!release/.*"
 chat:
     auto_reply: true
+    allow_non_org_members: false
