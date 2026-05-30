@@ -1,0 +1,58 @@
+name: Dispatch Deploy Workflow on /deploy comment
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: read
+  issues: read
+  actions: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Validate comment and dispatch
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const comment = context.payload.comment.body.trim();
+            if (!context.payload.issue.pull_request) {
+              core.info('Comment is not on a pull request; skipping.');
+              return;
+            }
+            if (!comment.startsWith('/deploy')) {
+              core.info('No /deploy command found; skipping.');
+              return;
+            }
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const commenter = context.payload.comment.user.login;
+            const pr_number = context.payload.issue.number;
+
+            // Check commenter is a collaborator
+            try {
+              await github.rest.repos.checkCollaborator({ owner, repo, username: commenter });
+            } catch (e) {
+              core.setFailed('Commenter is not a collaborator; aborting dispatch.');
+              return;
+            }
+
+            // Get PR head sha
+            const pr = await github.rest.pulls.get({ owner, repo, pull_number: pr_number });
+            const sha = pr.data.head.sha;
+
+            // Dispatch the deploy workflow with the PR head SHA
+            await github.rest.actions.createWorkflowDispatch({
+              owner,
+              repo,
+              workflow_id: 'deploy-workflow.yml',
+              ref: 'develop',
+              inputs: {
+                sha,
+                pr_number: String(pr_number)
+              }
+            });
+            core.info('Deploy workflow dispatched for PR #' + pr_number);
