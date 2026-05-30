@@ -125,6 +125,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20.18.3'
+      - name: Install dependencies
+        run: npm ci
       - name: Build (dev)
         run: npm run build-dev
       - uses: actions/upload-artifact@v4
