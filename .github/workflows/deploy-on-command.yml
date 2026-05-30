@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Validate comment and dispatch
-        uses: actions/github-script@v6
+        uses: actions/github-script@v9
         with:
           script: |
             const comment = context.payload.comment.body.trim();
@@ -37,6 +37,7 @@ jobs:
               await github.rest.repos.checkCollaborator({ owner, repo, username: commenter });
             } catch (e) {
               core.setFailed('Commenter is not a collaborator; aborting dispatch.');
+              return;
             }
 
             // Get PR head sha
