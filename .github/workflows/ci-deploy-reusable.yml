@@ -1,0 +1,157 @@
+name: Reusable CI and Deploy
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: 'Ref or SHA to checkout'
+        required: true
+        type: string
+      run_build:
+        description: 'Whether to run build step'
+        required: false
+        type: boolean
+        default: false
+      run_deploy:
+        description: 'Whether to run deploy steps'
+        required: false
+        type: boolean
+        default: false
+      pr_number:
+        description: 'Optional PR number'
+        required: false
+        type: string
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: false
+      AWS_SECRET_ACCESS_KEY:
+        required: false
+      S3_DEV_BUCKET_NAME:
+        required: false
+      CF_DEV_DISTRIBUTION_ID:
+        required: false
+      AWS_GLOBAL_CERTIFICATE_ARN:
+        required: false
+      EMAIL_SNS_TOPIC_ARN:
+        required: false
+      OIDC_GOOGLE_CLIENT_ID:
+        required: false
+      OIDC_GOOGLE_CLIENT_SECRET:
+        required: false
+      FROM_EMAIL_ADDRESS:
+        required: false
+
+jobs:
+  Setup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.3'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+
+  Lint:
+    needs: Setup
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.3'
+      - name: Run lint
+        run: npm run lint
+
+  UnitTest:
+    needs: Setup
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.3'
+      - name: Run unit tests
+        run: npm run test:unit --silent
+
+  Build:
+    if: ${{ inputs.run_build }}
+    needs: [Lint, UnitTest]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.3'
+      - name: Build (dev)
+        run: npm run build-dev
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 1
+
+  DeployDevelop:
+    if: ${{ inputs.run_deploy }}
+    needs: Build
+    runs-on: ubuntu-24.04
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: "ap-northeast-1"
+      S3_DEV_BUCKET_NAME: ${{ secrets.S3_DEV_BUCKET_NAME }}
+      CF_DEV_DISTRIBUTION_ID: ${{ secrets.CF_DEV_DISTRIBUTION_ID }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - name: Deploy to S3
+        run: aws s3 cp --recursive dist s3://${{ env.S3_DEV_BUCKET_NAME }}
+      - name: Invalidate CloudFront
+        run: aws cloudfront create-invalidation --distribution-id ${{ env.CF_DEV_DISTRIBUTION_ID }} --paths "/*"
+
+  DeployCloudFormation:
+    if: ${{ inputs.run_deploy }}
+    needs: DeployDevelop
+    runs-on: ubuntu-24.04
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_GLOBAL_CERTIFICATE_ARN: ${{ secrets.AWS_GLOBAL_CERTIFICATE_ARN }}
+      AWS_DEFAULT_REGION: "ap-northeast-1"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy CloudFormation APIGW Template
+        run: |
+          aws cloudformation deploy \
+            --template-file ./aws/templates/api-gateway.yml \
+            --stack-name uji52com-dev-apigw \
+            --parameter-overrides EmailSNSTopicArn=${{ secrets.EMAIL_SNS_TOPIC_ARN }} Environment=dev \
+            --capabilities CAPABILITY_NAMED_IAM
+
+      - name: Deploy CloudFormation Cognito Template
+        run: |
+          aws cloudformation deploy \
+            --template-file ./aws/templates/cognito.yml \
+            --stack-name uji52com-dev-cognito \
+            --parameter-overrides \
+              GoogleClientId=${{ secrets.OIDC_GOOGLE_CLIENT_ID }} \
+              GoogleClientSecret=${{ secrets.OIDC_GOOGLE_CLIENT_SECRET }} \
+              FromMailAddress=${{ secrets.FROM_EMAIL_ADDRESS }} \
+              Environment=dev \
+            --capabilities CAPABILITY_NAMED_IAM
