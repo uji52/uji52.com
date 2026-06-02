@@ -1,0 +1,27 @@
+name: Deploy (dispatched)
+
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: 'Commit SHA to checkout'
+        required: true
+        type: string
+      pr_number:
+        description: 'Pull request number'
+        required: true
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.inputs.pr_number }}
+  cancel-in-progress: true
+
+jobs:
+  call-ci:
+    uses: ./.github/workflows/ci-deploy-reusable.yml
+    with:
+      ref: ${{ inputs.sha }}
+      run_build: true
+      run_deploy: true
+      pr_number: ${{ inputs.pr_number }}
+    secrets: inherit
