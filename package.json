@@ -56,7 +56,7 @@
     "prettier": "^3.5.2",
     "sass": "^1.85.0",
     "vite": "^6.4.1",
-    "vite-plugin-pwa": "^0.21.1"
+    "vite-plugin-pwa": "^1.3.0"
   },
   "keywords": [],
   "author": "uji52",
