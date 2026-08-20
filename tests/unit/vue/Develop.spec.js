@@ -668,4 +668,40 @@ describe('Develop.vue', () => {
     expect(wrapper.vm.weeks).toBe('')
   })
 
+  it('ユーザーエージェントとGlobal IPのアドレス欄が存在し初期化される', async () => {
+    const globalIpInput = wrapper.find('input[id="globalIp"]')
+    const userAgentInput = wrapper.find('input[id="userAgent"]')
+
+    expect(globalIpInput.exists()).toBe(true)
+    expect(userAgentInput.exists()).toBe(true)
+    expect(wrapper.find('label[for="globalIp"]').text()).toBe('あなたのGlobal IPアドレス')
+    expect(wrapper.find('label[for="userAgent"]').text()).toBe('あなたのUserAgent')
+    expect(wrapper.vm.userAgent).toBe(navigator.userAgent)
+  })
+
+  it('fetchGlobalIp 成功時に globalIp が更新される', async () => {
+    const originalFetch = global.fetch
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ ip: '203.0.113.195' })
+      })
+    )
+
+    await wrapper.vm.fetchGlobalIp()
+
+    expect(wrapper.vm.globalIp).toBe('203.0.113.195')
+    global.fetch = originalFetch
+  })
+
+  it('fetchGlobalIp 失敗時にエラーが補捕捉される', async () => {
+    const originalFetch = global.fetch
+    global.fetch = jest.fn(() => Promise.reject(new Error('Network error')))
+
+    await wrapper.vm.fetchGlobalIp()
+
+    global.fetch = originalFetch
+  })
+
 })
+

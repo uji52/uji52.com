@@ -1,8 +1,16 @@
 export const releases = [
   {
+    version: '2.0.8',
+    date: '2026/08/20',
+    isNew: true,
+    notes: [
+      'Global IPアドレスとUserAgentの表示'
+    ]
+  },
+  {
     version: '2.0.7',
     date: '2025/12/12',
-    isNew: true,
+    isNew: false,
     notes: [
       '秒換算による時間変換を追加'
     ]

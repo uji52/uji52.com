@@ -8,6 +8,32 @@
     </section>
     <section>
       <div class="container">
+        <form>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="globalIp">あなたのGlobal IPアドレス</label>
+              <input
+                id="globalIp"
+                v-model="globalIp"
+                class="form-control"
+                placeholder="あなたのGlobal IPアドレス"
+                readonly
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="userAgent">あなたのUserAgent</label>
+              <input
+                id="userAgent"
+                v-model="userAgent"
+                class="form-control"
+                placeholder="あなたのUserAgent"
+                readonly
+              />
+            </div>
+          </div>
+        </form>
         <h2>Encode</h2>
         <form>
           <div class="row">
@@ -378,7 +404,7 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, onMounted } from 'vue'
 import CryptoJS from 'crypto-js'
 
 class UndecodableError extends Error {
@@ -397,6 +423,32 @@ const errorMessages = {
   invalidUnicode: 'Invalid Unicode string',
   invalidURLEncoding: 'Invalid URL encoding'
 }
+
+const globalIp = ref('')
+const userAgent = ref('')
+
+const fetchGlobalIp = async () => {
+  try {
+    if (typeof fetch === 'function') {
+      const response = await fetch('https://api.ipify.org?format=json')
+      if (response.ok) {
+        const data = await response.json()
+        globalIp.value = data.ip || ''
+      }
+    }
+  } catch (err) {
+    /* c8 ignore start */
+    // IP取得失敗時は空のまま
+    /* c8 ignore stop */
+  }
+}
+
+onMounted(() => {
+  if (typeof navigator !== 'undefined') {
+    userAgent.value = navigator.userAgent || ''
+  }
+  fetchGlobalIp()
+})
 
 const plane = ref('')
 const strHex = ref('')
