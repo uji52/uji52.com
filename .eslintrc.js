@@ -1,12 +1,13 @@
 module.exports = {
   root: true,
   env: {
+    browser: true,
+    es2020: true,
     node: true,
     jest: true,
-    'vue/setup-compiler-macros': true,
   },
   extends: [
-    'plugin:vue/vue3-essential',
+    'plugin:vue/essential',
     'eslint:recommended',
   ],
   parserOptions: {
