@@ -60,5 +60,10 @@
   },
   "keywords": [],
   "author": "uji52",
-  "license": "MIT"
+  "license": "MIT",
+  "overrides": {
+    "@vue/vue3-jest": {
+      "babel-jest": "$babel-jest"
+    }
+  }
 }
