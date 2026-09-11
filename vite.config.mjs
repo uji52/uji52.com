@@ -1,24 +1,23 @@
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
-import { loadEnv } from 'vite'
-import { defineConfig } from 'rollup'
-const path = require('path')
+import { defineConfig, loadEnv } from 'vite'
+import path from 'node:path'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
 
   return {
-    root: path.resolve(__dirname, 'src'),
+    root: path.resolve(import.meta.dirname, 'src'),
     build: {
       outDir: '../dist',
       rollupOptions: {
         input: {
-          main: path.resolve(__dirname, 'src/index.html')
+          main: path.resolve(import.meta.dirname, 'src/index.html')
         }
       },
       assetsDir: 'assets',
     },
-    publicDir: path.resolve(__dirname, 'public'),
+    publicDir: path.resolve(import.meta.dirname, 'public'),
     base: '/',
     server: {
       port: 8080
@@ -62,7 +61,7 @@ export default defineConfig(({ mode }) => {
     ],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src')
+        '@': path.resolve(import.meta.dirname, './src')
       },
     },
     css: {
