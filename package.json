@@ -4,8 +4,8 @@
   "version": "2.0.8",
   "main": "src/index.js",
   "engines": {
-    "node": "20.18.3",
-    "npm": "10.2.4"
+    "node": ">=22.13.0",
+    "npm": ">=10.2.4"
   },
   "scripts": {
     "serve": "vite",
