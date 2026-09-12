@@ -398,6 +398,53 @@
           </div>
           <p>{{ randomerror }}</p>
         </form>
+        <h2>PEM to JWK 変換</h2>
+        <form @submit.prevent>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="pemInput" class="form-label">PEM</label>
+              <textarea
+                id="pemInput"
+                v-model="pemInput"
+                class="form-control font-monospace"
+                rows="6"
+                placeholder="-----BEGIN PUBLIC KEY-----&#10;...&#10;-----END PUBLIC KEY-----"
+              ></textarea>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div
+                class="d-flex justify-content-between align-items-center mb-1"
+              >
+                <label for="jwkOutput" class="form-label mb-0"
+                  >JWK形式（JSON）</label
+                >
+                <div
+                  v-if="pemKeyInfoList.length"
+                  class="d-flex gap-1 flex-wrap"
+                >
+                  <span
+                    v-for="(info, idx) in pemKeyInfoList"
+                    :key="idx"
+                    class="badge bg-primary"
+                  >
+                    {{ formatKeyInfo(info) }}
+                  </span>
+                </div>
+              </div>
+              <textarea
+                id="jwkOutput"
+                v-model="jwkOutput"
+                class="form-control font-monospace"
+                rows="6"
+                placeholder="変換結果がここに表示されます"
+                readonly
+              ></textarea>
+            </div>
+          </div>
+          <p id="pemJwkError" v-if="pemJwkError" class="text-danger">
+            {{ pemJwkError }}
+          </p>
+        </form>
       </div>
     </section>
   </div>
@@ -406,6 +453,7 @@
 <script setup>
 import { ref, watch, nextTick, onMounted } from 'vue'
 import CryptoJS from 'crypto-js'
+import { pemToJwks, PemParseError } from '@/utils/pemJwk'
 
 class UndecodableError extends Error {
   constructor(message) {
@@ -493,6 +541,11 @@ const randomseed = ref(
 const randomlength = ref(10)
 const randomvalue = ref('')
 const randomerror = ref('')
+
+const pemInput = ref('')
+const jwkOutput = ref('')
+const pemKeyInfoList = ref([])
+const pemJwkError = ref('')
 
 // 時間変換の循環更新を防ぐフラグと現在更新中のフィールド
 let isUpdatingTimeConversion = false
@@ -647,9 +700,9 @@ watch(
       encodeError.value =
         err.name === 'URIError'
           ? 'その値はURLデコードできないです。'
-          /* c8 ignore start */
-          : err.message // 入らない想定
-          /* c8 ignore stop */
+          : /* c8 ignore start */
+            err.message // 入らない想定
+      /* c8 ignore stop */
     }
   }
 )
@@ -661,7 +714,7 @@ watch(
       plane.value = ''
       plane.value = unicodeToString(newValue)
       encodeError.value = ''
-    /* c8 ignore start */
+      /* c8 ignore start */
     } catch (err) {
       encodeError.value = err.message // 入らない想定
     }
@@ -796,7 +849,7 @@ watch(
       dec.value = parseInt(newValue, 2).toString(10)
       hex.value = parseInt(newValue, 2).toString(16)
       numberConversionError.value = ''
-    /* c8 ignore start */
+      /* c8 ignore start */
     } catch (err) {
       numberConversionError.value = 'unknown error: ' + err.message
     }
@@ -822,7 +875,7 @@ watch(
       dec.value = parseInt(newValue, 4).toString(10)
       hex.value = parseInt(newValue, 4).toString(16)
       numberConversionError.value = ''
-    /* c8 ignore start */
+      /* c8 ignore start */
     } catch (err) {
       numberConversionError.value = 'unknown error: ' + err.message
     }
@@ -848,7 +901,7 @@ watch(
       dec.value = parseInt(newValue, 8).toString(10)
       hex.value = parseInt(newValue, 8).toString(16)
       numberConversionError.value = ''
-    /* c8 ignore start */
+      /* c8 ignore start */
     } catch (err) {
       numberConversionError.value = 'unknown error: ' + err.message
     }
@@ -874,7 +927,7 @@ watch(
       oct.value = parseInt(newValue, 10).toString(8)
       hex.value = parseInt(newValue, 10).toString(16)
       numberConversionError.value = ''
-    /* c8 ignore start */
+      /* c8 ignore start */
     } catch (err) {
       numberConversionError.value = 'unknown error: ' + err.message
     }
@@ -900,7 +953,7 @@ watch(
       oct.value = parseInt(newValue, 16).toString(8)
       dec.value = parseInt(newValue, 16).toString(10)
       numberConversionError.value = ''
-    /* c8 ignore start */
+      /* c8 ignore start */
     } catch (err) {
       numberConversionError.value = 'unknown error: ' + err.message
     }
@@ -949,11 +1002,11 @@ const updateTimeConversion = async (sourceField, sourceValue) => {
     }
 
     // 秒から各単位に計算（整数除算を使用）
-    const calcSeconds = totalSecs % 60  // 残り秒
-    const calcMinutes = Math.floor(totalSecs / 60) % 60  // 分（時間からの余り）
-    const calcHours = Math.floor(totalSecs / 3600) % 24  // 時間（日からの余り）
-    const calcDays = Math.floor(totalSecs / 86400) % 7  // 日（週間からの余り）
-    const calcWeeks = Math.floor(totalSecs / 604800)  // 週間
+    const calcSeconds = totalSecs % 60 // 残り秒
+    const calcMinutes = Math.floor(totalSecs / 60) % 60 // 分（時間からの余り）
+    const calcHours = Math.floor(totalSecs / 3600) % 24 // 時間（日からの余り）
+    const calcDays = Math.floor(totalSecs / 86400) % 7 // 日（週間からの余り）
+    const calcWeeks = Math.floor(totalSecs / 604800) // 週間
 
     // プログラム更新としてマーク（watcher 側で無視するため）
     programmaticUpdateFields.add('totalSeconds')
@@ -993,7 +1046,10 @@ watch(
       cleanTimeConvertValues('totalSeconds')
       return
     }
-    if (isUpdatingTimeConversion || programmaticUpdateFields.has('totalSeconds')) {
+    if (
+      isUpdatingTimeConversion ||
+      programmaticUpdateFields.has('totalSeconds')
+    ) {
       return
     }
     updateTimeConversion('totalSeconds', newValue)
@@ -1015,7 +1071,8 @@ watch(
     const hrs = hours.value ? Math.floor(hours.value) : 0
     const dys = days.value ? Math.floor(days.value) : 0
     const wks = weeks.value ? Math.floor(weeks.value) : 0
-    const totalSecs = remain + mins * 60 + hrs * 3600 + dys * 86400 + wks * 604800
+    const totalSecs =
+      remain + mins * 60 + hrs * 3600 + dys * 86400 + wks * 604800
     updateTimeConversion('totalSeconds', totalSecs.toString())
   }
 )
@@ -1032,7 +1089,8 @@ watch(
     const hrs = hours.value ? Math.floor(hours.value) : 0
     const dys = days.value ? Math.floor(days.value) : 0
     const wks = weeks.value ? Math.floor(weeks.value) : 0
-    const totalSecs = remain + mins * 60 + hrs * 3600 + dys * 86400 + wks * 604800
+    const totalSecs =
+      remain + mins * 60 + hrs * 3600 + dys * 86400 + wks * 604800
     updateTimeConversion('totalSeconds', totalSecs.toString())
   }
 )
@@ -1049,7 +1107,8 @@ watch(
     const hrs = newValue ? Math.floor(newValue) : 0
     const dys = days.value ? Math.floor(days.value) : 0
     const wks = weeks.value ? Math.floor(weeks.value) : 0
-    const totalSecs = remain + mins * 60 + hrs * 3600 + dys * 86400 + wks * 604800
+    const totalSecs =
+      remain + mins * 60 + hrs * 3600 + dys * 86400 + wks * 604800
     updateTimeConversion('totalSeconds', totalSecs.toString())
   }
 )
@@ -1066,7 +1125,8 @@ watch(
     const hrs = hours.value ? Math.floor(hours.value) : 0
     const dys = newValue ? Math.floor(newValue) : 0
     const wks = weeks.value ? Math.floor(weeks.value) : 0
-    const totalSecs = remain + mins * 60 + hrs * 3600 + dys * 86400 + wks * 604800
+    const totalSecs =
+      remain + mins * 60 + hrs * 3600 + dys * 86400 + wks * 604800
     updateTimeConversion('totalSeconds', totalSecs.toString())
   }
 )
@@ -1083,11 +1143,65 @@ watch(
     const hrs = hours.value ? Math.floor(hours.value) : 0
     const dys = days.value ? Math.floor(days.value) : 0
     const wks = newValue ? Math.floor(newValue) : 0
-    const totalSecs = remain + mins * 60 + hrs * 3600 + dys * 86400 + wks * 604800
+    const totalSecs =
+      remain + mins * 60 + hrs * 3600 + dys * 86400 + wks * 604800
     updateTimeConversion('totalSeconds', totalSecs.toString())
   }
 )
 
+/**
+ * PEM to JWK
+ */
+const formatKeyInfo = (info) => {
+  if (!info) return ''
+  const typeLabel = info.isPrivate
+    ? '秘密鍵'
+    : info.type === 'certificate'
+      ? '証明書'
+      : '公開鍵'
+  if (info.algorithm === 'RSA') {
+    return `RSA (${info.bitLength}bit) ${typeLabel}`
+  }
+  if (info.algorithm === 'EC') {
+    return `EC (${info.curve}) ${typeLabel}`
+  }
+  if (info.algorithm === 'OKP') {
+    return `${info.curve} ${typeLabel}`
+  }
+  return `${info.format} ${typeLabel}`
+}
+
+watch(
+  () => pemInput.value,
+  (newValue) => {
+    if (!newValue || !newValue.trim()) {
+      jwkOutput.value = ''
+      pemKeyInfoList.value = []
+      pemJwkError.value = ''
+      return
+    }
+    try {
+      const res = pemToJwks(newValue)
+      if (res.keys.length === 1) {
+        jwkOutput.value = JSON.stringify(res.keys[0], null, 2)
+      } else {
+        jwkOutput.value = JSON.stringify({ keys: res.keys }, null, 2)
+      }
+      pemKeyInfoList.value = res.details
+      pemJwkError.value = ''
+    } catch (err) {
+      jwkOutput.value = ''
+      pemKeyInfoList.value = []
+      if (err instanceof PemParseError) {
+        pemJwkError.value = err.message
+      } else {
+        /* c8 ignore start */
+        pemJwkError.value = '変換エラー: ' + err.message
+        /* c8 ignore stop */
+      }
+    }
+  }
+)
 </script>
 
 <style scoped></style>
