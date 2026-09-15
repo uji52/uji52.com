@@ -365,7 +365,6 @@ describe('pemJwk utility', () => {
       expect(() => pemToJwk(pem)).toThrow()
     })
   })
-})
 
   describe('Edge cases and thorough error handling', () => {
     it('throws when PKCS#1 RSA Private Key has invalid tag or structure', () => {
@@ -392,16 +391,57 @@ describe('pemJwk utility', () => {
       ).toThrow('不正なSEC1 EC秘密鍵構造です')
     })
 
-    it('handles SEC1 EC Private Key with fallback curve detection and unknown length', () => {
-      // 100-byte private key without curve params
-      const longPriv = new Uint8Array(100)
+    it('throws when SEC1 EC Private Key has no curve parameters', () => {
+      // 32-byte private key without curve params
+      const priv = new Uint8Array(32)
+      const sec1Body = Buffer.concat([
+        Buffer.from([0x02, 0x01, 0x01, 0x04, 0x20]),
+        priv
+      ])
       const sec1Der = Buffer.concat([
-        Buffer.from([0x30, 0x69, 0x02, 0x01, 0x01, 0x04, 0x64]),
-        longPriv
+        Buffer.from([0x30, sec1Body.length]),
+        sec1Body
       ])
       expect(() =>
         pemToJwk(`-----BEGIN EC PRIVATE KEY-----\n${sec1Der.toString('base64')}\n-----END EC PRIVATE KEY-----`)
       ).toThrow('EC秘密鍵から曲線パラメータを特定できませんでした')
+    })
+
+    it('throws when SEC1 EC Private Key scalar length exceeds curve size', () => {
+      const priv33 = Buffer.alloc(33, 1)
+      const sec1Param = Buffer.from([0xa0, 0x0a, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07])
+      const sec1Body = Buffer.concat([
+        Buffer.from([0x02, 0x01, 0x01, 0x04, 0x21]),
+        priv33,
+        sec1Param
+      ])
+      const sec1Der = Buffer.concat([
+        Buffer.from([0x30, sec1Body.length]),
+        sec1Body
+      ])
+      expect(() =>
+        pemToJwk(`-----BEGIN EC PRIVATE KEY-----\n${sec1Der.toString('base64')}\n-----END EC PRIVATE KEY-----`)
+      ).toThrow('EC秘密鍵のスカラー長が不正です (P-256)')
+    })
+
+    it('throws when SEC1 EC Private Key has invalid public point format or length', () => {
+      const priv32 = Buffer.alloc(32, 1)
+      const sec1Param = Buffer.from([0xa0, 0x0a, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07])
+      // compressed public point (starts with 0x02 instead of 0x04)
+      const badPub = Buffer.from([0xa1, 0x05, 0x03, 0x03, 0x00, 0x02, 0x01])
+      const sec1Body = Buffer.concat([
+        Buffer.from([0x02, 0x01, 0x01, 0x04, 0x20]),
+        priv32,
+        sec1Param,
+        badPub
+      ])
+      const sec1Der = Buffer.concat([
+        Buffer.from([0x30, sec1Body.length]),
+        sec1Body
+      ])
+      expect(() =>
+        pemToJwk(`-----BEGIN EC PRIVATE KEY-----\n${sec1Der.toString('base64')}\n-----END EC PRIVATE KEY-----`)
+      ).toThrow('EC公開点の形式またはデータ長が不正です (P-256)')
     })
 
     it('throws when SPKI is not a sequence or has invalid algorithm identifier', () => {
@@ -427,7 +467,7 @@ describe('pemJwk utility', () => {
       ).toThrow('SPKIの公開鍵データが空です')
     })
 
-    it('throws when EC SPKI has invalid coordinate length or compressed format', () => {
+    it('throws when EC SPKI is missing curve OID', () => {
       const ecSpkiCompressed = Buffer.from([
         0x30, 0x16, 0x30, 0x09, 0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01,
         0x03, 0x09, 0x00, 0x02, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07
@@ -435,6 +475,78 @@ describe('pemJwk utility', () => {
       expect(() =>
         pemToJwk(`-----BEGIN PUBLIC KEY-----\n${ecSpkiCompressed.toString('base64')}\n-----END PUBLIC KEY-----`)
       ).toThrow('EC公開鍵の曲線パラメータが見つかりません')
+    })
+
+    it('throws when EC SPKI uses compressed point format', () => {
+      const p256AlgSeq = Buffer.from([
+        0x30, 0x13,
+        0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01, // id-ecPublicKey
+        0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07 // P-256
+      ])
+      const compressedPoint = Buffer.concat([Buffer.from([0x02]), Buffer.alloc(32, 1)])
+      const bitString = Buffer.concat([
+        Buffer.from([0x03, compressedPoint.length + 1, 0x00]),
+        compressedPoint
+      ])
+      const spki = Buffer.concat([
+        Buffer.from([0x30, p256AlgSeq.length + bitString.length]),
+        p256AlgSeq,
+        bitString
+      ])
+      expect(() =>
+        pemToJwk(`-----BEGIN PUBLIC KEY-----\n${spki.toString('base64')}\n-----END PUBLIC KEY-----`)
+      ).toThrow('非圧縮形式のEC公開鍵のみサポートしています')
+    })
+
+    it('throws when EC SPKI coordinate length is invalid', () => {
+      const p256AlgSeq = Buffer.from([
+        0x30, 0x13,
+        0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01, // id-ecPublicKey
+        0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07 // P-256
+      ])
+      // too short (1 + 30 bytes instead of 65)
+      const shortPoint = Buffer.concat([Buffer.from([0x04]), Buffer.alloc(30, 1)])
+      const shortBitString = Buffer.concat([
+        Buffer.from([0x03, shortPoint.length + 1, 0x00]),
+        shortPoint
+      ])
+      const shortSpki = Buffer.concat([
+        Buffer.from([0x30, p256AlgSeq.length + shortBitString.length]),
+        p256AlgSeq,
+        shortBitString
+      ])
+      expect(() =>
+        pemToJwk(`-----BEGIN PUBLIC KEY-----\n${shortSpki.toString('base64')}\n-----END PUBLIC KEY-----`)
+      ).toThrow('EC公開鍵のデータ長が不正です (P-256)')
+
+      // too long (1 + 66 bytes instead of 65)
+      const longPoint = Buffer.concat([Buffer.from([0x04]), Buffer.alloc(66, 1)])
+      const longBitString = Buffer.concat([
+        Buffer.from([0x03, longPoint.length + 1, 0x00]),
+        longPoint
+      ])
+      const longSpki = Buffer.concat([
+        Buffer.from([0x30, p256AlgSeq.length + longBitString.length]),
+        p256AlgSeq,
+        longBitString
+      ])
+      expect(() =>
+        pemToJwk(`-----BEGIN PUBLIC KEY-----\n${longSpki.toString('base64')}\n-----END PUBLIC KEY-----`)
+      ).toThrow('EC公開鍵のデータ長が不正です (P-256)')
+    })
+
+    it('throws when ASN.1 length field is invalid or overflows', () => {
+      // 4-byte negative / signed overflow in ASN.1 length: 0x30 0x84 0xff 0xff 0xff 0xfa
+      const overflowDer = Buffer.from([0x30, 0x84, 0xff, 0xff, 0xff, 0xfa])
+      expect(() =>
+        pemToJwk(`-----BEGIN PUBLIC KEY-----\n${overflowDer.toString('base64')}\n-----END PUBLIC KEY-----`)
+      ).toThrow('ASN.1の長さフィールドが不正です')
+
+      // length field > 4 bytes: 0x30 0x85 0x01 0x00 0x00 0x00 0x00
+      const tooLargeDer = Buffer.from([0x30, 0x85, 0x01, 0x00, 0x00, 0x00, 0x00])
+      expect(() =>
+        pemToJwk(`-----BEGIN PUBLIC KEY-----\n${tooLargeDer.toString('base64')}\n-----END PUBLIC KEY-----`)
+      ).toThrow('ASN.1の長さフィールドが大きすぎます')
     })
 
     it('throws when PKCS#8 is not a sequence or has invalid structure', () => {
@@ -478,3 +590,4 @@ describe('pemJwk utility', () => {
       ).toThrow('SubjectPublicKeyInfoが見つかりませんでした')
     })
   })
+})

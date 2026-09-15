@@ -755,7 +755,7 @@ qwIDAQAB
           format: 'X.509',
           isPrivate: false
         })
-      ).toBe('RSA (undefinedbit) 証明書')
+      ).toBe('RSA 証明書')
       expect(
         wrapper.vm.formatKeyInfo({
           algorithm: 'UNKNOWN',

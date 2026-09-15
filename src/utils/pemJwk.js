@@ -1,10 +1,10 @@
 /**
- * PEM to JWK converter (pure JavaScript, client-side only)
+ * PEMからJWKへの変換処理（Pure JavaScript・クライアントサイド専用）
  *
- * Supports:
- * - Public Keys: SPKI (RSA, EC P-256/P-384/P-521/secp256k1, Ed25519), PKCS#1 RSA Public Key
- * - Private Keys: PKCS#8 (RSA, EC, Ed25519), PKCS#1 RSA Private Key, SEC1 EC Private Key
- * - Certificates: X.509 Certificates (extracts public key, adds x5c)
+ * 対応形式:
+ * - 公開鍵: SPKI (RSA, EC P-256/P-384/P-521/secp256k1, Ed25519), PKCS#1 RSA公開鍵
+ * - 秘密鍵: PKCS#8 (RSA, EC, Ed25519), PKCS#1 RSA秘密鍵, SEC1 EC秘密鍵
+ * - 証明書: X.509証明書（公開鍵を抽出し、x5cを付与）
  */
 
 export class PemParseError extends Error {
@@ -32,7 +32,7 @@ export const EC_CURVES_BY_OID = {
 }
 
 /**
- * Base64 string to Uint8Array
+ * Base64文字列をUint8Arrayへ変換
  */
 export function base64ToBytes(b64) {
   try {
@@ -52,7 +52,7 @@ export function base64ToBytes(b64) {
 }
 
 /**
- * Uint8Array to Base64URL string (RFC 7515 / 7517)
+ * Uint8ArrayをBase64URL文字列へ変換 (RFC 7515 / 7517)
  */
 export function bytesToBase64Url(bytes) {
   let binary = ''
@@ -64,7 +64,7 @@ export function bytesToBase64Url(bytes) {
 }
 
 /**
- * Remove leading zero bytes from unsigned BigInteger (ASN.1 INTEGER padding)
+ * 符号なしBigIntegerの先頭ゼロバイト（ASN.1 INTEGERパディング）を除去
  */
 export function stripLeadingZeros(bytes) {
   let start = 0
@@ -75,7 +75,7 @@ export function stripLeadingZeros(bytes) {
 }
 
 /**
- * Pad byte array with leading zeros to exact length (for EC coordinates and scalar)
+ * バイト配列を指定の長さに達するよう先頭ゼロ埋め（EC座標・スカラー用）
  */
 export function padToLength(bytes, targetLength) {
   const stripped = stripLeadingZeros(bytes)
@@ -89,7 +89,7 @@ export function padToLength(bytes, targetLength) {
 }
 
 /**
- * Parse an ASN.1 DER TLV node
+ * ASN.1 DER TLVノードを解析
  */
 export function parseNode(bytes, offset = 0) {
   const start = offset
@@ -112,11 +112,17 @@ export function parseNode(bytes, offset = 0) {
     if (numBytes === 0) {
       throw new PemParseError('不定長ASN.1形式はサポートされていません')
     }
+    if (numBytes > 4) {
+      throw new PemParseError('ASN.1の長さフィールドが大きすぎます')
+    }
     if (offset + numBytes > bytes.length) {
       throw new PemParseError('ASN.1の長さバイトが不完全です')
     }
     for (let i = 0; i < numBytes; i++) {
-      length = (length << 8) | bytes[offset++]
+      length = length * 256 + bytes[offset++]
+    }
+    if (!Number.isSafeInteger(length) || length < 0 || length > 0x7fffffff) {
+      throw new PemParseError('ASN.1の長さフィールドが不正です')
     }
   }
 
@@ -137,13 +143,16 @@ export function parseNode(bytes, offset = 0) {
 }
 
 /**
- * Parse a DER sequence of nodes
+ * DER SEQUENCEノード群を解析
  */
 export function parseSequence(bytes) {
   const items = []
   let curr = 0
   while (curr < bytes.length) {
     const node = parseNode(bytes, curr)
+    if (node.totalLength <= 0) {
+      throw new PemParseError('ASN.1構造の解析に失敗しました')
+    }
     items.push(node)
     curr += node.totalLength
   }
@@ -151,7 +160,7 @@ export function parseSequence(bytes) {
 }
 
 /**
- * Decode DER encoded OID into dotted string (e.g. "1.2.840.113549.1.1.1")
+ * DERエンコードされたOIDをドット区切り文字列に変換（例: "1.2.840.113549.1.1.1"）
  */
 export function decodeOID(bytes) {
   if (bytes.length === 0) return ''
@@ -169,7 +178,7 @@ export function decodeOID(bytes) {
 }
 
 /**
- * Extract PEM blocks from text
+ * テキストからPEMブロックを抽出
  */
 export function extractPemBlocks(pemString) {
   if (typeof pemString !== 'string' || !pemString.trim()) {
@@ -204,7 +213,7 @@ export function extractPemBlocks(pemString) {
 }
 
 /**
- * Parse PKCS#1 RSA Public Key
+ * PKCS#1 RSA公開鍵を解析
  */
 export function parsePkcs1RsaPublicKey(derBytes) {
   const root = parseNode(derBytes, 0)
@@ -236,7 +245,7 @@ export function parsePkcs1RsaPublicKey(derBytes) {
 }
 
 /**
- * Parse PKCS#1 RSA Private Key
+ * PKCS#1 RSA秘密鍵を解析
  */
 export function parsePkcs1RsaPrivateKey(derBytes) {
   const root = parseNode(derBytes, 0)
@@ -275,7 +284,7 @@ export function parsePkcs1RsaPrivateKey(derBytes) {
 }
 
 /**
- * Parse SEC1 EC Private Key
+ * SEC1 EC秘密鍵を解析
  */
 export function parseSec1EcPrivateKey(derBytes, fallbackCurveOid = null) {
   const root = parseNode(derBytes, 0)
@@ -294,35 +303,34 @@ export function parseSec1EcPrivateKey(derBytes, fallbackCurveOid = null) {
   for (let i = 2; i < items.length; i++) {
     const item = items[i]
     if (item.tag === 0xa0) {
-      // [0] parameters
+      // [0] parameters（曲線パラメータ）
       const sub = parseSequence(item.value)
       if (sub.length > 0 && sub[0].tag === 0x06) {
         curveOid = decodeOID(sub[0].value)
       }
     } else if (item.tag === 0xa1) {
-      // [1] publicKey
+      // [1] publicKey（公開鍵）
       const sub = parseSequence(item.value)
       if (sub.length > 0 && sub[0].tag === 0x03) {
-        // BIT STRING - first byte is unused bits
+        // BIT STRING - 先頭バイトは未使用ビット数
         pubBytes = sub[0].value.subarray(1)
       }
     }
   }
 
   if (!curveOid) {
-    if (dBytes.length <= 32) curveOid = OIDS.P_256
-    else if (dBytes.length <= 48) curveOid = OIDS.P_384
-    else if (dBytes.length <= 66) curveOid = OIDS.P_521
-    else {
-      throw new PemParseError(
-        'EC秘密鍵から曲線パラメータを特定できませんでした'
-      )
-    }
+    throw new PemParseError(
+      'EC秘密鍵から曲線パラメータを特定できませんでした'
+    )
   }
 
   const curve = EC_CURVES_BY_OID[curveOid]
   if (!curve) {
     throw new PemParseError(`未対応のEC曲線OIDです: ${curveOid}`)
+  }
+
+  if (stripLeadingZeros(dBytes).length > curve.size) {
+    throw new PemParseError(`EC秘密鍵のスカラー長が不正です (${curve.name})`)
   }
 
   const jwk = {
@@ -331,11 +339,12 @@ export function parseSec1EcPrivateKey(derBytes, fallbackCurveOid = null) {
     d: bytesToBase64Url(padToLength(dBytes, curve.size))
   }
 
-  if (
-    pubBytes &&
-    pubBytes[0] === 0x04 &&
-    pubBytes.length >= 1 + 2 * curve.size
-  ) {
+  if (pubBytes) {
+    if (pubBytes[0] !== 0x04 || pubBytes.length !== 1 + 2 * curve.size) {
+      throw new PemParseError(
+        `EC公開点の形式またはデータ長が不正です (${curve.name})`
+      )
+    }
     jwk.x = bytesToBase64Url(pubBytes.subarray(1, 1 + curve.size))
     jwk.y = bytesToBase64Url(
       pubBytes.subarray(1 + curve.size, 1 + 2 * curve.size)
@@ -356,7 +365,7 @@ export function parseSec1EcPrivateKey(derBytes, fallbackCurveOid = null) {
 }
 
 /**
- * Parse SubjectPublicKeyInfo (SPKI)
+ * SubjectPublicKeyInfo (SPKI) を解析
  */
 export function parseSpki(derBytes) {
   const root = parseNode(derBytes, 0)
@@ -374,7 +383,7 @@ export function parseSpki(derBytes) {
   }
   const algOid = decodeOID(algSeq[0].value)
 
-  // subjectPublicKey is BIT STRING (first byte is unused bits)
+  // subjectPublicKeyはBIT STRING（先頭バイトは未使用ビット数）
   const bitStringVal = items[1].value
   if (bitStringVal.length < 1) {
     throw new PemParseError('SPKIの公開鍵データが空です')
@@ -402,7 +411,7 @@ export function parseSpki(derBytes) {
       throw new PemParseError('非圧縮形式のEC公開鍵のみサポートしています')
     }
     const expectedCoordLen = curve.size
-    if (pubKeyBytes.length < 1 + 2 * expectedCoordLen) {
+    if (pubKeyBytes.length !== 1 + 2 * expectedCoordLen) {
       throw new PemParseError(`EC公開鍵のデータ長が不正です (${curve.name})`)
     }
     const x = pubKeyBytes.subarray(1, 1 + expectedCoordLen)
@@ -454,7 +463,7 @@ export function parseSpki(derBytes) {
 }
 
 /**
- * Parse PKCS#8 PrivateKeyInfo
+ * PKCS#8 PrivateKeyInfoを解析
  */
 export function parsePkcs8(derBytes) {
   const root = parseNode(derBytes, 0)
@@ -527,7 +536,7 @@ export function parsePkcs8(derBytes) {
 }
 
 /**
- * Parse X.509 Certificate
+ * X.509証明書を解析
  */
 export function parseCertificate(derBytes, rawBase64 = null) {
   const root = parseNode(derBytes, 0)
@@ -572,7 +581,7 @@ export function parseCertificate(derBytes, rawBase64 = null) {
 }
 
 /**
- * Convert a single PEM block to JWK
+ * 単一のPEMブロックをJWKへ変換
  */
 export function convertBlock(block) {
   const header = block.header.toUpperCase()
@@ -598,7 +607,7 @@ export function convertBlock(block) {
 }
 
 /**
- * Convert PEM string to JWK (first block)
+ * PEM文字列をJWKへ変換（最初のブロック）
  * @param {string} pemString
  * @returns {{ jwk: object, keyInfo: object }}
  */
@@ -608,7 +617,7 @@ export function pemToJwk(pemString) {
 }
 
 /**
- * Convert PEM string containing multiple blocks to JWK Set (JWKS)
+ * 複数ブロックを含むPEM文字列をJWK Set（JWKS）へ変換
  * @param {string} pemString
  * @returns {{ keys: object[], details: object[] }}
  */

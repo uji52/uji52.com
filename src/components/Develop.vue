@@ -399,6 +399,9 @@
           <p>{{ randomerror }}</p>
         </form>
         <h2>PEM to JWK 変換</h2>
+        <p class="text-muted small">
+          変換はブラウザ内で完結し、鍵は外部へ送信されません。
+        </p>
         <form @submit.prevent>
           <div class="row">
             <div class="col-md-6 mb-3">
@@ -1160,7 +1163,9 @@ const formatKeyInfo = (info) => {
       ? '証明書'
       : '公開鍵'
   if (info.algorithm === 'RSA') {
-    return `RSA (${info.bitLength}bit) ${typeLabel}`
+    return info.bitLength
+      ? `RSA (${info.bitLength}bit) ${typeLabel}`
+      : `RSA ${typeLabel}`
   }
   if (info.algorithm === 'EC') {
     return `EC (${info.curve}) ${typeLabel}`
