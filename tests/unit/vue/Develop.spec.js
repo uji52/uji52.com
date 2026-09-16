@@ -703,5 +703,104 @@ describe('Develop.vue', () => {
     global.fetch = originalFetch
   })
 
+  describe('PEM to JWK conversion', () => {
+    const validRsaPem = `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmhg5MwASg1hoYk3BvZ93
+CogfupOjTZvUX/USeeTRiUlw+WRjZ8xStlLzn/AGU7f8UoEPX8WkXgPUV+8dQ7nH
+KzQp/hI9QtHHPZ5emQihnKe4R3aWgvnGzN+yMEQTiZ+6oGpEAXzVn9tooZ4UDgk/
+bwPaFnlfceOfKZVfX17DQJOWY4VdBCLeJeg7bvte7HRTQIpw2vkA2xGDMU7ogFJW
+YwDgj6IcV2XwhgQePqcuV7ngJ6mRQDXWdIkwGtogm/4ESf27DytJRQ/PQUt0/w5h
+A2PVh+L3dnUCSIATdu78PDPloIH/udwVa+gORIAOW9ICFfEDi/aYZYHukLuc0nZH
+qwIDAQAB
+-----END PUBLIC KEY-----`
+
+    it('formatKeyInfo formats key info correctly', () => {
+      expect(wrapper.vm.formatKeyInfo(null)).toBe('')
+      expect(
+        wrapper.vm.formatKeyInfo({
+          algorithm: 'RSA',
+          bitLength: 2048,
+          isPrivate: false,
+          type: 'public'
+        })
+      ).toBe('RSA (2048bit) 公開鍵')
+      expect(
+        wrapper.vm.formatKeyInfo({
+          algorithm: 'RSA',
+          bitLength: 2048,
+          isPrivate: true,
+          type: 'private'
+        })
+      ).toBe('RSA (2048bit) 秘密鍵')
+      expect(
+        wrapper.vm.formatKeyInfo({
+          algorithm: 'EC',
+          curve: 'P-256',
+          isPrivate: false,
+          type: 'public'
+        })
+      ).toBe('EC (P-256) 公開鍵')
+      expect(
+        wrapper.vm.formatKeyInfo({
+          algorithm: 'OKP',
+          curve: 'Ed25519',
+          isPrivate: true,
+          type: 'private'
+        })
+      ).toBe('Ed25519 秘密鍵')
+      expect(
+        wrapper.vm.formatKeyInfo({
+          type: 'certificate',
+          algorithm: 'RSA',
+          format: 'X.509',
+          isPrivate: false
+        })
+      ).toBe('RSA 証明書')
+      expect(
+        wrapper.vm.formatKeyInfo({
+          algorithm: 'UNKNOWN',
+          format: 'CUSTOM',
+          isPrivate: false,
+          type: 'public'
+        })
+      ).toBe('CUSTOM 公開鍵')
+    })
+
+    it('updates jwkOutput and pemKeyInfoList on valid PEM input', async () => {
+      const pemTextarea = wrapper.find('textarea[id="pemInput"]')
+      await pemTextarea.setValue(validRsaPem)
+      await nextTick()
+
+      expect(wrapper.vm.jwkOutput).toContain('"kty": "RSA"')
+      expect(wrapper.vm.pemKeyInfoList.length).toBe(1)
+      expect(wrapper.vm.pemJwkError).toBe('')
+
+      // Clearing input clears output
+      await pemTextarea.setValue('')
+      await nextTick()
+      expect(wrapper.vm.jwkOutput).toBe('')
+      expect(wrapper.vm.pemKeyInfoList.length).toBe(0)
+    })
+
+    it('updates jwkOutput with JWKS on multiple PEM input', async () => {
+      const pemTextarea = wrapper.find('textarea[id="pemInput"]')
+      await pemTextarea.setValue(`${validRsaPem}\n${validRsaPem}`)
+      await nextTick()
+
+      expect(wrapper.vm.jwkOutput).toContain('"keys": [')
+      expect(wrapper.vm.pemKeyInfoList.length).toBe(2)
+    })
+
+    it('sets error on invalid PEM input', async () => {
+      const pemTextarea = wrapper.find('textarea[id="pemInput"]')
+      await pemTextarea.setValue('invalid pem string')
+      await nextTick()
+
+      expect(wrapper.vm.jwkOutput).toBe('')
+      expect(wrapper.vm.pemKeyInfoList.length).toBe(0)
+      expect(wrapper.vm.pemJwkError).toContain('有効なPEMヘッダー')
+    })
+  })
 })
+
 
