@@ -7,7 +7,13 @@
  * - 証明書: X.509証明書（公開鍵を抽出し、x5cを付与）
  */
 
+/**
+ * PEMパースエラー
+ */
 export class PemParseError extends Error {
+  /**
+   * @param {string} message
+   */
   constructor(message) {
     super(message)
     this.name = 'PemParseError'
@@ -25,10 +31,34 @@ export const OIDS = {
 }
 
 export const EC_CURVES_BY_OID = {
-  [OIDS.P_256]: { name: 'P-256', size: 32 },
-  [OIDS.P_384]: { name: 'P-384', size: 48 },
-  [OIDS.P_521]: { name: 'P-521', size: 66 },
-  [OIDS.SECP256K1]: { name: 'secp256k1', size: 32 }
+  [OIDS.P_256]: {
+    name: 'P-256',
+    size: 32,
+    n: BigInt(
+      '0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551'
+    )
+  },
+  [OIDS.P_384]: {
+    name: 'P-384',
+    size: 48,
+    n: BigInt(
+      '0xffffffffffffffffffffffffffffffffffffffffffffffffc7634d81f4372ddf581a0db248b0a77aecec196accc52973'
+    )
+  },
+  [OIDS.P_521]: {
+    name: 'P-521',
+    size: 66,
+    n: BigInt(
+      '0x01fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa51868783bf2f966b7fcc0148f709a5d03bb5c9b8899c47aebb6fb71e91386409'
+    )
+  },
+  [OIDS.SECP256K1]: {
+    name: 'secp256k1',
+    size: 32,
+    n: BigInt(
+      '0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141'
+    )
+  }
 }
 
 /**
@@ -85,6 +115,19 @@ export function padToLength(bytes, targetLength) {
   }
   const result = new Uint8Array(targetLength)
   result.set(stripped, targetLength - stripped.length)
+  return result
+}
+
+/**
+ * バイト配列をBigIntへ変換
+ * @param {Uint8Array} bytes
+ * @returns {bigint}
+ */
+export function bytesToBigInt(bytes) {
+  let result = 0n
+  for (let i = 0; i < bytes.length; i++) {
+    result = (result << 8n) | BigInt(bytes[i])
+  }
   return result
 }
 
@@ -331,6 +374,11 @@ export function parseSec1EcPrivateKey(derBytes, fallbackCurveOid = null) {
 
   if (stripLeadingZeros(dBytes).length > curve.size) {
     throw new PemParseError(`EC秘密鍵のスカラー長が不正です (${curve.name})`)
+  }
+
+  const dScalar = bytesToBigInt(dBytes)
+  if (dScalar < 1n || dScalar >= curve.n) {
+    throw new PemParseError(`EC秘密鍵のスカラー値が不正です (${curve.name})`)
   }
 
   const jwk = {
