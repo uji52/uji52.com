@@ -435,15 +435,20 @@ describe('pemJwk utility', () => {
     it('throws when EC curve is unknown', () => {
       // 未対応の曲線OID 1.2.3.4 を持つEC SPKI
       const algSeq = Buffer.from([
-        0x30, 0x09, 0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01
-      ]) // EC公開鍵OID
+        0x30, 0x0e,
+        0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01, // id-ecPublicKey OID
+        0x06, 0x03, 0x2a, 0x03, 0x04 // 未対応の曲線OID 1.2.3.4
+      ])
+      const pubKeyBitString = Buffer.from([
+        0x03, 0x08, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06
+      ])
       const spkiDer = Buffer.concat([
-        Buffer.from([0x30, 0x15]),
+        Buffer.from([0x30, algSeq.length + pubKeyBitString.length]),
         algSeq,
-        Buffer.from([0x03, 0x08, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06])
+        pubKeyBitString
       ])
       const pem = `-----BEGIN PUBLIC KEY-----\n${spkiDer.toString('base64')}\n-----END PUBLIC KEY-----`
-      expect(() => pemToJwk(pem)).toThrow()
+      expect(() => pemToJwk(pem)).toThrow('未対応のEC曲線OIDです: 1.2.3.4')
     })
   })
 
