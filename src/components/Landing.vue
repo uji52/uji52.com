@@ -30,7 +30,7 @@
           <div>
             <h3 class="fs-2 text-body-emphasis">開発ツール</h3>
             <p>
-              Base64エンコード/デコード、URLエンコード/デコード、ハッシュ計算など、
+              Base64エンコード/デコード、URLエンコード/デコード、ハッシュ計算、PEM/JWK変換など、
               開発に便利なツールを提供しています。
             </p>
             <router-link to="/develop" class="btn btn-primary">
