@@ -1,19 +1,21 @@
 export const releases = [
   {
+    version: '2.0.9',
+    date: '2026/09/12',
+    isNew: true,
+    notes: ['ブラウザ処理によるPEMからJWK形式への変換機能を追加']
+  },
+  {
     version: '2.0.8',
     date: '2026/08/20',
-    isNew: true,
-    notes: [
-      'Global IPアドレスとUserAgentの表示'
-    ]
+    isNew: false,
+    notes: ['Global IPアドレスとUserAgentの表示']
   },
   {
     version: '2.0.7',
     date: '2025/12/12',
     isNew: false,
-    notes: [
-      '秒換算による時間変換を追加'
-    ]
+    notes: ['秒換算による時間変換を追加']
   },
   {
     version: '2.0.6',
@@ -26,16 +28,12 @@ export const releases = [
   {
     version: '2.0.5',
     date: '2025/04/19',
-    notes: [
-      '要望はログイン後に送付可能に変更'
-    ]
+    notes: ['要望はログイン後に送付可能に変更']
   },
   {
     version: '2.0.4',
     date: '2025/04/16',
-    notes: [
-      '認証機構追加に伴うプライバシポリシの追加'
-    ]
+    notes: ['認証機構追加に伴うプライバシポリシの追加']
   },
   {
     version: '2.0.4',
@@ -48,11 +46,7 @@ export const releases = [
   {
     version: '2.0.3',
     date: '2025/03/26',
-    notes: [
-      'エンコード類の位置変更',
-      'Unicode変換追加',
-      '進数変換追加'
-    ]
+    notes: ['エンコード類の位置変更', 'Unicode変換追加', '進数変換追加']
   },
   {
     version: '2.0.2',
@@ -67,9 +61,7 @@ export const releases = [
   {
     version: '2.0.1',
     date: '2025/03/22',
-    notes: [
-      'Feedbackの機構を追加'
-    ]
+    notes: ['Feedbackの機構を追加']
   },
   {
     version: '2.0.0',
