@@ -32,7 +32,7 @@
     "bootstrap-icons": "^1.11.3",
     "crypto-js": "^4.2.0",
     "esbuild": "^0.28.2",
-    "nanoid": "^3.3.8",
+    "nanoid": "^6.0.1",
     "picocolors": "^1.1.1",
     "postcss": "^8.5.26",
     "rollup": "^4.63.0",
