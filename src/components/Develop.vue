@@ -587,7 +587,7 @@ const base64ToString = (base64) => {
     const bytes = Uint8Array.from(atob(paddedBase64), (c) => c.charCodeAt(0))
     return new TextDecoder().decode(bytes)
   } catch (e) {
-    throw new Error('Invalid Base64 string')
+    throw new Error('Invalid Base64 string', { cause: e })
   }
 }
 
