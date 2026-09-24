@@ -1,11 +1,12 @@
 module.exports = {
   testEnvironment: 'jsdom',
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/tools/generate_cloudfront_signed_cookies.js'],
-  moduleFileExtensions: ['js', 'vue'],
+  moduleFileExtensions: ['js', 'vue', 'mjs'],
   transform: {
     '^.+\\.vue$': '@vue/vue3-jest',
-    '^.+\\.(js|jsx)$': 'babel-jest'
+    '^.+\\.(js|jsx|mjs)$': 'babel-jest'
   },
+  transformIgnorePatterns: ['/node_modules/(?!(nostics)/)'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy'
