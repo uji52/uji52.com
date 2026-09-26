@@ -41,7 +41,7 @@
     "vue-router": "^5.3.1"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.26.9",
+    "@babel/preset-env": "^8.0.6",
     "@eslint/js": "^10.0.1",
     "@types/jest": "^29.5.14",
     "@vitejs/plugin-vue": "^6.0.8",
