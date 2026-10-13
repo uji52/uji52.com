@@ -801,6 +801,52 @@ qwIDAQAB
       expect(wrapper.vm.pemJwkError).toContain('有効なPEMヘッダー')
     })
   })
+
+  describe('tabs', () => {
+    it('initializes with general tab active', () => {
+      expect(wrapper.vm.activeTab).toBe('general')
+
+      const generalTab = wrapper.find('#general-tab')
+      const fidoTab = wrapper.find('#fido-tab')
+      expect(generalTab.classes()).toContain('active')
+      expect(fidoTab.classes()).not.toContain('active')
+
+      const generalPane = wrapper.find('#general-tab-pane')
+      const fidoPane = wrapper.find('#fido-tab-pane')
+      expect(generalPane.classes()).toContain('active')
+      expect(generalPane.classes()).toContain('show')
+      expect(fidoPane.classes()).not.toContain('active')
+    })
+
+    it('switches to FIDO tab on click', async () => {
+      const fidoTab = wrapper.find('#fido-tab')
+      await fidoTab.trigger('click')
+
+      expect(wrapper.vm.activeTab).toBe('fido')
+      expect(fidoTab.classes()).toContain('active')
+
+      const generalTab = wrapper.find('#general-tab')
+      expect(generalTab.classes()).not.toContain('active')
+
+      const generalPane = wrapper.find('#general-tab-pane')
+      const fidoPane = wrapper.find('#fido-tab-pane')
+      expect(fidoPane.classes()).toContain('active')
+      expect(fidoPane.classes()).toContain('show')
+      expect(generalPane.classes()).not.toContain('active')
+    })
+
+    it('switches back to General tab on click', async () => {
+      const fidoTab = wrapper.find('#fido-tab')
+      await fidoTab.trigger('click')
+      expect(wrapper.vm.activeTab).toBe('fido')
+
+      const generalTab = wrapper.find('#general-tab')
+      await generalTab.trigger('click')
+      expect(wrapper.vm.activeTab).toBe('general')
+      expect(generalTab.classes()).toContain('active')
+      expect(fidoTab.classes()).not.toContain('active')
+    })
+  })
 })
 
 

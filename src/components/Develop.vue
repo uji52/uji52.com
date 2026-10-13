@@ -8,446 +8,501 @@
     </section>
     <section>
       <div class="container">
-        <form>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="globalIp">あなたのGlobal IPアドレス</label>
-              <input
-                id="globalIp"
-                v-model="globalIp"
-                class="form-control"
-                placeholder="あなたのGlobal IPアドレス"
-                readonly
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="userAgent">あなたのUserAgent</label>
-              <input
-                id="userAgent"
-                v-model="userAgent"
-                class="form-control"
-                placeholder="あなたのUserAgent"
-                readonly
-              />
-            </div>
-          </div>
-        </form>
-        <h2>Encode</h2>
-        <form>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="plane">文字列</label>
-              <input
-                id="plane"
-                v-model="plane"
-                class="form-control"
-                placeholder="文字列"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-3 mb-3">
-              <label for="b64strb64">Base64(文字列)</label>
-              <input
-                id="b64str"
-                v-model="b64str"
-                class="form-control"
-                placeholder="Base64(文字列)"
-              />
-            </div>
-            <div class="col-md-3 mb-3">
-              <label for="b64strb64url">Base64URL(文字列)</label>
-              <input
-                id="b64urlstr"
-                v-model="b64urlstr"
-                class="form-control"
-                placeholder="Base64URL(文字列)"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="urlencode">URL Encode</label>
-              <input
-                id="urlencode"
-                v-model="urlencode"
-                class="form-control"
-                placeholder="URL Encode"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="unicode">Unicode</label>
-              <input
-                id="unicode"
-                v-model="unicode"
-                class="form-control"
-                placeholder="Unicode"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="strHex">16進数</label>
-              <input
-                id="strHex"
-                v-model="strHex"
-                class="form-control"
-                placeholder="16進数"
-              />
-            </div>
-          </div>
-          <p id="encodeError">{{ encodeError }}</p>
-        </form>
-        <h2>Hash</h2>
-        <form>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="hashPlain">文字列</label>
-              <input
-                id="hashPlain"
-                v-model="hashPlain"
-                class="form-control"
-                placeholder="Plain"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="hashHex">16進数</label>
-              <input
-                id="hashHex"
-                v-model="hashHex"
-                class="form-control"
-                placeholder="Hex"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="hashHex">MD5</label>
-              <input
-                id="hashMd5"
-                v-model="hashMd5"
-                class="form-control"
-                placeholder="MD5"
-                readonly
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-3 mb-3">
-              <label for="hashSha1">SHA1</label>
-              <input
-                id="hashSha1"
-                v-model="hashSha1"
-                class="form-control"
-                placeholder="SHA1"
-                readonly
-              />
-            </div>
-            <div class="col-md-3 mb-3">
-              <label for="hashSha1">SHA1(Base64Encoded)</label>
-              <input
-                id="hashSha1b64"
-                v-model="hashSha1b64"
-                class="form-control"
-                placeholder="SHA1B64"
-                readonly
-              />
-            </div>
-            <div class="col-md-3 mb-3">
-              <label for="hashSha1">SHA1(Base64URLEncoded)</label>
-              <input
-                id="hashSha1b64url"
-                v-model="hashSha1b64url"
-                class="form-control"
-                placeholder="SHA1B64URL"
-                readonly
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-3 mb-3">
-              <label for="hashSha256">SHA256</label>
-              <input
-                id="hashSha256"
-                v-model="hashSha256"
-                class="form-control"
-                placeholder="SHA256"
-                readonly
-              />
-            </div>
-            <div class="col-md-3 mb-3">
-              <label for="hashSha256">SHA256(Base64Encoded)</label>
-              <input
-                id="hashSha256b64"
-                v-model="hashSha256b64"
-                class="form-control"
-                placeholder="SHA256B64"
-                readonly
-              />
-            </div>
-            <div class="col-md-3 mb-3">
-              <label for="hashSha256">SHA256(Base64URLEncoded)</label>
-              <input
-                id="hashSha256b64url"
-                v-model="hashSha256b64url"
-                class="form-control"
-                placeholder="SHA256B64URL"
-                readonly
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-3 mb-3">
-              <label for="hashSha512">SHA512</label>
-              <input
-                id="hashSha512"
-                v-model="hashSha512"
-                class="form-control"
-                placeholder="SHA512"
-                readonly
-              />
-            </div>
-            <div class="col-md-3 mb-3">
-              <label for="hashSha512">SHA512(Base64Encoded)</label>
-              <input
-                id="hashSha512b64"
-                v-model="hashSha512b64"
-                class="form-control"
-                placeholder="SHA512B64"
-                readonly
-              />
-            </div>
-            <div class="col-md-3 mb-3">
-              <label for="hashSha512">SHA512(Base64URLEncoded)</label>
-              <input
-                id="hashSha512b64url"
-                v-model="hashSha512b64url"
-                class="form-control"
-                placeholder="SHA512B64URL"
-                readonly
-              />
-            </div>
-          </div>
-          <p id="hasherror">{{ hasherror }}</p>
-        </form>
-        <h2>数値変換</h2>
-        <form>
-          <div class="row">
-            <div class="col-md-2 mb-3">
-              <label for="bin">2進数</label>
-              <input
-                id="bin"
-                v-model="bin"
-                class="form-control"
-                placeholder="2進数"
-              />
-            </div>
-            <div class="col-md-2 mb-3">
-              <label for="quat">4進数</label>
-              <input
-                id="quat"
-                v-model="quat"
-                class="form-control"
-                placeholder="4進数"
-              />
-            </div>
-            <div class="col-md-2 mb-3">
-              <label for="oct">8進数</label>
-              <input
-                id="oct"
-                v-model="oct"
-                class="form-control"
-                placeholder="8進数"
-              />
-            </div>
-            <div class="col-md-2 mb-3">
-              <label for="dec">10進数</label>
-              <input
-                id="dec"
-                v-model="dec"
-                class="form-control"
-                placeholder="10進数"
-              />
-            </div>
-            <div class="col-md-2 mb-3">
-              <label for="hex">16進数</label>
-              <input
-                id="hex"
-                v-model="hex"
-                class="form-control"
-                placeholder="16進数"
-              />
-            </div>
-          </div>
-          <p id="numberConversionError">{{ numberConversionError }}</p>
-        </form>
-        <h2>時間変換</h2>
-        <form>
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label for="totalSeconds">秒(合計)</label>
-              <input
-                id="totalSeconds"
-                v-model="totalSeconds"
-                class="form-control"
-                placeholder="秒"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-2 mb-3">
-              <label for="seconds">秒</label>
-              <input
-                id="seconds"
-                v-model="seconds"
-                class="form-control"
-                placeholder="残り秒"
-              />
-            </div>
-            <div class="col-md-2 mb-3">
-              <label for="minutes">分</label>
-              <input
-                id="minutes"
-                v-model="minutes"
-                class="form-control"
-                placeholder="分"
-              />
-            </div>
-            <div class="col-md-2 mb-3">
-              <label for="hours">時間</label>
-              <input
-                id="hours"
-                v-model="hours"
-                class="form-control"
-                placeholder="時間"
-              />
-            </div>
-            <div class="col-md-2 mb-3">
-              <label for="days">日</label>
-              <input
-                id="days"
-                v-model="days"
-                class="form-control"
-                placeholder="日"
-              />
-            </div>
-            <div class="col-md-2 mb-3">
-              <label for="weeks">週間</label>
-              <input
-                id="weeks"
-                v-model="weeks"
-                class="form-control"
-                placeholder="週間"
-              />
-            </div>
-          </div>
-          <p id="timeConversionError">{{ timeConversionError }}</p>
-        </form>
-        <h2>Random</h2>
-        <form>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="randomseed">ランダムシード</label>
-              <input
-                id="randomseed"
-                v-model="randomseed"
-                class="form-control"
-                placeholder="ランダムシード"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="randomlength">文字列長</label>
-              <input
-                id="randomlength"
-                number
-                v-model="randomlength"
-                class="form-control"
-                placeholder="文字列長"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <input
-                id="randomgenerateButton"
-                type="button"
-                v-on:click="randomgenerate"
-                class="btn btn-success"
-                value="生成"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="randomvalue">ランダム値</label>
-              <input
-                id="randomvalue"
-                v-model="randomvalue"
-                class="form-control"
-                placeholder="ランダム値"
-              />
-            </div>
-          </div>
-          <p>{{ randomerror }}</p>
-        </form>
-        <h2>PEM to JWK 変換</h2>
-        <p class="text-muted small">
-          変換はブラウザ内で完結し、鍵は外部へ送信されません。
-        </p>
-        <form @submit.prevent>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="pemInput" class="form-label">PEM</label>
-              <textarea
-                id="pemInput"
-                v-model="pemInput"
-                class="form-control font-monospace"
-                rows="6"
-                placeholder="-----BEGIN PUBLIC KEY-----&#10;...&#10;-----END PUBLIC KEY-----"
-              ></textarea>
-            </div>
-            <div class="col-md-6 mb-3">
-              <div
-                class="d-flex justify-content-between align-items-center mb-1"
-              >
-                <label for="jwkOutput" class="form-label mb-0"
-                  >JWK形式（JSON）</label
-                >
-                <div
-                  v-if="pemKeyInfoList.length"
-                  class="d-flex gap-1 flex-wrap"
-                >
-                  <span
-                    v-for="(info, idx) in pemKeyInfoList"
-                    :key="idx"
-                    class="badge bg-primary"
-                  >
-                    {{ formatKeyInfo(info) }}
-                  </span>
+        <ul class="nav nav-tabs mb-4" id="developTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              :class="{ active: activeTab === 'general' }"
+              id="general-tab"
+              type="button"
+              role="tab"
+              aria-controls="general-tab-pane"
+              :aria-selected="activeTab === 'general'"
+              @click="activeTab = 'general'"
+            >
+              General
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              :class="{ active: activeTab === 'fido' }"
+              id="fido-tab"
+              type="button"
+              role="tab"
+              aria-controls="fido-tab-pane"
+              :aria-selected="activeTab === 'fido'"
+              @click="activeTab = 'fido'"
+            >
+              FIDO
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content" id="developTabContent">
+          <div
+            class="tab-pane fade"
+            :class="{ 'show active': activeTab === 'general' }"
+            id="general-tab-pane"
+            role="tabpanel"
+            aria-labelledby="general-tab"
+            tabindex="0"
+          >
+            <form>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="globalIp">あなたのGlobal IPアドレス</label>
+                  <input
+                    id="globalIp"
+                    v-model="globalIp"
+                    class="form-control"
+                    placeholder="あなたのGlobal IPアドレス"
+                    readonly
+                  />
                 </div>
               </div>
-              <textarea
-                id="jwkOutput"
-                v-model="jwkOutput"
-                class="form-control font-monospace"
-                rows="6"
-                placeholder="変換結果がここに表示されます"
-                readonly
-              ></textarea>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="userAgent">あなたのUserAgent</label>
+                  <input
+                    id="userAgent"
+                    v-model="userAgent"
+                    class="form-control"
+                    placeholder="あなたのUserAgent"
+                    readonly
+                  />
+                </div>
+              </div>
+            </form>
+            <h2>Encode</h2>
+            <form>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="plane">文字列</label>
+                  <input
+                    id="plane"
+                    v-model="plane"
+                    class="form-control"
+                    placeholder="文字列"
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-3 mb-3">
+                  <label for="b64strb64">Base64(文字列)</label>
+                  <input
+                    id="b64str"
+                    v-model="b64str"
+                    class="form-control"
+                    placeholder="Base64(文字列)"
+                  />
+                </div>
+                <div class="col-md-3 mb-3">
+                  <label for="b64strb64url">Base64URL(文字列)</label>
+                  <input
+                    id="b64urlstr"
+                    v-model="b64urlstr"
+                    class="form-control"
+                    placeholder="Base64URL(文字列)"
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="urlencode">URL Encode</label>
+                  <input
+                    id="urlencode"
+                    v-model="urlencode"
+                    class="form-control"
+                    placeholder="URL Encode"
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="unicode">Unicode</label>
+                  <input
+                    id="unicode"
+                    v-model="unicode"
+                    class="form-control"
+                    placeholder="Unicode"
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="strHex">16進数</label>
+                  <input
+                    id="strHex"
+                    v-model="strHex"
+                    class="form-control"
+                    placeholder="16進数"
+                  />
+                </div>
+              </div>
+              <p id="encodeError">{{ encodeError }}</p>
+            </form>
+            <h2>Hash</h2>
+            <form>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="hashPlain">文字列</label>
+                  <input
+                    id="hashPlain"
+                    v-model="hashPlain"
+                    class="form-control"
+                    placeholder="Plain"
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="hashHex">16進数</label>
+                  <input
+                    id="hashHex"
+                    v-model="hashHex"
+                    class="form-control"
+                    placeholder="Hex"
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="hashHex">MD5</label>
+                  <input
+                    id="hashMd5"
+                    v-model="hashMd5"
+                    class="form-control"
+                    placeholder="MD5"
+                    readonly
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-3 mb-3">
+                  <label for="hashSha1">SHA1</label>
+                  <input
+                    id="hashSha1"
+                    v-model="hashSha1"
+                    class="form-control"
+                    placeholder="SHA1"
+                    readonly
+                  />
+                </div>
+                <div class="col-md-3 mb-3">
+                  <label for="hashSha1">SHA1(Base64Encoded)</label>
+                  <input
+                    id="hashSha1b64"
+                    v-model="hashSha1b64"
+                    class="form-control"
+                    placeholder="SHA1B64"
+                    readonly
+                  />
+                </div>
+                <div class="col-md-3 mb-3">
+                  <label for="hashSha1">SHA1(Base64URLEncoded)</label>
+                  <input
+                    id="hashSha1b64url"
+                    v-model="hashSha1b64url"
+                    class="form-control"
+                    placeholder="SHA1B64URL"
+                    readonly
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-3 mb-3">
+                  <label for="hashSha256">SHA256</label>
+                  <input
+                    id="hashSha256"
+                    v-model="hashSha256"
+                    class="form-control"
+                    placeholder="SHA256"
+                    readonly
+                  />
+                </div>
+                <div class="col-md-3 mb-3">
+                  <label for="hashSha256">SHA256(Base64Encoded)</label>
+                  <input
+                    id="hashSha256b64"
+                    v-model="hashSha256b64"
+                    class="form-control"
+                    placeholder="SHA256B64"
+                    readonly
+                  />
+                </div>
+                <div class="col-md-3 mb-3">
+                  <label for="hashSha256">SHA256(Base64URLEncoded)</label>
+                  <input
+                    id="hashSha256b64url"
+                    v-model="hashSha256b64url"
+                    class="form-control"
+                    placeholder="SHA256B64URL"
+                    readonly
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-3 mb-3">
+                  <label for="hashSha512">SHA512</label>
+                  <input
+                    id="hashSha512"
+                    v-model="hashSha512"
+                    class="form-control"
+                    placeholder="SHA512"
+                    readonly
+                  />
+                </div>
+                <div class="col-md-3 mb-3">
+                  <label for="hashSha512">SHA512(Base64Encoded)</label>
+                  <input
+                    id="hashSha512b64"
+                    v-model="hashSha512b64"
+                    class="form-control"
+                    placeholder="SHA512B64"
+                    readonly
+                  />
+                </div>
+                <div class="col-md-3 mb-3">
+                  <label for="hashSha512">SHA512(Base64URLEncoded)</label>
+                  <input
+                    id="hashSha512b64url"
+                    v-model="hashSha512b64url"
+                    class="form-control"
+                    placeholder="SHA512B64URL"
+                    readonly
+                  />
+                </div>
+              </div>
+              <p id="hasherror">{{ hasherror }}</p>
+            </form>
+            <h2>数値変換</h2>
+            <form>
+              <div class="row">
+                <div class="col-md-2 mb-3">
+                  <label for="bin">2進数</label>
+                  <input
+                    id="bin"
+                    v-model="bin"
+                    class="form-control"
+                    placeholder="2進数"
+                  />
+                </div>
+                <div class="col-md-2 mb-3">
+                  <label for="quat">4進数</label>
+                  <input
+                    id="quat"
+                    v-model="quat"
+                    class="form-control"
+                    placeholder="4進数"
+                  />
+                </div>
+                <div class="col-md-2 mb-3">
+                  <label for="oct">8進数</label>
+                  <input
+                    id="oct"
+                    v-model="oct"
+                    class="form-control"
+                    placeholder="8進数"
+                  />
+                </div>
+                <div class="col-md-2 mb-3">
+                  <label for="dec">10進数</label>
+                  <input
+                    id="dec"
+                    v-model="dec"
+                    class="form-control"
+                    placeholder="10進数"
+                  />
+                </div>
+                <div class="col-md-2 mb-3">
+                  <label for="hex">16進数</label>
+                  <input
+                    id="hex"
+                    v-model="hex"
+                    class="form-control"
+                    placeholder="16進数"
+                  />
+                </div>
+              </div>
+              <p id="numberConversionError">{{ numberConversionError }}</p>
+            </form>
+            <h2>時間変換</h2>
+            <form>
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label for="totalSeconds">秒(合計)</label>
+                  <input
+                    id="totalSeconds"
+                    v-model="totalSeconds"
+                    class="form-control"
+                    placeholder="秒"
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-2 mb-3">
+                  <label for="seconds">秒</label>
+                  <input
+                    id="seconds"
+                    v-model="seconds"
+                    class="form-control"
+                    placeholder="残り秒"
+                  />
+                </div>
+                <div class="col-md-2 mb-3">
+                  <label for="minutes">分</label>
+                  <input
+                    id="minutes"
+                    v-model="minutes"
+                    class="form-control"
+                    placeholder="分"
+                  />
+                </div>
+                <div class="col-md-2 mb-3">
+                  <label for="hours">時間</label>
+                  <input
+                    id="hours"
+                    v-model="hours"
+                    class="form-control"
+                    placeholder="時間"
+                  />
+                </div>
+                <div class="col-md-2 mb-3">
+                  <label for="days">日</label>
+                  <input
+                    id="days"
+                    v-model="days"
+                    class="form-control"
+                    placeholder="日"
+                  />
+                </div>
+                <div class="col-md-2 mb-3">
+                  <label for="weeks">週間</label>
+                  <input
+                    id="weeks"
+                    v-model="weeks"
+                    class="form-control"
+                    placeholder="週間"
+                  />
+                </div>
+              </div>
+              <p id="timeConversionError">{{ timeConversionError }}</p>
+            </form>
+            <h2>Random</h2>
+            <form>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="randomseed">ランダムシード</label>
+                  <input
+                    id="randomseed"
+                    v-model="randomseed"
+                    class="form-control"
+                    placeholder="ランダムシード"
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="randomlength">文字列長</label>
+                  <input
+                    id="randomlength"
+                    number
+                    v-model="randomlength"
+                    class="form-control"
+                    placeholder="文字列長"
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <input
+                    id="randomgenerateButton"
+                    type="button"
+                    v-on:click="randomgenerate"
+                    class="btn btn-success"
+                    value="生成"
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="randomvalue">ランダム値</label>
+                  <input
+                    id="randomvalue"
+                    v-model="randomvalue"
+                    class="form-control"
+                    placeholder="ランダム値"
+                  />
+                </div>
+              </div>
+              <p>{{ randomerror }}</p>
+            </form>
+            <h2>PEM to JWK 変換</h2>
+            <p class="text-muted small">
+              変換はブラウザ内で完結し、鍵は外部へ送信されません。
+            </p>
+            <form @submit.prevent>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="pemInput" class="form-label">PEM</label>
+                  <textarea
+                    id="pemInput"
+                    v-model="pemInput"
+                    class="form-control font-monospace"
+                    rows="6"
+                    placeholder="-----BEGIN PUBLIC KEY-----&#10;...&#10;-----END PUBLIC KEY-----"
+                  ></textarea>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-1"
+                  >
+                    <label for="jwkOutput" class="form-label mb-0"
+                      >JWK形式（JSON）</label
+                    >
+                    <div
+                      v-if="pemKeyInfoList.length"
+                      class="d-flex gap-1 flex-wrap"
+                    >
+                      <span
+                        v-for="(info, idx) in pemKeyInfoList"
+                        :key="idx"
+                        class="badge bg-primary"
+                      >
+                        {{ formatKeyInfo(info) }}
+                      </span>
+                    </div>
+                  </div>
+                  <textarea
+                    id="jwkOutput"
+                    v-model="jwkOutput"
+                    class="form-control font-monospace"
+                    rows="6"
+                    placeholder="変換結果がここに表示されます"
+                    readonly
+                  ></textarea>
+                </div>
+              </div>
+              <p id="pemJwkError" v-if="pemJwkError" class="text-danger">
+                {{ pemJwkError }}
+              </p>
+            </form>
+          </div>
+
+          <div
+            class="tab-pane fade"
+            :class="{ 'show active': activeTab === 'fido' }"
+            id="fido-tab-pane"
+            role="tabpanel"
+            aria-labelledby="fido-tab"
+            tabindex="0"
+          >
+            <div class="py-4 text-center text-body-secondary">
+              <p class="mb-0">FIDO内部の実装予定エリア</p>
             </div>
           </div>
-          <p id="pemJwkError" v-if="pemJwkError" class="text-danger">
-            {{ pemJwkError }}
-          </p>
-        </form>
+        </div>
       </div>
     </section>
   </div>
@@ -475,6 +530,7 @@ const errorMessages = {
   invalidURLEncoding: 'Invalid URL encoding'
 }
 
+const activeTab = ref('general')
 const globalIp = ref('')
 const userAgent = ref('')
 
