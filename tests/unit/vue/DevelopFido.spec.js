@@ -119,15 +119,14 @@ describe('DevelopFido.vue', () => {
         b.text().includes('再生成') &&
         b.element.closest('.mb-3')?.querySelector('#regChallenge')
     )
-    if (regenChalBtn) {
-      await regenChalBtn.trigger('click')
-      expect(regChallengeInput.element.value).not.toBe(
-        'custom-synced-challenge-2'
-      )
-      expect(regChallengeInput.element.value).toBe(
-        authChallengeInput.element.value
-      )
-    }
+    expect(regenChalBtn).toBeDefined()
+    await regenChalBtn.trigger('click')
+    expect(regChallengeInput.element.value).not.toBe(
+      'custom-synced-challenge-2'
+    )
+    expect(regChallengeInput.element.value).toBe(
+      authChallengeInput.element.value
+    )
   })
 
   it('regenerates user id when button clicked', async () => {
@@ -142,7 +141,8 @@ describe('DevelopFido.vue', () => {
         b.text().includes('再生成') &&
         b.element.closest('.mb-3')?.querySelector('#regUserId')
     )
-    if (regenUserIdBtn) await regenUserIdBtn.trigger('click')
+    expect(regenUserIdBtn).toBeDefined()
+    await regenUserIdBtn.trigger('click')
 
     expect(wrapper.find('#regUserId').element.value).not.toBe(initialUserId)
   })
@@ -306,23 +306,156 @@ describe('DevelopFido.vue', () => {
     const setBtn = wrapper
       .findAll('button')
       .find((b) => b.text().includes('認証にセット'))
-    if (setBtn) {
-      await setBtn.trigger('click')
-      expect(wrapper.find('#authCredentialId').element.value).toBe(
-        'saved-cred-xyz'
-      )
-    }
+    expect(setBtn).toBeDefined()
+    await setBtn.trigger('click')
+    expect(wrapper.find('#authCredentialId').element.value).toBe(
+      'saved-cred-xyz'
+    )
 
     // Clear storage
     const clearBtn = wrapper
       .findAll('button')
       .find((b) => b.text().includes('すべて削除'))
-    if (clearBtn) {
-      await clearBtn.trigger('click')
-      await nextTick()
-      expect(wrapper.text()).toContain(
-        '現在SessionStorageに保管されているKeyはありません'
-      )
-    }
+    expect(clearBtn).toBeDefined()
+    await clearBtn.trigger('click')
+    await nextTick()
+    expect(wrapper.text()).toContain(
+      '現在SessionStorageに保管されているKeyはありません'
+    )
+  })
+
+  it('allows adding multiple credentials to allowCredentials and reflects them in request options JSON', async () => {
+    wrapper = mount(DevelopFido)
+    await nextTick()
+
+    // 1つ目の鍵を入力
+    const credInput0 = wrapper.find('#authCredentialId')
+    await credInput0.setValue('credential-alpha')
+
+    // 「＋ 鍵を追加」ボタンをクリック
+    const addBtn = wrapper.find('#btnAddAuthCredential')
+    expect(addBtn.exists()).toBe(true)
+    await addBtn.trigger('click')
+    await nextTick()
+
+    // 2つ目の入力欄が存在する
+    const credInput1 = wrapper.find('#authCredentialId_1')
+    expect(credInput1.exists()).toBe(true)
+    await credInput1.setValue('credential-beta')
+
+    // JSON の options に2件反映されていることを確認
+    const optionsJsonText = wrapper.find('#authOptionsJson').text()
+    const options = JSON.parse(optionsJsonText)
+    expect(options.allowCredentials).toBeDefined()
+    expect(options.allowCredentials).toHaveLength(2)
+    expect(options.allowCredentials[0].id).toBe('credential-alpha')
+    expect(options.allowCredentials[0].type).toBe('public-key')
+    expect(options.allowCredentials[1].id).toBe('credential-beta')
+
+    // 1つ目の削除ボタンをクリック
+    const deleteBtns = wrapper
+      .findAll('button')
+      .filter((b) => b.attributes('title') === 'この鍵を削除')
+    expect(deleteBtns.length).toBe(2)
+    await deleteBtns[0].trigger('click')
+    await nextTick()
+
+    // 残りの1件 (credential-beta) になる
+    const updatedJson = JSON.parse(wrapper.find('#authOptionsJson').text())
+    expect(updatedJson.allowCredentials).toHaveLength(1)
+    expect(updatedJson.allowCredentials[0].id).toBe('credential-beta')
+  })
+
+  it('supports clearing credentials and adding all stored credentials', async () => {
+    saveStoredCredential({
+      id: 'stored-cred-1',
+      rawId: 'raw-1',
+      userName: 'user1@example.com',
+      transports: ['internal']
+    })
+    saveStoredCredential({
+      id: 'stored-cred-2',
+      rawId: 'raw-2',
+      userName: 'user2@example.com',
+      transports: ['usb']
+    })
+
+    wrapper = mount(DevelopFido)
+    await nextTick()
+
+    // 「クリア (空欄=パスキー)」ボタンをクリック
+    const clearAuthBtn = wrapper
+      .findAll('button')
+      .find((b) => b.text().includes('クリア (空欄=パスキー)'))
+    expect(clearAuthBtn).toBeDefined()
+    await clearAuthBtn.trigger('click')
+    await nextTick()
+
+    expect(wrapper.text()).toContain('指定なし（Discoverable Credential')
+    const clearOptions = JSON.parse(wrapper.find('#authOptionsJson').text())
+    expect(clearOptions.allowCredentials).toBeUndefined()
+
+    // 「保存中の全鍵を追加」ボタンをクリック
+    const addAllBtn = wrapper
+      .findAll('button')
+      .find((b) => b.text().includes('保存中の全鍵を追加'))
+    expect(addAllBtn).toBeDefined()
+    await addAllBtn.trigger('click')
+    await nextTick()
+
+    const allOptions = JSON.parse(wrapper.find('#authOptionsJson').text())
+    expect(allOptions.allowCredentials).toHaveLength(2)
+    expect(allOptions.allowCredentials.map((c) => c.id).sort()).toEqual([
+      'stored-cred-1',
+      'stored-cred-2'
+    ])
+  })
+
+  it('passes multiple allowCredentials to navigator.credentials.get', async () => {
+    const mockGet = jest.fn().mockResolvedValue({
+      id: 'test-cred-id',
+      rawId: new Uint8Array([1, 2, 3]).buffer,
+      type: 'public-key',
+      response: {
+        authenticatorData: new Uint8Array([4, 5, 6]).buffer,
+        clientDataJSON: new TextEncoder().encode(
+          JSON.stringify({ type: 'webauthn.get', challenge: 'dummy' })
+        ).buffer,
+        signature: new Uint8Array([7, 8, 9]).buffer
+      },
+      getClientExtensionResults: () => ({})
+    })
+
+    Object.defineProperty(navigator, 'credentials', {
+      value: { create: jest.fn(), get: mockGet },
+      configurable: true,
+      writable: true
+    })
+
+    wrapper = mount(DevelopFido)
+    await nextTick()
+
+    // 2つの有効な鍵を設定
+    await wrapper.find('#authCredentialId').setValue('cred-first')
+    await wrapper.find('#btnAddAuthCredential').trigger('click')
+    await nextTick()
+    await wrapper.find('#authCredentialId_1').setValue('cred-second')
+
+    // 認証ボタン押下
+    const getBtn = wrapper.find('#btnGetCredential')
+    await getBtn.trigger('click')
+    await nextTick()
+
+    expect(mockGet).toHaveBeenCalledTimes(1)
+    const callArgs = mockGet.mock.calls[0][0]
+    expect(callArgs.publicKey.allowCredentials).toBeDefined()
+    expect(callArgs.publicKey.allowCredentials).toHaveLength(2)
+    expect(callArgs.publicKey.allowCredentials[0].type).toBe('public-key')
+    expect(callArgs.publicKey.allowCredentials[0].id).toBeInstanceOf(
+      ArrayBuffer
+    )
+    expect(callArgs.publicKey.allowCredentials[1].id).toBeInstanceOf(
+      ArrayBuffer
+    )
   })
 })

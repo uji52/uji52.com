@@ -500,62 +500,116 @@
               <div
                 class="d-flex justify-content-between align-items-center mb-1"
               >
-                <label
-                  for="authCredentialId"
-                  class="form-label small fw-semibold mb-0"
-                >
-                  Credential ID (allowCredentials)
+                <label class="form-label small fw-semibold mb-0">
+                  Allow Credentials (許可する鍵:
+                  {{ authCredentials.length }}件)
                 </label>
                 <div class="btn-group btn-group-sm">
+                  <button
+                    v-if="storedCredentials.length > 1"
+                    type="button"
+                    class="btn btn-link btn-sm p-0 text-decoration-none me-2"
+                    @click="addAllStoredToAuth"
+                  >
+                    保存中の全鍵を追加
+                  </button>
                   <button
                     v-if="storedCredentials.length > 0"
                     type="button"
                     class="btn btn-link btn-sm p-0 text-decoration-none me-2"
                     @click="applyLatestCredential"
                   >
-                    最新のKeyを適用
+                    最新のKeyを追加
                   </button>
                   <button
                     type="button"
                     class="btn btn-link btn-sm p-0 text-decoration-none text-muted"
-                    @click="authParams.credentialId = ''"
+                    @click="clearAuthCredentials"
                   >
-                    クリア (空欄=パスキー選択)
+                    クリア (空欄=パスキー)
                   </button>
                 </div>
               </div>
-              <input
-                id="authCredentialId"
-                v-model="authParams.credentialId"
-                type="text"
-                class="form-control form-control-sm font-monospace"
-                placeholder="Base64URL形式のCredential ID（空欄の場合はDiscoverable Credential）"
-              />
-            </div>
 
-            <!-- Transports -->
-            <div class="mb-3">
-              <label class="form-label small fw-semibold d-block">
-                Transports (オプション)
-              </label>
-              <div class="d-flex flex-wrap gap-3">
+              <!-- 鍵一覧 -->
+              <div
+                v-if="authCredentials.length === 0"
+                class="p-2 border rounded bg-body-tertiary text-body-secondary small mb-2 text-center"
+              >
+                指定なし（Discoverable Credential / パスキーによる自動選択）
+              </div>
+              <div v-else class="d-flex flex-column gap-2 mb-2">
                 <div
-                  v-for="trans in ['internal', 'usb', 'nfc', 'ble', 'hybrid']"
-                  :key="trans"
-                  class="form-check"
+                  v-for="(item, idx) in authCredentials"
+                  :key="idx"
+                  class="p-2 border rounded bg-body-tertiary"
                 >
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-1"
+                  >
+                    <span class="small fw-semibold">Key #{{ idx + 1 }}</span>
+                    <button
+                      type="button"
+                      class="btn btn-outline-danger btn-sm py-0 px-1"
+                      style="font-size: 0.7rem"
+                      title="この鍵を削除"
+                      @click="removeAuthCredential(idx)"
+                    >
+                      <i class="bi bi-x-lg"></i>
+                    </button>
+                  </div>
                   <input
-                    :id="`trans_${trans}`"
-                    v-model="authParams.transports"
-                    type="checkbox"
-                    class="form-check-input"
-                    :value="trans"
+                    :id="
+                      idx === 0 ? 'authCredentialId' : `authCredentialId_${idx}`
+                    "
+                    v-model="item.id"
+                    type="text"
+                    class="form-control form-control-sm font-monospace mb-1"
+                    placeholder="Base64URL形式のCredential ID"
                   />
-                  <label :for="`trans_${trans}`" class="form-check-label small">
-                    {{ trans }}
-                  </label>
+                  <!-- 各鍵の transports -->
+                  <div class="d-flex flex-wrap gap-2 align-items-center small">
+                    <span class="text-body-secondary" style="font-size: 0.75rem"
+                      >Transports:</span
+                    >
+                    <div
+                      v-for="trans in [
+                        'internal',
+                        'usb',
+                        'nfc',
+                        'ble',
+                        'hybrid'
+                      ]"
+                      :key="trans"
+                      class="form-check form-check-inline m-0"
+                    >
+                      <input
+                        :id="`trans_${idx}_${trans}`"
+                        v-model="item.transports"
+                        type="checkbox"
+                        class="form-check-input"
+                        :value="trans"
+                      />
+                      <label
+                        :for="`trans_${idx}_${trans}`"
+                        class="form-check-label small"
+                        style="font-size: 0.75rem"
+                      >
+                        {{ trans }}
+                      </label>
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              <button
+                type="button"
+                id="btnAddAuthCredential"
+                class="btn btn-outline-secondary btn-sm w-100"
+                @click="addAuthCredential"
+              >
+                <i class="bi bi-plus-circle me-1"></i> 鍵を追加
+              </button>
             </div>
 
             <!-- User Verification & Timeout -->
@@ -896,11 +950,24 @@ const currentRegJsonText = computed(() => {
 // ==================== State: 認証 (Authentication) ====================
 const authParams = reactive({
   rpId: defaultHostname,
-  credentialId: '',
-  transports: ['internal'],
   userVerification: 'preferred',
   timeout: 60000
 })
+
+// 複数の鍵を指定可能 (allowCredentials)
+const authCredentials = ref([{ id: '', transports: ['internal'] }])
+
+const addAuthCredential = (id = '', transports = ['internal']) => {
+  authCredentials.value.push({ id, transports: [...transports] })
+}
+
+const removeAuthCredential = (index) => {
+  authCredentials.value.splice(index, 1)
+}
+
+const clearAuthCredentials = () => {
+  authCredentials.value = []
+}
 
 const authLoading = ref(false)
 const authSuccessMsg = ref('')
@@ -920,15 +987,20 @@ const authOptionsObject = computed(() => {
     options.rpId = authParams.rpId
   }
 
-  if (authParams.credentialId) {
-    const cred = {
-      id: authParams.credentialId,
-      type: 'public-key'
-    }
-    if (authParams.transports.length > 0) {
-      cred.transports = authParams.transports
-    }
-    options.allowCredentials = [cred]
+  const validCreds = authCredentials.value.filter(
+    (c) => c && typeof c.id === 'string' && c.id.trim() !== ''
+  )
+  if (validCreds.length > 0) {
+    options.allowCredentials = validCreds.map((c) => {
+      const item = {
+        id: c.id.trim(),
+        type: 'public-key'
+      }
+      if (c.transports && c.transports.length > 0) {
+        item.transports = [...c.transports]
+      }
+      return item
+    })
   }
 
   return options
@@ -957,17 +1029,50 @@ const refreshStoredCredentials = () => {
 
 const applyLatestCredential = () => {
   if (storedCredentials.value.length > 0) {
-    authParams.credentialId = storedCredentials.value[0].id
+    const latest = storedCredentials.value[0]
+    selectCredentialForAuth(latest)
+  }
+}
+
+const addAllStoredToAuth = () => {
+  for (const stored of storedCredentials.value) {
+    if (!authCredentials.value.some((c) => c.id === stored.id)) {
+      if (authCredentials.value.length === 1 && !authCredentials.value[0].id) {
+        authCredentials.value[0] = {
+          id: stored.id,
+          transports: stored.transports ? [...stored.transports] : ['internal']
+        }
+      } else {
+        authCredentials.value.push({
+          id: stored.id,
+          transports: stored.transports ? [...stored.transports] : ['internal']
+        })
+      }
+    }
   }
 }
 
 const selectCredentialForAuth = (cred) => {
-  authParams.credentialId = cred.id
   if (cred.rpId) {
     authParams.rpId = cred.rpId
   }
-  if (cred.transports && cred.transports.length > 0) {
-    authParams.transports = [...cred.transports]
+  const existingIndex = authCredentials.value.findIndex((c) => c.id === cred.id)
+  if (existingIndex >= 0) {
+    const [found] = authCredentials.value.splice(existingIndex, 1)
+    authCredentials.value.unshift(found)
+  } else if (
+    authCredentials.value.length === 1 &&
+    !authCredentials.value[0].id
+  ) {
+    authCredentials.value[0] = {
+      id: cred.id,
+      transports: cred.transports ? [...cred.transports] : ['internal']
+    }
+  } else {
+    authCredentials.value.unshift({
+      id: cred.id,
+      transports: cred.transports ? [...cred.transports] : ['internal']
+    })
   }
 }
 
@@ -1047,8 +1152,26 @@ const handleCreateCredential = async () => {
     saveStoredCredential(toStore)
     refreshStoredCredentials()
 
-    // 認証側のCredential IDにも自動反映
-    authParams.credentialId = parsed.id
+    // 認証側のCredential一覧の先頭に自動反映
+    const newCred = {
+      id: parsed.id,
+      transports:
+        parsed.transports && parsed.transports.length > 0
+          ? [...parsed.transports]
+          : ['internal']
+    }
+    const existingIndex = authCredentials.value.findIndex(
+      (c) => c.id === parsed.id
+    )
+    if (existingIndex >= 0) {
+      authCredentials.value.splice(existingIndex, 1)
+    } else if (
+      authCredentials.value.length === 1 &&
+      !authCredentials.value[0].id
+    ) {
+      authCredentials.value.shift()
+    }
+    authCredentials.value.unshift(newCred)
 
     regSuccessMsg.value =
       'Keyの作成に成功しました！情報はSessionStorageに保管され、認証セクションにもセットされました。'
@@ -1120,8 +1243,19 @@ onMounted(() => {
     isSupported.value = false
   }
   refreshStoredCredentials()
-  if (storedCredentials.value.length > 0 && !authParams.credentialId) {
-    authParams.credentialId = storedCredentials.value[0].id
+  if (storedCredentials.value.length > 0) {
+    const latest = storedCredentials.value[0]
+    if (authCredentials.value.length === 1 && !authCredentials.value[0].id) {
+      authCredentials.value[0] = {
+        id: latest.id,
+        transports: latest.transports ? [...latest.transports] : ['internal']
+      }
+    } else if (authCredentials.value.length === 0) {
+      authCredentials.value.push({
+        id: latest.id,
+        transports: latest.transports ? [...latest.transports] : ['internal']
+      })
+    }
   }
 })
 </script>

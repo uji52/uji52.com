@@ -65,13 +65,10 @@ export function bytesToString(buffer) {
  */
 export function generateRandomBytes(length = 32) {
   const array = new Uint8Array(length)
-  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
-    crypto.getRandomValues(array)
-  } else {
-    for (let i = 0; i < length; i++) {
-      array[i] = Math.floor(Math.random() * 256)
-    }
+  if (typeof crypto === 'undefined' || !crypto.getRandomValues) {
+    throw new Error('crypto.getRandomValues が利用できません。')
   }
+  crypto.getRandomValues(array)
   return array
 }
 
@@ -95,11 +92,20 @@ export function generateGuid() {
   ) {
     return crypto.randomUUID()
   }
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0
-    const v = c === 'x' ? r : (r & 0x3) | 0x8
-    return v.toString(16)
-  })
+  if (
+    typeof crypto !== 'undefined' &&
+    typeof crypto.getRandomValues === 'function'
+  ) {
+    const bytes = new Uint8Array(16)
+    crypto.getRandomValues(bytes)
+    bytes[6] = (bytes[6] & 0x0f) | 0x40 // Version 4
+    bytes[8] = (bytes[8] & 0x3f) | 0x80 // Variant RFC 4122
+    const hex = Array.from(bytes)
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
+  }
+  throw new Error('crypto.getRandomValues が利用できません。')
 }
 
 /**
@@ -133,13 +139,17 @@ export function getStoredCredentials() {
  */
 export function saveStoredCredential(cred) {
   if (typeof window === 'undefined' || !window.sessionStorage) return
-  const current = getStoredCredentials()
-  const filtered = current.filter((item) => item.id !== cred.id)
-  filtered.unshift({
-    ...cred,
-    savedAt: new Date().toISOString()
-  })
-  window.sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(filtered))
+  try {
+    const current = getStoredCredentials()
+    const filtered = current.filter((item) => item.id !== cred.id)
+    filtered.unshift({
+      ...cred,
+      savedAt: new Date().toISOString()
+    })
+    window.sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(filtered))
+  } catch (err) {
+    console.warn('SessionStorage へのクレデンシャル保存に失敗しました:', err)
+  }
 }
 
 /**
@@ -147,7 +157,11 @@ export function saveStoredCredential(cred) {
  */
 export function clearStoredCredentials() {
   if (typeof window === 'undefined' || !window.sessionStorage) return
-  window.sessionStorage.removeItem(SESSION_STORAGE_KEY)
+  try {
+    window.sessionStorage.removeItem(SESSION_STORAGE_KEY)
+  } catch (err) {
+    console.warn('SessionStorage のクレデンシャル消去に失敗しました:', err)
+  }
 }
 
 /**

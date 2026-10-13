@@ -87,6 +87,38 @@ describe('webauthn.js utility', () => {
         /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
       )
     })
+
+    it('generates GUID with getRandomValues when randomUUID is unavailable', () => {
+      const originalRandomUUID = crypto.randomUUID
+      try {
+        crypto.randomUUID = undefined
+        const guid = generateGuid()
+        expect(typeof guid).toBe('string')
+        expect(guid).toMatch(
+          /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+        )
+      } finally {
+        crypto.randomUUID = originalRandomUUID
+      }
+    })
+
+    it('throws error when crypto.getRandomValues is unavailable', () => {
+      const originalGetRandomValues = crypto.getRandomValues
+      const originalRandomUUID = crypto.randomUUID
+      try {
+        crypto.getRandomValues = undefined
+        crypto.randomUUID = undefined
+        expect(() => generateRandomBytes(16)).toThrow(
+          'crypto.getRandomValues が利用できません。'
+        )
+        expect(() => generateGuid()).toThrow(
+          'crypto.getRandomValues が利用できません。'
+        )
+      } finally {
+        crypto.getRandomValues = originalGetRandomValues
+        crypto.randomUUID = originalRandomUUID
+      }
+    })
   })
 
   describe('sessionStorage helpers', () => {
@@ -113,6 +145,35 @@ describe('webauthn.js utility', () => {
 
       clearStoredCredentials()
       expect(getStoredCredentials()).toEqual([])
+    })
+
+    it('safely catches exceptions from sessionStorage.setItem / removeItem', () => {
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+      const setItemSpy = jest
+        .spyOn(Storage.prototype, 'setItem')
+        .mockImplementation(() => {
+          throw new Error('QuotaExceededError')
+        })
+      const removeItemSpy = jest
+        .spyOn(Storage.prototype, 'removeItem')
+        .mockImplementation(() => {
+          throw new Error('SecurityError')
+        })
+
+      try {
+        expect(() => {
+          saveStoredCredential({ id: 'test' })
+        }).not.toThrow()
+        expect(warnSpy).toHaveBeenCalled()
+
+        expect(() => {
+          clearStoredCredentials()
+        }).not.toThrow()
+      } finally {
+        setItemSpy.mockRestore()
+        removeItemSpy.mockRestore()
+        warnSpy.mockRestore()
+      }
     })
   })
 
