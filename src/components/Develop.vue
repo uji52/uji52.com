@@ -498,9 +498,7 @@
             aria-labelledby="fido-tab"
             tabindex="0"
           >
-            <div class="py-4 text-center text-body-secondary">
-              <p class="mb-0">FIDO内部の実装予定エリア</p>
-            </div>
+            <DevelopFido />
           </div>
         </div>
       </div>
@@ -512,6 +510,7 @@
 import { ref, watch, nextTick, onMounted } from 'vue'
 import CryptoJS from 'crypto-js'
 import { pemToJwks, PemParseError } from '@/utils/pemJwk'
+import DevelopFido from './DevelopFido.vue'
 
 class UndecodableError extends Error {
   constructor(message) {
