@@ -1,8 +1,18 @@
 export const releases = [
   {
+    version: '2.1.0',
+    date: '2026/10/14',
+    isNew: true,
+    notes: [
+      'Development Tools にタブ機能（General / FIDO）を追加',
+      'WebAuthn (FIDO2) のKey作成および認証のテスト機能を追加',
+      'WebAuthn 認証時の allowCredentials 複数指定に対応'
+    ]
+  },
+  {
     version: '2.0.9',
     date: '2026/09/12',
-    isNew: true,
+    isNew: false,
     notes: ['ブラウザ処理によるPEMからJWK形式への変換機能を追加']
   },
   {
