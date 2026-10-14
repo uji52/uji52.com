@@ -541,7 +541,7 @@
               <div v-else class="d-flex flex-column gap-2 mb-2">
                 <div
                   v-for="(item, idx) in authCredentials"
-                  :key="idx"
+                  :key="item.uid"
                   class="p-2 border rounded bg-body-tertiary"
                 >
                   <div
@@ -606,7 +606,7 @@
                 type="button"
                 id="btnAddAuthCredential"
                 class="btn btn-outline-secondary btn-sm w-100"
-                @click="addAuthCredential"
+                @click="addAuthCredential()"
               >
                 <i class="bi bi-plus-circle me-1"></i> 鍵を追加
               </button>
@@ -954,11 +954,19 @@ const authParams = reactive({
   timeout: 60000
 })
 
+// 項目ごとの一意なキーを生成する
+let credUid = 0
+const makeAuthCredential = (id = '', transports = ['internal']) => ({
+  uid: ++credUid,
+  id: typeof id === 'string' ? id : '',
+  transports: Array.isArray(transports) ? [...transports] : ['internal']
+})
+
 // 複数の鍵を指定可能 (allowCredentials)
-const authCredentials = ref([{ id: '', transports: ['internal'] }])
+const authCredentials = ref([makeAuthCredential()])
 
 const addAuthCredential = (id = '', transports = ['internal']) => {
-  authCredentials.value.push({ id, transports: [...transports] })
+  authCredentials.value.push(makeAuthCredential(id, transports))
 }
 
 const removeAuthCredential = (index) => {
@@ -1038,15 +1046,17 @@ const addAllStoredToAuth = () => {
   for (const stored of storedCredentials.value) {
     if (!authCredentials.value.some((c) => c.id === stored.id)) {
       if (authCredentials.value.length === 1 && !authCredentials.value[0].id) {
-        authCredentials.value[0] = {
-          id: stored.id,
-          transports: stored.transports ? [...stored.transports] : ['internal']
-        }
+        authCredentials.value[0].id = stored.id
+        authCredentials.value[0].transports = stored.transports
+          ? [...stored.transports]
+          : ['internal']
       } else {
-        authCredentials.value.push({
-          id: stored.id,
-          transports: stored.transports ? [...stored.transports] : ['internal']
-        })
+        authCredentials.value.push(
+          makeAuthCredential(
+            stored.id,
+            stored.transports ? stored.transports : ['internal']
+          )
+        )
       }
     }
   }
@@ -1064,15 +1074,17 @@ const selectCredentialForAuth = (cred) => {
     authCredentials.value.length === 1 &&
     !authCredentials.value[0].id
   ) {
-    authCredentials.value[0] = {
-      id: cred.id,
-      transports: cred.transports ? [...cred.transports] : ['internal']
-    }
+    authCredentials.value[0].id = cred.id
+    authCredentials.value[0].transports = cred.transports
+      ? [...cred.transports]
+      : ['internal']
   } else {
-    authCredentials.value.unshift({
-      id: cred.id,
-      transports: cred.transports ? [...cred.transports] : ['internal']
-    })
+    authCredentials.value.unshift(
+      makeAuthCredential(
+        cred.id,
+        cred.transports ? cred.transports : ['internal']
+      )
+    )
   }
 }
 
@@ -1153,13 +1165,10 @@ const handleCreateCredential = async () => {
     refreshStoredCredentials()
 
     // 認証側のCredential一覧の先頭に自動反映
-    const newCred = {
-      id: parsed.id,
-      transports:
-        parsed.transports && parsed.transports.length > 0
-          ? [...parsed.transports]
-          : ['internal']
-    }
+    const transports =
+      parsed.transports && parsed.transports.length > 0
+        ? parsed.transports
+        : ['internal']
     const existingIndex = authCredentials.value.findIndex(
       (c) => c.id === parsed.id
     )
@@ -1171,7 +1180,7 @@ const handleCreateCredential = async () => {
     ) {
       authCredentials.value.shift()
     }
-    authCredentials.value.unshift(newCred)
+    authCredentials.value.unshift(makeAuthCredential(parsed.id, transports))
 
     regSuccessMsg.value =
       'Keyの作成に成功しました！情報はSessionStorageに保管され、認証セクションにもセットされました。'
@@ -1245,16 +1254,12 @@ onMounted(() => {
   refreshStoredCredentials()
   if (storedCredentials.value.length > 0) {
     const latest = storedCredentials.value[0]
+    const transports = latest.transports ? latest.transports : ['internal']
     if (authCredentials.value.length === 1 && !authCredentials.value[0].id) {
-      authCredentials.value[0] = {
-        id: latest.id,
-        transports: latest.transports ? [...latest.transports] : ['internal']
-      }
+      authCredentials.value[0].id = latest.id
+      authCredentials.value[0].transports = [...transports]
     } else if (authCredentials.value.length === 0) {
-      authCredentials.value.push({
-        id: latest.id,
-        transports: latest.transports ? [...latest.transports] : ['internal']
-      })
+      authCredentials.value.push(makeAuthCredential(latest.id, transports))
     }
   }
 })

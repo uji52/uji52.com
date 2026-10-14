@@ -338,9 +338,10 @@ describe('DevelopFido.vue', () => {
     await addBtn.trigger('click')
     await nextTick()
 
-    // 2つ目の入力欄が存在する
+    // 2つ目の入力欄が存在し、初期値が空文字（MouseEvent等ではない）ことを確認
     const credInput1 = wrapper.find('#authCredentialId_1')
     expect(credInput1.exists()).toBe(true)
+    expect(credInput1.element.value).toBe('')
     await credInput1.setValue('credential-beta')
 
     // JSON の options に2件反映されていることを確認
