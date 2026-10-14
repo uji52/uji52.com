@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
           main: path.resolve(import.meta.dirname, 'src/index.html')
         }
       },
-      assetsDir: 'assets',
+      assetsDir: 'assets'
     },
     publicDir: path.resolve(import.meta.dirname, 'public'),
     base: '/',
@@ -27,6 +27,9 @@ export default defineConfig(({ mode }) => {
       VitePWA({
         registerType: 'autoUpdate',
         includeAssets: ['favicon.ico', 'robots.txt'],
+        workbox: {
+          navigateFallbackDenylist: [/^\/\.well-known/]
+        },
         manifest: {
           name: 'uji52.com',
           short_name: 'uji52',
@@ -62,7 +65,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(import.meta.dirname, './src')
-      },
+      }
     },
     css: {
       devSourcemap: true,

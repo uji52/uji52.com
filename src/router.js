@@ -35,15 +35,19 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes,
-  /* c8 ignore start - can't test*/
-  beforeEach: (to, from, next) => {
-    if (to.path === '/manifest.json') {
-      return next(false)
-    }
-    next()
-  }
-  /* c8 ignore stop */
+  routes
 })
+
+/* c8 ignore start - can't test*/
+router.beforeEach((to, from, next) => {
+  if (to.path === '/manifest.json' || to.path.startsWith('/.well-known/')) {
+    if (typeof window !== 'undefined') {
+      window.location.href = to.fullPath
+    }
+    return next(false)
+  }
+  next()
+})
+/* c8 ignore stop */
 
 export default router
