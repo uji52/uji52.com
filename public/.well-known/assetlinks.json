@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.uji52.webviewfido",
+      "sha256_cert_fingerprints": [
+        "0C:BA:1F:D1:69:A1:8B:A0:E5:D1:6A:62:40:DA:E1:A3:4D:4E:49:55:E7:33:78:82:3B:D7:B5:23:07:B9:FC:3D"
+      ]
+    }
+  }
+]

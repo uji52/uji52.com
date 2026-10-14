@@ -11,7 +11,8 @@ import {
   getStoredCredentials,
   saveStoredCredential,
   clearStoredCredentials,
-  parseCredentialResponse
+  parseCredentialResponse,
+  isWebViewEnvironment
 } from '@/utils/webauthn'
 
 if (typeof global.TextEncoder === 'undefined') {
@@ -241,6 +242,43 @@ describe('webauthn.js utility', () => {
       expect(parsed.clientDataParsed).toEqual(clientDataObj)
       expect(parsed.userHandleString).toBe('user-handle-123')
       expect(typeof parsed.signature).toBe('string')
+    })
+  })
+
+  describe('isWebViewEnvironment', () => {
+    it('returns false for standard desktop and mobile browsers', () => {
+      const desktopChrome =
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      const mobileSafari =
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1'
+      const androidChrome =
+        'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.43 Mobile Safari/537.36'
+
+      expect(isWebViewEnvironment(desktopChrome)).toBe(false)
+      expect(isWebViewEnvironment(mobileSafari)).toBe(false)
+      expect(isWebViewEnvironment(androidChrome)).toBe(false)
+      expect(isWebViewEnvironment('')).toBe(false)
+      expect(isWebViewEnvironment(null)).toBe(false)
+    })
+
+    it('returns true for Android WebViews', () => {
+      const androidWv =
+        'Mozilla/5.0 (Linux; Android 14; Pixel 8 Build/UD1A.231105.004; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/120.0.6099.43 Mobile Safari/537.36'
+      const androidVersion =
+        'Mozilla/5.0 (Linux; U; Android 4.4.2; en-us; LGMS323 Build/KOT49I.MS32310c) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/30.0.0.0 Mobile Safari/537.36'
+
+      expect(isWebViewEnvironment(androidWv)).toBe(true)
+      expect(isWebViewEnvironment(androidVersion)).toBe(true)
+    })
+
+    it('returns true for iOS WebViews and in-app browsers', () => {
+      const iosWebView =
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148'
+      const lineBrowser =
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Line/13.1.0'
+
+      expect(isWebViewEnvironment(iosWebView)).toBe(true)
+      expect(isWebViewEnvironment(lineBrowser)).toBe(true)
     })
   })
 })

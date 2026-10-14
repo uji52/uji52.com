@@ -459,4 +459,69 @@ describe('DevelopFido.vue', () => {
       ArrayBuffer
     )
   })
+
+  it('handles WebView environment and self-responsibility checkbox to unlock execution', async () => {
+    wrapper = mount(DevelopFido)
+    await nextTick()
+
+    // 非WebView環境下ではシミュレーションボタンが存在
+    const toggleBtn = wrapper.find('#btnToggleSimulateWebview')
+    expect(toggleBtn.exists()).toBe(true)
+
+    // シミュレーションをONにする
+    await toggleBtn.trigger('click')
+    await nextTick()
+
+    // 警告アラートが表示される
+    const alert = wrapper.find('#webviewWarningAlert')
+    expect(alert.exists()).toBe(true)
+    expect(alert.text()).toContain('WebView環境が検出されました')
+
+    // 自己責任チェックがOFFの間はボタンが無効化される
+    const createBtn = wrapper.find('#btnCreateCredential')
+    const getBtn = wrapper.find('#btnGetCredential')
+    expect(createBtn.attributes('disabled')).toBeDefined()
+    expect(getBtn.attributes('disabled')).toBeDefined()
+    expect(wrapper.text()).toContain(
+      'WebView環境のため、上部の「自己責任で許可」にチェックを入れるまで無効化されています'
+    )
+
+    // チェックボックスをONにする
+    const checkbox = wrapper.find('#allowWebViewExecution')
+    expect(checkbox.exists()).toBe(true)
+    await checkbox.setValue(true)
+    await nextTick()
+
+    // ボタンのdisabledが解除される
+    expect(createBtn.attributes('disabled')).toBeUndefined()
+    expect(getBtn.attributes('disabled')).toBeUndefined()
+  })
+
+  it('displays WebView guidance when NotSupportedError is thrown', async () => {
+    const mockCreate = jest
+      .fn()
+      .mockRejectedValue(
+        new DOMException(
+          'Error connecting to Web Authentication service',
+          'NotSupportedError'
+        )
+      )
+    Object.defineProperty(navigator, 'credentials', {
+      value: { create: mockCreate, get: jest.fn() },
+      configurable: true,
+      writable: true
+    })
+
+    wrapper = mount(DevelopFido)
+    await nextTick()
+
+    const createBtn = wrapper.find('#btnCreateCredential')
+    await createBtn.trigger('click')
+    await nextTick()
+
+    expect(wrapper.text()).toContain('Key作成エラー')
+    expect(wrapper.text()).toContain(
+      'WebSettingsCompat.setWebAuthenticationSupport 設定や、端末の画面ロック設定が必要です'
+    )
+  })
 })
