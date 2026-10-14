@@ -226,3 +226,33 @@ export function parseCredentialResponse(credential) {
 
   return result
 }
+
+/**
+ * 実行環境が WebView（Android WebView や iOS アプリ内ブラウザ等）であるかを判定
+ * @param {string} [userAgent]
+ * @returns {boolean}
+ */
+export function isWebViewEnvironment(
+  userAgent = typeof navigator !== 'undefined' ? navigator.userAgent : ''
+) {
+  if (!userAgent || typeof userAgent !== 'string') return false
+  const ua = userAgent.toLowerCase()
+
+  // Android WebView: "; wv" または "version/x.x ... chrome/..."
+  const isAndroid = ua.includes('android')
+  const isAndroidWebView =
+    isAndroid && (ua.includes('; wv') || /version\/[0-9.]+/i.test(ua))
+
+  // iOS App-bound WebView / In-App Browser: iPhone/iPad/iPod かつ Safari が含まれない、または AppleWebKit
+  const isIOS = /iphone|ipod|ipad/i.test(ua)
+  const isIOSWebView =
+    isIOS &&
+    ua.includes('applewebkit') &&
+    !ua.includes('safari') &&
+    !ua.includes('crios')
+
+  // 代表的なアプリ内ブラウザ（LINE, FB, Twitter/X, Instagram等）
+  const isInAppBrowser = /line\/|fb_iab|fbav|instagram|twitter/i.test(ua)
+
+  return isAndroidWebView || isIOSWebView || isInAppBrowser
+}

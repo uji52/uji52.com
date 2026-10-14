@@ -8,6 +8,66 @@
       がサポートされていない可能性があります。
     </div>
 
+    <!-- WebView Environment Warning & Self-Responsibility Check -->
+    <div
+      v-if="isWebViewActive"
+      id="webviewWarningAlert"
+      class="alert alert-warning mb-4"
+      role="alert"
+    >
+      <div class="d-flex align-items-start">
+        <i class="bi bi-shield-exclamation fs-4 me-3 text-warning"></i>
+        <div class="flex-grow-1">
+          <h6 class="alert-heading fw-bold mb-1">
+            WebView環境が検出されました（自己責任検証モード）
+          </h6>
+          <p class="small mb-2 text-body-secondary">
+            Android等のアプリ内ブラウザ（WebView）では、OSおよびアプリの制限により、
+            <code
+              >NotSupportedError - Error connecting to Web Authentication
+              service</code
+            >
+            が発生する場合があります。 アプリ側で
+            <code>WebSettingsCompat.setWebAuthenticationSupport</code>
+            の有効化や、特定アプリ認証（Digital Asset
+            Links）の設定がされていない場合、動作しません。
+          </p>
+          <div class="form-check form-switch mt-2">
+            <input
+              id="allowWebViewExecution"
+              v-model="allowWebViewExecution"
+              class="form-check-input"
+              type="checkbox"
+            />
+            <label
+              for="allowWebViewExecution"
+              class="form-check-label fw-semibold small"
+            >
+              【自己責任】WebView環境でのFIDO実行を許可する（検証用）
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 非WebView環境向け: シミュレーション切り替えリンク -->
+    <div v-if="!isWebView" class="text-end mb-2">
+      <button
+        type="button"
+        id="btnToggleSimulateWebview"
+        class="btn btn-link btn-sm text-decoration-none text-muted p-0 small"
+        style="font-size: 0.75rem"
+        @click="isWebViewForced = !isWebViewForced"
+      >
+        <i class="bi bi-phone me-1"></i>
+        {{
+          isWebViewForced
+            ? 'WebViewシミュレーション解除'
+            : 'WebViewシミュレーション'
+        }}
+      </button>
+    </div>
+
     <!-- ==================== Section 1: Key作成 (Registration) ==================== -->
     <div class="card mb-4 shadow-sm">
       <div class="card-header bg-body-tertiary">
@@ -300,8 +360,8 @@
             <button
               id="btnCreateCredential"
               type="button"
-              class="btn btn-primary w-100 fw-bold py-2 mb-3"
-              :disabled="regLoading"
+              class="btn btn-primary w-100 fw-bold py-2 mb-2"
+              :disabled="regLoading || isActionBlocked"
               @click="handleCreateCredential"
             >
               <span
@@ -312,6 +372,10 @@
               <i v-else class="bi bi-key-fill me-2"></i>
               Key作成を実行 (navigator.credentials.create)
             </button>
+            <div v-if="isActionBlocked" class="text-danger small mb-3">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              WebView環境のため、上部の「自己責任で許可」にチェックを入れるまで無効化されています。
+            </div>
 
             <!-- メッセージ表示 -->
             <div
@@ -649,8 +713,8 @@
             <button
               id="btnGetCredential"
               type="button"
-              class="btn btn-success w-100 fw-bold py-2 mb-3"
-              :disabled="authLoading"
+              class="btn btn-success w-100 fw-bold py-2 mb-2"
+              :disabled="authLoading || isActionBlocked"
               @click="handleGetCredential"
             >
               <span
@@ -661,6 +725,10 @@
               <i v-else class="bi bi-shield-check me-2"></i>
               認証を実行 (navigator.credentials.get)
             </button>
+            <div v-if="isActionBlocked" class="text-danger small mb-3">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              WebView環境のため、上部の「自己責任で許可」にチェックを入れるまで無効化されています。
+            </div>
 
             <!-- メッセージ表示 -->
             <div
@@ -847,11 +915,21 @@ import {
   getStoredCredentials,
   saveStoredCredential,
   clearStoredCredentials,
-  parseCredentialResponse
+  parseCredentialResponse,
+  isWebViewEnvironment
 } from '@/utils/webauthn'
 
 // ブラウザのWebAuthnサポート判定
 const isSupported = ref(true)
+
+// WebView環境判定と自己責任許可フラグ
+const isWebView = ref(false)
+const isWebViewForced = ref(false) // テスト・シミュレーション用
+const isWebViewActive = computed(() => isWebView.value || isWebViewForced.value)
+const allowWebViewExecution = ref(false)
+const isActionBlocked = computed(
+  () => isWebViewActive.value && !allowWebViewExecution.value
+)
 
 // ==================== 共通 Challenge (Key作成・認証で同期) ====================
 const sharedChallenge = ref(generateRandomBase64Url(32))
@@ -1185,7 +1263,15 @@ const handleCreateCredential = async () => {
     regSuccessMsg.value =
       'Keyの作成に成功しました！情報はSessionStorageに保管され、認証セクションにもセットされました。'
   } catch (err) {
-    regErrorMsg.value = `Key作成エラー: ${err.name || 'Error'} - ${err.message}`
+    let msg = `Key作成エラー: ${err.name || 'Error'} - ${err.message}`
+    if (
+      err.name === 'NotSupportedError' ||
+      (err.message && err.message.includes('Web Authentication service'))
+    ) {
+      msg +=
+        ' （※WebView環境の場合、アプリ側の WebSettingsCompat.setWebAuthenticationSupport 設定や、端末の画面ロック設定が必要です）'
+    }
+    regErrorMsg.value = msg
   } finally {
     regLoading.value = false
   }
@@ -1238,7 +1324,15 @@ const handleGetCredential = async () => {
 
     authSuccessMsg.value = `認証に成功しました！ (Credential ID: ${parsed.id})`
   } catch (err) {
-    authErrorMsg.value = `認証エラー: ${err.name || 'Error'} - ${err.message}`
+    let msg = `認証エラー: ${err.name || 'Error'} - ${err.message}`
+    if (
+      err.name === 'NotSupportedError' ||
+      (err.message && err.message.includes('Web Authentication service'))
+    ) {
+      msg +=
+        ' （※WebView環境の場合、アプリ側の WebSettingsCompat.setWebAuthenticationSupport 設定や、端末の画面ロック設定が必要です）'
+    }
+    authErrorMsg.value = msg
   } finally {
     authLoading.value = false
   }
@@ -1251,6 +1345,7 @@ onMounted(() => {
   ) {
     isSupported.value = false
   }
+  isWebView.value = isWebViewEnvironment()
   refreshStoredCredentials()
   if (storedCredentials.value.length > 0) {
     const latest = storedCredentials.value[0]
