@@ -9,20 +9,33 @@ jest.mock('vue-router', () => {
     Develop: { template: '<div>Develop</div>' },
     ReleaseNote: { template: '<div>ReleaseNote</div>' },
     Feedback: { template: '<div>Feedback</div>' },
-    Privacy: { template: '<div>Privacy</div>' },
+    Privacy: { template: '<div>Privacy</div>' }
   }
 
   const mockRouter = {
     options: {
       routes: [
         { path: '/', name: 'Landing', component: mockComponents.Landing },
-        { path: '/develop', name: 'Develop', component: mockComponents.Develop },
-        { path: '/release', name: 'ReleaseNote', component: mockComponents.ReleaseNote },
-        { path: '/feedback', name: 'Feedback', component: mockComponents.Feedback },
-        { path: '/privacy', name: 'Privacy', component: mockComponents.Privacy },
+        {
+          path: '/develop',
+          name: 'Develop',
+          component: mockComponents.Develop
+        },
+        {
+          path: '/release',
+          name: 'ReleaseNote',
+          component: mockComponents.ReleaseNote
+        },
+        {
+          path: '/feedback',
+          name: 'Feedback',
+          component: mockComponents.Feedback
+        },
+        { path: '/privacy', name: 'Privacy', component: mockComponents.Privacy }
       ],
       history: { constructor: { name: 'WebHistory' } }
-    }
+    },
+    beforeEach: jest.fn()
   }
 
   return {
@@ -41,7 +54,7 @@ describe('Router', () => {
       { path: '/develop', name: 'Develop' },
       { path: '/release', name: 'ReleaseNote' },
       { path: '/feedback', name: 'Feedback' },
-      { path: '/privacy', name: 'Privacy' },
+      { path: '/privacy', name: 'Privacy' }
     ]
 
     expectedRoutes.forEach((expectedRoute, index) => {
